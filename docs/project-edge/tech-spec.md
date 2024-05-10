@@ -7,7 +7,7 @@ This document provides detailed technical specifications for the software archit
 ### Scope
 This document covers API specifications, data models, system architecture, security, performance, testing, and deployment strategies.
 
-### 2. API Specifications
+## 2. API Specifications
 
 #### Endpoint Definitions
 
@@ -194,70 +194,140 @@ Provide an entity-relationship diagram illustrating the database schema.
 Include diagrams that illustrate the flow of data through the system.
 
 ## 6. Service Architecture
+
 ### Microservices/Services Layout
-Describe each microservice, its responsibilities, and interactions with other services.
+
+1. **User Service**
+   - **Responsibilities**: Manages user authentication, profile management, and user-related functionalities.
+   - **Interactions**: Communicates with the Post Service for user-related posts and comments.
+
+2. **Post Service**
+   - **Responsibilities**: Handles CRUD operations for posts, including creating, retrieving, updating, and deleting posts.
+   - **Interactions**: Communicates with the User Service for user authentication and authorization.
+
+3. **Notification Service**
+   - **Responsibilities**: Manages notifications for users, including sending alerts for new comments, mentions, or likes.
+   - **Interactions**: Subscribes to events from the Post Service and User Service to generate notifications.
 
 ### Internal APIs
-Detail any internal APIs used for inter-service communication.
+
+1. **User Service API**
+   - **Endpoints**: 
+     - `/api/users`: CRUD operations for user management.
+   - **Purpose**: Used by other services for user authentication and profile retrieval.
+
+2. **Post Service API**
+   - **Endpoints**: 
+     - `/api/posts`: CRUD operations for post management.
+   - **Purpose**: Accessed by other services for post-related functionalities, such as creating and retrieving posts.
 
 ### External Integrations
-Document external services the system integrates with, such as APIs or data services.
 
-## 5. Security Specifications
+1. **Email Service**
+   - **Purpose**: Integrates with external email service providers for sending email notifications, such as account verification emails or password reset links.
+
+2. **Storage Service**
+   - **Purpose**: Integrates with cloud storage providers for storing file attachments associated with posts or comments.
+
+3. **Analytics Service**
+   - **Purpose**: Integrates with analytics platforms for tracking user engagement and behavior within the application.
+## 7. Security Specifications
 ### Data Security
-Outline measures for securing data at rest and in transit.
+To ensure data security, Project Edge implements the following measures:
+- Encryption: All sensitive data stored in the database is encrypted using industry-standard encryption algorithms.
+- Access Control: Role-based access control mechanisms are enforced to restrict unauthorized access to data.
+- Secure Communication: Data transmitted between clients and servers is encrypted using HTTPS protocol to prevent interception by third parties.
+- Regular Security Audits: Periodic security audits are conducted to identify and address potential vulnerabilities.
 
 ### Compliance and Standards
-Mention compliance standards the project adheres to, such as GDPR or HIPAA.
+Project Edge adheres to the following compliance standards:
+- GDPR (General Data Protection Regulation): Ensures the protection of user data privacy and rights within the European Union.
+- HIPAA (Health Insurance Portability and Accountability Act): Enforces security and privacy measures for protecting health information.
 
 ### Vulnerability Management
-Describe strategies for managing software vulnerabilities.
+To manage software vulnerabilities, Project Edge follows these strategies:
+- Patch Management: Regularly apply security patches and updates to software components to address known vulnerabilities.
+- Vulnerability Scanning: Conduct routine vulnerability scans to identify and remediate potential security weaknesses.
+- Incident Response Plan: Maintain an incident response plan to promptly address and mitigate security incidents as they arise.
 
-## 6. Performance and Scaling
+## 8. Performance and Scaling
 ### Performance Benchmarks
-Set specific performance goals for critical operations.
+Performance goals for critical operations in Project Edge include:
+- Response Time: Aim for an average response time of under 500 milliseconds for API requests.
+- Throughput: Handle a minimum of 1000 concurrent users without significant degradation in performance.
 
 ### Scaling Strategy
-Explain the strategies for application scaling, including load balancing and database sharding.
+Project Edge employs the following scaling strategies:
+- Horizontal Scaling: Add more server instances to distribute the load evenly and increase capacity as demand grows.
+- Load Balancing: Utilize load balancers to distribute incoming traffic across multiple servers for optimal performance.
+- Database Sharding: Implement database sharding to horizontally partition data and distribute it across multiple database servers.
 
-## 7. Testing Strategy
+## 9. Testing Strategy
 ### Testing Levels
-Describe the different levels of testing: unit, integration, system, and acceptance.
+Project Edge implements the following testing levels:
+- Unit Testing: Test individual components in isolation to ensure they function correctly.
+- Integration Testing: Validate the interaction between different modules to ensure seamless integration.
+- System Testing: Evaluate the system as a whole to verify its compliance with functional requirements.
+- Acceptance Testing: Conduct tests with end-users to ensure the system meets their needs and expectations.
 
 ### Test Cases
-Provide examples of key test cases for essential functionalities.
+Key test cases for essential functionalities in Project Edge include:
+- User Registration: Verify that users can successfully register new accounts with valid credentials.
+- Post Creation: Ensure users can create new posts with correct formatting and attributes.
+- Authentication: Validate that users can log in securely and access authorized resources.
 
 ### Automation Strategy
-Outline the approach for test automation and continuous integration.
+Project Edge employs automated testing and continuous integration (CI) to streamline the testing process:
+- Automated Tests: Use testing frameworks to automate the execution of test cases, saving time and effort.
+- Continuous Integration: Integrate automated tests into the CI/CD pipeline to detect and address issues early in the development cycle.
 
-## 8. Deployment Strategy
+## 10. Deployment Strategy
 ### Environment Setup
-Detail configurations for development, testing, staging, and production environments.
+Project Edge utilizes the following environment configurations:
+- Development: Local development environments set up using Docker Compose for consistency and ease of use.
+- Testing: Dedicated testing environments for running automated tests and validating new features before deployment.
+- Staging: Pre-production environments closely resembling the production environment for final testing and quality assurance.
+- Production: Live production environment hosted on cloud platforms like AWS, Azure, or Google Cloud for scalability and reliability.
 
 ### Deployment Process
-Outline the steps and tools used for deploying new application versions.
+The deployment process for Project Edge involves the following steps:
+- Code Review: Peer review of code changes to ensure quality and adherence to coding standards.
+- Automated Builds: Automated builds triggered by code commits to create deployment artifacts.
+- Continuous Deployment: Automated deployment pipelines using tools like GitHub Actions or Jenkins for seamless and efficient deployment to production.
 
 ### Rollback Procedures
-Describe the process for rolling back a deployment if needed.
+In the event of a deployment failure or critical issue, Project Edge follows these rollback procedures:
+- Automated Rollback: Implement automated rollback scripts to revert to the previous stable version of the application.
+- Rollback Testing: Validate the rollback process in testing environments to ensure it functions as expected.
+- Incident Response: Communicate with stakeholders and follow incident response protocols to address the issue promptly and minimize downtime.
 
-## 9. Maintenance and Monitoring
+## 11. Maintenance and Monitoring
 ### Monitoring Tools
-List tools and metrics used for monitoring the application's health and performance.
+Project Edge utilizes the following monitoring tools and metrics:
+- Prometheus: Collects and stores time-series data for monitoring system metrics.
+- Grafana: Visualizes and analyzes system performance and resource utilization using customizable dashboards.
+- ELK Stack (Elasticsearch, Logstash, Kibana): Centralized logging and log analysis for monitoring application logs and identifying issues.
 
 ### Log Management
-Describe the logging strategy, including storage, access, and management of logs.
+Project Edge follows a comprehensive log management strategy:
+- Log Storage: Store logs centrally in a dedicated logging infrastructure for easy access and analysis.
+- Log Rotation: Implement log rotation policies to manage log file size and prevent storage issues.
+- Log Analysis: Utilize log analysis tools to parse and analyze logs for troubleshooting and identifying patterns or anomalies.
 
 ### Maintenance Procedures
-Outline regular maintenance operations such as database backups and software updates.
+Regular maintenance operations for Project Edge include:
+- Database Backups: Schedule regular backups of the database to prevent data loss in the event of system failure or corruption.
+- Software Updates: Apply patches and updates to software components to address security vulnerabilities and improve performance.
+- Performance Tuning: Monitor and optimize system performance to ensure optimal resource utilization and responsiveness.
 
-## 10. Conclusion
+## 12. Conclusion
 ### Summary
-Recap the main points covered in this document.
+In summary, this document outlines the technical specifications and strategies for developing, deploying, and maintaining Project Edge, a community-driven platform for university students.
 
 ### Contact Information
-Provide contact details for the development team or project manager for further queries.
+For further queries or information, please contact the development team at [email@example.com](mailto:email@example.com).
 
-## 11. Appendices
+## 13. Appendices
 ### Glossary
 Define technical terms used throughout the document.
 
