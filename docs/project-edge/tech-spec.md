@@ -7,15 +7,94 @@ This document provides detailed technical specifications for the software archit
 ### Scope
 This document covers API specifications, data models, system architecture, security, performance, testing, and deployment strategies.
 
-## 2. API Specifications
-### Endpoint Definitions
-Detail each API endpoint including paths, methods, request parameters, response structures, and status codes.
+### 2. API Specifications
 
-### Authentication Mechanisms
-Describe the authentication process, including any tokens or headers required.
+#### Endpoint Definitions
 
-### Error Handling
-Define standard API error responses and status codes.
+1. **User Management**
+   - **Path**: `/api/users`
+   - **Methods**: 
+     - `POST`: Create a new user.
+     - `GET`: Get user profile information.
+     - `PUT`: Update user profile information.
+     - `DELETE`: Delete user account.
+   - **Request Parameters**:
+     - `POST`: 
+       - `first_name`: String (required)
+       - `last_name`: String (required)
+       - `email`: String (required)
+       - `password`: String (required)
+     - `PUT`:
+       - `first_name`: String
+       - `last_name`: String
+       - `email`: String
+       - `password`: String
+   - **Response Structures**:
+     - `POST`, `GET`, `PUT`: 
+       - `id`: Integer
+       - `first_name`: String
+       - `last_name`: String
+       - `email`: String
+   - **Status Codes**:
+     - `200 OK`: Successful operation.
+     - `400 Bad Request`: Invalid request parameters.
+     - `401 Unauthorized`: Authentication failure.
+     - `404 Not Found`: User not found.
+     - `500 Internal Server Error`: Server encountered an error.
+
+2. **Post Management**
+   - **Path**: `/api/posts`
+   - **Methods**: 
+     - `POST`: Create a new post.
+     - `GET`: Get posts.
+     - `PUT`: Update a post.
+     - `DELETE`: Delete a post.
+   - **Request Parameters**:
+     - `POST`: 
+       - `title`: String (required)
+       - `description`: String (required)
+       - `type`: Enum (`PROJECT` or `DISCUSSION`, required)
+     - `PUT`:
+       - `title`: String
+       - `description`: String
+   - **Response Structures**:
+     - `POST`, `GET`, `PUT`: 
+       - `id`: Integer
+       - `title`: String
+       - `description`: String
+       - `type`: Enum (`PROJECT` or `DISCUSSION`)
+   - **Status Codes**:
+     - `200 OK`: Successful operation.
+     - `400 Bad Request`: Invalid request parameters.
+     - `401 Unauthorized`: Authentication failure.
+     - `404 Not Found`: Post not found.
+     - `500 Internal Server Error`: Server encountered an error.
+
+#### Authentication Mechanisms
+
+- Authentication for API endpoints is handled via JWT (JSON Web Tokens).
+- To authenticate, users must include an `Authorization` header with a valid JWT token in the request headers.
+- Upon successful authentication, the server validates the token and grants access to protected endpoints.
+
+#### Error Handling
+
+- **Standard API Error Responses**:
+  - **Format**: JSON
+  - **Structure**:
+    ```json
+    {
+      "error": {
+        "code": "<error_code>",
+        "message": "<error_message>"
+      }
+    }
+    ```
+  - **Status Codes and Messages**:
+    - `400 Bad Request`: {"code": "BAD_REQUEST", "message": "Invalid request parameters."}
+    - `401 Unauthorized`: {"code": "UNAUTHORIZED", "message": "Authentication required."}
+    - `403 Forbidden`: {"code": "FORBIDDEN", "message": "Access denied."}
+    - `404 Not Found`: {"code": "NOT_FOUND", "message": "Resource not found."}
+    - `500 Internal Server Error`: {"code": "INTERNAL_SERVER_ERROR", "message": "Internal server error."}
 
 ## 3. Data Models
 
