@@ -17,17 +17,104 @@ Describe the authentication process, including any tokens or headers required.
 ### Error Handling
 Define standard API error responses and status codes.
 
-## 3. Data Models and Database Schema
-### Entity Relationships
+## 3. Data Models
+
+### User
+
+- **Attributes:**
+  - `id`: Integer (Primary Key)
+  - `first_name`: String (50 characters, not nullable)
+  - `last_name`: String (50 characters, not nullable)
+  - `email`: String (100 characters, unique, not nullable)
+  - `password`: String (255 characters, not nullable)
+
+### PostType
+
+- **Enum Values:**
+  - `PROJECT`
+  - `DISCUSSION`
+
+### Post
+
+- **Attributes:**
+  - `id`: Integer (Primary Key)
+  - `title`: String (255 characters, not nullable)
+  - `description`: String (1000 characters, not nullable)
+  - `type`: Enum (`PROJECT` or `DISCUSSION`, not nullable)
+  - `user_id`: Integer (Foreign Key to `User.id`, not nullable)
+
+### ProjectPost
+
+- **Attributes:**
+  - Inherits from `Post`
+  - `name`: String (255 characters, not nullable)
+  - `project_description`: String (1000 characters, not nullable)
+
+### Tag
+
+- **Attributes:**
+  - `id`: Integer (Primary Key)
+  - `descriptor`: String (50 characters, unique, not nullable)
+
+### Comment
+
+- **Attributes:**
+  - `id`: Integer (Primary Key)
+  - `description`: String (1000 characters, not nullable)
+  - `user_id`: Integer (Foreign Key to `User.id`, not nullable)
+  - `post_id`: Integer (Foreign Key to `Post.id`, not nullable)
+
+### Category
+
+- **Attributes:**
+  - `id`: Integer (Primary Key)
+  - `name`: String (50 characters, unique, not nullable)
+  - `description`: String (255 characters, nullable)
+
+### Notification
+
+- **Attributes:**
+  - `id`: Integer (Primary Key)
+  - `user_id`: Integer (Foreign Key to `User.id`, not nullable)
+  - `content`: String (255 characters, not nullable)
+  - `timestamp`: DateTime (nullable, default: current timestamp)
+
+### Message
+
+- **Attributes:**
+  - `id`: Integer (Primary Key)
+  - `sender_id`: Integer (Foreign Key to `User.id`, not nullable)
+  - `receiver_id`: Integer (Foreign Key to `User.id`, not nullable)
+  - `content`: String (1000 characters, not nullable)
+  - `timestamp`: DateTime (nullable, default: current timestamp)
+
+### Reaction
+
+- **Attributes:**
+  - `id`: Integer (Primary Key)
+  - `user_id`: Integer (Foreign Key to `User.id`, not nullable)
+  - `post_id`: Integer (Foreign Key to `Post.id`, nullable)
+  - `comment_id`: Integer (Foreign Key to `Comment.id`, nullable)
+  - `reaction_type`: Enum ('LIKE', 'DISLIKE', etc., not nullable)
+  - `timestamp`: DateTime (nullable, default: current timestamp)
+
+### Attachment
+
+- **Attributes:**
+  - `id`: Integer (Primary Key)
+  - `post_id`: Integer (Foreign Key to `Post.id`, nullable)
+  - `comment_id`: Integer (Foreign Key to `Comment.id`, nullable)
+  - `file_url`: String (255 characters, not nullable)
+  - `file_type`: String (50 characters, not nullable)
+  - `timestamp`: DateTime (nullable, default: current timestamp)
+
+## 4. Entity Relationships
 Provide an entity-relationship diagram illustrating the database schema.
 
-### Model Definitions
-Detail attributes, data types, constraints, and indexes for each model (Users, Posts, Comments, etc.).
-
-### Data Flow Diagrams
+## 5. Data Flow Diagrams
 Include diagrams that illustrate the flow of data through the system.
 
-## 4. Service Architecture
+## 6. Service Architecture
 ### Microservices/Services Layout
 Describe each microservice, its responsibilities, and interactions with other services.
 
