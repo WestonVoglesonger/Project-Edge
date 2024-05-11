@@ -27,6 +27,8 @@ This document covers API specifications, data models, system architecture, secur
      - `PUT`:
        - `first_name`: String
        - `last_name`: String
+       - `description`: String
+       - `areas_of_interest`: String
        - `email`: String
        - `password`: String
    - **Response Structures**:
@@ -34,6 +36,8 @@ This document covers API specifications, data models, system architecture, secur
        - `id`: Integer
        - `first_name`: String
        - `last_name`: String
+       - `description`: String
+       - `areas_of_interest`: String
        - `email`: String
    - **Status Codes**:
      - `200 OK`: Successful operation.
