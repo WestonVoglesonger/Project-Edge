@@ -1,11 +1,11 @@
 # User Stories for Project Edge
 
 ## Introduction
-This document outlines the user stories for Project Edge, a versatile platform that supports collaboration on technology, business, and artistic projects among university students. These stories define the functional needs from various user perspectives.
+This document outlines the user stories for Project Edge, a versatile platform that supports collaboration on technology projects among university students. These stories define the functional needs from various user perspectives.
 
 ## User Roles
-- **User**: A user who engages with projects, whether as a participant or an observer.
-- **Project Owner**: A user who initiates projects and manages their progression.
+- **User**: A user who engages with projects and discussions, whether as a participant or an observer.
+- **Project/Discussion Owner**: A user who initiates projects and manages their progression.
 - **Administrator**: Manages overall platform functionality and ensures adherence to community guidelines.
 
 ## User Stories
@@ -26,24 +26,24 @@ This document outlines the user stories for Project Edge, a versatile platform t
    - **I want to** network with other users,
    - **So that** I can build professional relationships and expand my career opportunities.
   
-4. **Create Discussions**
-   - **As a** User,
-   - **I want to** post discussions for other users to engage in,
-   - **So that** I can engage with other users on the platform.
-
 6. **Custom Notifications**
    - **As a** User,
    - **I want to** customize my notifications,
    - **So that** I only receive updates that are relevant to my interests and projects.
 
-### Project Owner
+### Project/Discussion Owner
 5. **Project Setup and Management**
-   - **As a** Project Owner,
+   - **As a** Project/Discussion Owner,
    - **I want to** set up and categorize my project under appropriate disciplines,
    - **So that** the right audience can find and join my project.
+  
+6. **Create Discussions**
+   - **As a** Project/Discussion Owner,
+   - **I want to** post discussions for other users to engage in,
+   - **So that** I can engage with other users on the platform.
 
-6. **Progress Tracking**
-   - **As a** Project Owner,
+7. **Progress Tracking**
+   - **As a** Project/Discussion Owner,
    - **I want to** track the progress of tasks and milestones,
    - **So that** I can keep the project on schedule and report updates to stakeholders.
 
