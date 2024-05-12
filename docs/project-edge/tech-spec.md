@@ -57,7 +57,7 @@ This document covers API specifications, data models, system architecture, secur
      - `POST`: 
        - `title`: String (required)
        - `description`: String (required)
-       - `type`: Enum (`PROJECT` or `DISCUSSION`, required)
+       - `owners`: User[]
      - `PUT`:
        - `title`: String
        - `description`: String
@@ -66,7 +66,6 @@ This document covers API specifications, data models, system architecture, secur
        - `id`: Integer
        - `title`: String
        - `description`: String
-       - `type`: Enum (`PROJECT` or `DISCUSSION`)
    - **Status Codes**:
      - `200 OK`: Successful operation.
      - `400 Bad Request`: Invalid request parameters.
@@ -110,12 +109,8 @@ This document covers API specifications, data models, system architecture, secur
   - `last_name`: String (50 characters, not nullable)
   - `email`: String (100 characters, unique, not nullable)
   - `password`: String (255 characters, not nullable)
-
-### PostType
-
-- **Enum Values:**
-  - `PROJECT`
-  - `DISCUSSION`
+  - `description`: String (1000 characters, nullable)
+  - `tag_ids: Integer[] (Foreign Key to `Tag.id`, nullable)
 
 ### Post
 
@@ -123,16 +118,15 @@ This document covers API specifications, data models, system architecture, secur
   - `id`: Integer (Primary Key)
   - `title`: String (255 characters, not nullable)
   - `description`: String (1000 characters, not nullable)
-  - `type`: Enum (`PROJECT` or `DISCUSSION`, not nullable)
   - `user_id`: Integer (Foreign Key to `User.id`, not nullable)
+  - `tag_ids`: Integer[] (Foreign Key to `Tag.id`, not nullable)
 
 ### ProjectPost
 
 - **Attributes:**
   - Inherits from `Post`
-  - `name`: String (255 characters, not nullable)
-  - `project_description`: String (1000 characters, not nullable)
-
+  - `members`: Integer[] (Foreign Key to `User.id`, nullable)
+ 
 ### Tag
 
 - **Attributes:**
@@ -146,13 +140,6 @@ This document covers API specifications, data models, system architecture, secur
   - `description`: String (1000 characters, not nullable)
   - `user_id`: Integer (Foreign Key to `User.id`, not nullable)
   - `post_id`: Integer (Foreign Key to `Post.id`, not nullable)
-
-### Category
-
-- **Attributes:**
-  - `id`: Integer (Primary Key)
-  - `name`: String (50 characters, unique, not nullable)
-  - `description`: String (255 characters, nullable)
 
 ### Notification
 
