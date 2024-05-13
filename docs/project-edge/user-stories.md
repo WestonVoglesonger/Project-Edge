@@ -1,70 +1,77 @@
-# User Stories for Project Edge
+# User Stories
 
 ## Introduction
-This document outlines the user stories for Project Edge, a versatile platform that supports collaboration on technology projects among university students. These stories define the functional needs from various user perspectives.
+This document outlines comprehensive user stories for Project Edge, a collaborative platform for university students engaging in tech projects, discussions, and integrated business and artistic perspectives.
 
 ## User Roles
-- **User**: A user who engages with projects and discussions, whether as a participant or an observer.
-- **Project/Discussion Owner**: A user who initiates projects and manages their progression.
-- **Administrator**: Manages overall platform functionality and ensures adherence to community guidelines.
+- **User:** Engages with projects, discussions, and networking.
+- **Project/Discussion Owner:** Initiates and manages projects and discussions.
+- **Administrator:** Manages platform functionality and ensures content quality and community guidelines adherence.
 
 ## User Stories
 
-### User
-1. **Explore Diverse Projects**
-   - **As a** User,
-   - **I want to** explore projects across the platform,
-   - **So that** I can participate in or learn from a variety of areas in the tech industry.
-
-2. **Join Projects**
-   - **As a** User,
-   - **I want to** easily join projects that interest me,
-   - **So that** I can contribute my skills and gain experience.
-
-3. **Network with Peers**
-   - **As a** User,
-   - **I want to** network with other users,
-   - **So that** I can build professional relationships and expand my career opportunities.
+### For Users
+1. **Explore Projects**
+   - **As a User, I want to explore various projects so that I can join and learn from them.**
   
-6. **Custom Notifications**
-   - **As a** User,
-   - **I want to** customize my notifications,
-   - **So that** I only receive updates that are relevant to my interests and projects.
+2. **Explore Discussions**
+   - **As a User, I want to explore various discussions so that I can participate and learn from them.**
 
-### Project/Discussion Owner
-5. **Project Setup and Management**
-   - **As a** Project/Discussion Owner,
-   - **I want to** set up and categorize my project under appropriate disciplines,
-   - **So that** the right audience can find and join my project.
+6. **Join Projects**
+   - **As a User, I want to join interesting projects so that I can contribute and gain experience.**
   
-6. **Create Discussions**
-   - **As a** Project/Discussion Owner,
-   - **I want to** post discussions for other users to engage in,
-   - **So that** I can engage with other users on the platform.
+6. **Post Comments**
+   - **As a User, I want to post comments to projects and discussions so that I can ask questions and learn.**
 
-7. **Progress Tracking**
-   - **As a** Project/Discussion Owner,
-   - **I want to** track the progress of tasks and milestones,
-   - **So that** I can keep the project on schedule and report updates to stakeholders.
+7. **Network with Peers**
+   - **As a User, I want to network with other users so that I can build professional relationships.**
 
-### Administrator
-7. **Content Moderation**
-   - **As an** Administrator,
-   - **I want to** moderate project content and discussions,
-   - **So that** the platform maintains high standards of professionalism and relevance.
+8. **Receive Notifications**
+   - **As a User, I want to receive notifications for post updates, comments, and messages so that I stay informed of my activities.**
 
-8. **Analytics and Reporting**
-    - **As an** Administrator,
-    - **I want to** access detailed analytics on project engagements and user activity,
-    - **So that** I can understand usage patterns and help improve platform services.
+9. **Send Messages**
+   - **As a User, I want to send and receive direct messages to other users so that I can discuss projects privately.**
 
-9. **Manage User Roles**
-    - **As an** Administrator,
-    - **I want to** manage user roles and permissions,
-    - **So that** I can ensure users have appropriate access and capabilities according to their needs.
+11. **Upload Attachments**
+   - **As a User, I want to upload and share files in my posts and comments so that I can provide more context and resources.**
 
-## Acceptance Criteria
-Each user story will be developed with specific acceptance criteria to ensure functionality meets the expected standards and requirements.
+11. **Advanced Search**
+   - **As a User, I want advanced search capabilities to filter posts by tags, categories, and types so that I can quickly find relevant content.**
 
-## Conclusion
-This enhanced document provides a comprehensive overview of the user stories for Project Edge, emphasizing not only technical collaboration but also support for business and artistic projects. It will guide the development team in creating a multifaceted platform that caters to a diverse university community.
+11. **Mark Notifications as Read**
+   - **As a User, I want to mark my notifications as read so that I can keep track of new and unseen updates.**
+
+11. **Delete Messages**
+   - **As a User, I want to delete specific messages so that I can manage my message inbox efficiently.**
+
+11. **Follow Users/Projects**
+    - **As a User, I want to follow other users or projects to get updates about their activities so that I stay engaged with interesting content.**
+
+### For Project/Discussion Owners
+1. **Project Setup and Management**
+   - **As a Project/Discussion Owner, I want to set up and categorize my project so that the right audience can find and join it.**
+
+2. **Create Discussions**
+   - **As a Project/Discussion Owner, I want to post discussions for user engagement.**
+
+3. **Progress Tracking**
+   - **As a Project/Discussion Owner, I want to track progress so that I can report updates.**
+
+4. **Manage Group Projects**
+   - **As a Project/Discussion Owner, I want to create group projects and manage members so that team collaboration is facilitated.**
+
+### For Administrators
+1. **Content Moderation**
+   - **As an Administrator, I want to moderate content so that the platform maintains high standards and relevance.**
+
+2. **Analytics and Reporting**
+   - **As an Administrator, I want detailed analytics to understand platform usage and improve services.**
+
+3. **Manage User Roles**
+   - **As an Administrator, I want to manage user roles to ensure appropriate permissions.**
+
+4. **Receive User Feedback**
+   - **As an Administrator, I want to receive user feedback on projects and discussions to continuously improve the platform.**
+
+### Acceptance Criteria
+Each user story will have specific acceptance criteria to ensure functionality works as expected.
