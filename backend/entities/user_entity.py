@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy import Column, Integer, String, Boolean, Text
 from sqlalchemy.orm import declarative_base
 
 from backend.models.user import User, UserBase
@@ -14,6 +14,9 @@ class UserEntity(Base):
     email = Column(String, unique=True, nullable=False)
     hashed_password = Column(String, nullable=False)
     accepted_community_agreement = Column(Boolean, default=False, nullable=False)
+    bio = Column(Text, nullable=True) 
+    profile_picture = Column(String, nullable=True)  
+    areas_of_interest = Column(String, nullable=True)
 
     def to_model(self):
         return User(
