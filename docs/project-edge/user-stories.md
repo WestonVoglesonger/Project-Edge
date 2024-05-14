@@ -11,40 +11,43 @@ This document outlines comprehensive user stories for Project Edge, a collaborat
 ## User Stories
 
 ### For Users
-1. **Explore Projects**
+1. **Create a Profile**
+   - **As a User, I want to create a profile so that I can engage in the communitiy.**
+
+2. **Explore Projects**
    - **As a User, I want to explore various projects so that I can join and learn from them.**
   
-2. **Explore Discussions**
+3. **Explore Discussions**
    - **As a User, I want to explore various discussions so that I can participate and learn from them.**
 
-6. **Join Projects**
+4. **Join Projects**
    - **As a User, I want to join interesting projects so that I can contribute and gain experience.**
   
-6. **Post Comments**
+5. **Post Comments**
    - **As a User, I want to post comments to projects and discussions so that I can ask questions and learn.**
 
-7. **Network with Peers**
+6. **Network with Peers**
    - **As a User, I want to network with other users so that I can build professional relationships.**
 
-8. **Receive Notifications**
+7. **Receive Notifications**
    - **As a User, I want to receive notifications for post updates, comments, and messages so that I stay informed of my activities.**
 
-9. **Send Messages**
+8. **Send Messages**
    - **As a User, I want to send and receive direct messages to other users so that I can discuss projects privately.**
 
-11. **Upload Attachments**
+9. **Upload Attachments**
    - **As a User, I want to upload and share files in my posts and comments so that I can provide more context and resources.**
 
-11. **Advanced Search**
+10. **Advanced Search**
    - **As a User, I want advanced search capabilities to filter posts by tags, categories, and types so that I can quickly find relevant content.**
 
 11. **Mark Notifications as Read**
    - **As a User, I want to mark my notifications as read so that I can keep track of new and unseen updates.**
 
-11. **Delete Messages**
+12. **Delete Messages**
    - **As a User, I want to delete specific messages so that I can manage my message inbox efficiently.**
 
-11. **Follow Users/Projects**
+13. **Follow Users/Projects**
     - **As a User, I want to follow other users or projects to get updates about their activities so that I stay engaged with interesting content.**
 
 ### For Project/Discussion Owners
