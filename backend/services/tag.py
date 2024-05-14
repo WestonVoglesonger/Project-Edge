@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from ..models.tag import Tag, TagBase, TagCreate
+from ..models.tag import Tag, TagBase
 from ..entities.tag_entity import TagEntity
 from ..exceptions import TagNotFoundException
 
@@ -10,7 +10,7 @@ class TagService:
     def get_tag(self, tag_id: int) -> Tag:
         tag_entity = self.db.query(TagEntity).filter(TagEntity.id == tag_id).first()
         if tag_entity is None:
-            raise TagNotFoundException(f"Tag with id {tag_id} not found")
+            raise TagNotFoundException(tag_id)
         return tag_entity.to_model()
 
     def create_tag(self, tag_data: TagBase) -> Tag:
@@ -23,6 +23,6 @@ class TagService:
     def delete_tag(self, tag_id: int):
         tag_entity = self.db.query(TagEntity).filter(TagEntity.id == tag_id).first()
         if tag_entity is None:
-            raise TagNotFoundException(f"Tag with id {tag_id} not found")
+            raise TagNotFoundException(tag_id)
         self.db.delete(tag_entity)
         self.db.commit()

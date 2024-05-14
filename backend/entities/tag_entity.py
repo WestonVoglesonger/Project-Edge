@@ -19,5 +19,6 @@ class TagEntity(Base):
     @staticmethod
     def from_model(tag: Tag):
         return TagEntity(
+            id=tag.id,
             name=tag.name,
         )

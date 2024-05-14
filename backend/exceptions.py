@@ -11,3 +11,10 @@ class EmailAlreadyRegisteredException(Exception):
         self.email = email
         self.message = f"Email {email} is already registered."
         super().__init__(self.message)
+
+class TagNotFoundException(Exception):
+    """Exception raised when a tag is not found."""
+    def __init__(self, tag_id: int):
+        self.tag_id = tag_id
+        self.message = f"User with id {tag_id} not found."
+        super().__init__(self.message)
