@@ -8,7 +8,7 @@ Three users are setup for testing and development purposes:
 
 import pytest
 from sqlalchemy.orm import Session
-from ...models.user import User, UserBase
+from ...models.user import ProfileForm, User, UserBase
 from ...entities.user_entity import UserEntity
 from .reset_table_id_seq import reset_table_id_seq
 
@@ -17,7 +17,8 @@ __copyright__ = "Copyright 2023"
 __license__ = "MIT"
 
 
-root = UserBase(
+root = User(
+        id=1,
         first_name="Rhonda",
         last_name="Root",
         email="root@gmail.com",
@@ -25,7 +26,8 @@ root = UserBase(
         accepted_community_agreement=True
     )
 
-project_owner = UserBase(
+project_owner = User(
+        id=2,
         first_name="Proj",
         last_name="Ector",
         email="proj@gmail.com",
@@ -33,13 +35,28 @@ project_owner = UserBase(
         accepted_community_agreement=True
     )
 
-user = UserBase(
+user = User(
+        id=3,
         first_name="Sally",
         last_name="Student",
         email="user@gmail.com",
         password="studentpassword",
         accepted_community_agreement=True
     )
+
+new_user = ProfileForm(
+        email="testuser@example.com",
+        password="testpassword",
+        accepted_community_agreement=True
+    )
+
+update_data = ProfileForm(
+        first_name="Sallie",
+        last_name="Students",
+        email="users@gmail.com",
+        password="studentspassword",
+        accepted_community_agreement=True
+)
 
 users = [root, project_owner, user]
 
