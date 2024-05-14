@@ -1,5 +1,8 @@
 from pydantic import BaseModel, EmailStr
 from typing import Optional
+from passlib.context import CryptContext
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 class UserIdentity(BaseModel):
     id: Optional[int] = None
@@ -10,6 +13,9 @@ class UserBase(BaseModel):
     email: EmailStr
     password: str
     accepted_community_agreement: bool = False
+
+    def hash_password(self):
+        return pwd_context.hash(self.password)
 
 class User(UserIdentity, BaseModel):
     first_name: str
@@ -23,3 +29,4 @@ class ProfileForm(BaseModel):
     email: EmailStr
     password: str
     accepted_community_agreement: bool = False
+
