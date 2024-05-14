@@ -181,6 +181,8 @@ def alembic_generate_migration(branch_name: str) -> bool:
         stderr=subprocess.PIPE,
         text=True,
     )
+    print("Alembic stdout:", result.stdout)
+    print("Alembic stderr:", result.stderr)
     return result.returncode == 0
 
 
