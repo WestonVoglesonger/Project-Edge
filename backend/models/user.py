@@ -11,8 +11,11 @@ class UserBase(BaseModel):
     password: str
     accepted_community_agreement: bool = False
 
-class User(UserBase, UserIdentity):
-    pass
+class User(UserIdentity, BaseModel):
+    first_name: str
+    last_name: str
+    email: EmailStr
+    accepted_community_agreement: bool = False
 
 class ProfileForm(BaseModel):
     first_name: str
