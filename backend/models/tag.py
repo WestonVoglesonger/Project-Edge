@@ -7,5 +7,3 @@ class TagBase(BaseModel):
 class Tag(TagBase):
     id: int
 
-    class Config:
-        orm_mode = True
