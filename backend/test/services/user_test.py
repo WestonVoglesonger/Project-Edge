@@ -1,7 +1,7 @@
 import pytest
 from sqlalchemy.orm import Session
 
-from backend.exceptions import EmailAlreadyRegisteredException, UserNotFoundException
+from backend.services.exceptions import EmailAlreadyRegisteredException, UserNotFoundException
 from backend.models.user import ProfileForm, UserBase
 from backend.services.user import UserService
 
@@ -9,7 +9,7 @@ from backend.services.user import UserService
 from .core_data import setup_insert_data_fixture
 from .fixtures import  user_svc
 
-from .user_data import new_user, user, project_owner, root, update_data
+from .user_data import new_user, user, update_data
 
 
 

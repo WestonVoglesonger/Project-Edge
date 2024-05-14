@@ -1,5 +1,12 @@
+"""Helper function to reset the ID sequence of an entity.
+
+When we reset the database and insert data with predefined IDs, Postgres does
+not automatically reset the id counter of the database. This helper function
+emits a SQL statament to do so."""
+
 from sqlalchemy import text
 from sqlalchemy.orm import Session, DeclarativeBase, InstrumentedAttribute
+
 
 def reset_table_id_seq(
     session: Session,
@@ -17,9 +24,7 @@ def reset_table_id_seq(
 
     Returns:
         None"""
-    table_name = entity.__tablename__
+    table = entity.__table__
     id_column_name = entity_id_column.name
-    sequence_name = f"{table_name}_{id_column_name}_seq"
-    sql = text(f"ALTER SEQUENCE {sequence_name} RESTART WITH {next_id}")
+    sql = text(f"ALTER SEQUENCe {table}_{id_column_name}_seq RESTART WITH {next_id}")
     session.execute(sql)
-    session.commit()

@@ -2,9 +2,8 @@ from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 
 from backend.entities.user_entity import UserEntity
-from ..models.user import User, UserBase, ProfileForm
-from ..models.user import UserResponse  # Import the response model
-from ..exceptions import EmailAlreadyRegisteredException, UserNotFoundException
+from ..models.user import ProfileForm, UserBase, UserResponse
+from .exceptions import EmailAlreadyRegisteredException, UserNotFoundException
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -24,12 +23,13 @@ class UserService:
             raise UserNotFoundException(f"User with email {email} not found")
         return user_entity.to_model()
 
-    def create_user(self, user_data: ProfileForm) -> UserResponse:
+   
+    def create_user(self, user_data: UserBase) -> UserResponse:
         existing_user = self.db.query(UserEntity).filter(UserEntity.email == user_data.email).first()
         if existing_user:
             raise EmailAlreadyRegisteredException(user_data.email)
         hashed_password = pwd_context.hash(user_data.password)
-        user_entity = UserEntity.from_model(user_data, hashed_password)
+        user_entity = UserEntity.from_new_model(user_data, hashed_password)
         self.db.add(user_entity)
         self.db.commit()
         self.db.refresh(user_entity)

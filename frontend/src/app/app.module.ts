@@ -11,13 +11,18 @@ import { MatToolbarModule } from "@angular/material/toolbar";
 import { MatIconModule } from "@angular/material/icon";
 import { MatSidenavModule } from "@angular/material/sidenav";
 import { MatListModule } from "@angular/material/list";
+import { MatCardModule } from "@angular/material/card";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatInputModule } from "@angular/material/input";
 
 // Components
 import { AppComponent } from "./app.component";
+import { CreateAccountComponent } from "./users/create-account/create-account.component";
 
 @NgModule({
   declarations: [
     AppComponent,
+    CreateAccountComponent,
     // Add other component declarations here
   ],
   imports: [
@@ -33,6 +38,9 @@ import { AppComponent } from "./app.component";
     MatIconModule,
     MatSidenavModule,
     MatListModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
     // Add other module imports as necessary
   ],
   providers: [],
