@@ -13,6 +13,10 @@ class UserBase(BaseModel):
     email: EmailStr
     password: str
     accepted_community_agreement: bool = False
+    bio: Optional[str] = None
+    profile_picture: Optional[str] = None
+    areas_of_interest: Optional[str] = None
+
 
     def hash_password(self):
         return pwd_context.hash(self.password)
