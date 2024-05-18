@@ -2,7 +2,7 @@ from typing import List
 from sqlalchemy import Column, Integer, String, Boolean, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from .base import Base
-from ..models.user import ProfileForm, UserBase, UserResponse
+from ..models.user import ProfileForm, User, UserBase, UserResponse
 
 class UserEntity(Base):
     __tablename__ = 'users'
@@ -16,7 +16,7 @@ class UserEntity(Base):
     bio: Mapped[Text] = mapped_column(Text, nullable=True)
     profile_picture: Mapped[str] = mapped_column(String, nullable=True)
 
-    def to_model(self):
+    def to_user_response(self):
         return UserResponse(
             id=self.id,
             first_name=self.first_name,
@@ -26,6 +26,19 @@ class UserEntity(Base):
             bio=self.bio,
             profile_picture=self.profile_picture,
         )
+    
+    def to_user(self):
+        return User(
+            id=self.id,
+            first_name=self.first_name,
+            last_name=self.last_name,
+            email=self.email,
+            password=self.hashed_password,
+            accepted_community_agreement=self.accepted_community_agreement,
+            bio=self.bio,
+            profile_picture=self.profile_picture,
+        )
+
 
     @staticmethod
     def from_model(user: ProfileForm, hashed_password: str):

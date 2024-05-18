@@ -10,6 +10,7 @@ from backend.api import static_files
 
 from .api import (
     user,
+    auth,
 )
 
 
@@ -28,6 +29,7 @@ app = FastAPI(
     description=description,
     openapi_tags=[
         user.openapi_tags,
+        auth.openapi_tags,
     ],
 )
 
@@ -37,6 +39,7 @@ app.add_middleware(GZipMiddleware)
 # Plugging in each of the router APIs
 feature_apis = [
     user,
+    auth
 ]
 
 for feature_api in feature_apis:

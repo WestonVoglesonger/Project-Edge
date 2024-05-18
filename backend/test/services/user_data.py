@@ -1,7 +1,7 @@
 import pytest
 from sqlalchemy.orm import Session
-from ...models.user import ProfileForm, UserBase
-from ...entities.user_entity import UserEntity
+from backend.models.user import ProfileForm, UserBase
+from backend.entities.user_entity import UserEntity
 from .reset_table_id_seq import reset_table_id_seq
 
 __authors__ = ["Weston Voglesonger"]

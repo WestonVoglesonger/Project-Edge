@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 
 from backend.entities.user_entity import UserEntity
-from ..models.user import ProfileForm, UserBase, UserResponse
+from ..models.user import ProfileForm, User, UserBase, UserResponse
 from .exceptions import EmailAlreadyRegisteredException, UserNotFoundException
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -15,14 +15,19 @@ class UserService:
         user_entity = self.db.query(UserEntity).filter(UserEntity.id == user_id).first()
         if user_entity is None:
             raise UserNotFoundException(f"User with id {user_id} not found")
-        return user_entity.to_model()
+        return user_entity.to_user_response()
 
-    def get_user_by_email(self, email: str) -> UserResponse:
+    def get_user_by_email_no_password(self, email: str) -> UserResponse:
         user_entity = self.db.query(UserEntity).filter(UserEntity.email == email).first()
         if user_entity is None:
             raise UserNotFoundException(f"User with email {email} not found")
-        return user_entity.to_model()
+        return user_entity.to_user_response()
 
+    def get_user_by_email(self, email: str) -> User:
+        user_entity = self.db.query(UserEntity).filter(UserEntity.email == email).first()
+        if user_entity is None:
+            raise UserNotFoundException(f"User with email {email} not found")
+        return user_entity.to_user()
    
     def create_user(self, user_data: UserBase) -> UserResponse:
         existing_user = self.db.query(UserEntity).filter(UserEntity.email == user_data.email).first()
@@ -33,7 +38,7 @@ class UserService:
         self.db.add(user_entity)
         self.db.commit()
         self.db.refresh(user_entity)
-        return user_entity.to_model()
+        return user_entity.to_user_response()
 
     def update_user(self, user_id: int, user_update: ProfileForm) -> UserResponse:
         user_entity = self.db.query(UserEntity).filter(UserEntity.id == user_id).first()
@@ -46,7 +51,7 @@ class UserService:
             setattr(user_entity, key, value)
         self.db.commit()
         self.db.refresh(user_entity)
-        return user_entity.to_model()
+        return user_entity.to_user_response()
 
     def delete_user(self, user_id: int) -> UserResponse:
         user_entity = self.db.query(UserEntity).filter(UserEntity.id == user_id).first()
@@ -54,4 +59,4 @@ class UserService:
             raise UserNotFoundException(f"User with id {user_id} not found")
         self.db.delete(user_entity)
         self.db.commit()
-        return user_entity.to_model()
+        return user_entity.to_user_response()
