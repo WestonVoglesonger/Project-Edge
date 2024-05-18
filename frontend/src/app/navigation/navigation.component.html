@@ -1,0 +1,11 @@
+<mat-toolbar color="primary" class="header">
+  <div class="header-links">
+    <a mat-button routerLink="/">Home</a>
+    <a mat-button routerLink="/profile">Profile</a>
+    <a mat-button routerLink="/projects">Projects</a>
+    <a mat-button routerLink="/discussions">Discussions</a>
+  </div>
+  <span class="flex-spacer"></span>
+  <button mat-button (click)="logout()">Logout</button>
+  <a mat-button routerLink="/sign-in">Sign-In</a>
+</mat-toolbar>
