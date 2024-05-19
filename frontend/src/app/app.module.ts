@@ -19,11 +19,15 @@ import { MatInputModule } from "@angular/material/input";
 // Components
 import { AppComponent } from "./app.component";
 import { AuthComponent } from "./auth/auth.component";
+import { NavigationComponent } from "./navigation/navigation.component";
+import { HomeComponent } from "./home/home.component";
 
 @NgModule({
   declarations: [
     AppComponent,
     AuthComponent,
+    NavigationComponent,
+    HomeComponent,
     // Add other component declarations here
   ],
   imports: [

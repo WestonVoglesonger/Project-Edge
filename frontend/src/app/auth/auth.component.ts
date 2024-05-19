@@ -1,6 +1,6 @@
-import { Component } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import { Route, Router } from "@angular/router";
+import { Router, ActivatedRoute, Route } from "@angular/router";
 import { AuthService } from "../shared/auth.service";
 import { UserService } from "../users/user.service";
 
@@ -9,7 +9,7 @@ import { UserService } from "../users/user.service";
   templateUrl: "./auth.component.html",
   styleUrls: ["./auth.component.css"],
 })
-export class AuthComponent {
+export class AuthComponent implements OnInit {
   public static Route: Route = {
     path: "auth",
     component: AuthComponent,
@@ -26,9 +26,10 @@ export class AuthComponent {
     private authService: AuthService,
     private userService: UserService,
     private router: Router,
+    private route: ActivatedRoute,
   ) {
     this.loginForm = this.fb.group({
-      email: ["", [Validators.required]],
+      email: ["", [Validators.required, Validators.email]],
       password: ["", [Validators.required, Validators.minLength(6)]],
     });
 
@@ -36,6 +37,19 @@ export class AuthComponent {
       email: ["", [Validators.required, Validators.email]],
       password: ["", [Validators.required, Validators.minLength(6)]],
     });
+  }
+
+  ngOnInit(): void {
+    this.route.url.subscribe(() => {
+      this.resetComponent();
+    });
+  }
+
+  private resetComponent(): void {
+    this.isLoginMode = true;
+    this.errorMessage = null;
+    this.loginForm.reset();
+    this.createAccountForm.reset();
   }
 
   onSwitchMode() {
@@ -53,10 +67,10 @@ export class AuthComponent {
 
   login() {
     if (this.loginForm.valid) {
-      const { username, password } = this.loginForm.value;
-      this.authService.login(username, password).subscribe(
+      const { email, password } = this.loginForm.value;
+      this.authService.login(email, password).subscribe(
         () => this.router.navigate(["/"]),
-        (error) => (this.errorMessage = "Invalid username or password"),
+        (error) => (this.errorMessage = "Invalid email or password"),
       );
     }
   }

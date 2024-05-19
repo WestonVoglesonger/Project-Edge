@@ -1,20 +1,22 @@
 <div class="container">
-  <mat-toolbar color="primary" class="header">
-    <div class="header-links">
-      <a mat-button routerLink="/">Home</a>
-      <a mat-button routerLink="/projects">Projects</a>
-      <a mat-button routerLink="/discussions">Discussions</a>
-    </div>
-    <span class="flex-spacer"></span>
-    <a mat-button routerLink="/sign-in" class="sign-in">Sign-In</a>
-  </mat-toolbar>
+  <app-navigation></app-navigation>
 
   <div class="main-content">
     <div class="content-wrapper">
       <div class="title-section">
         <h1 class="title">
-          {{ isLoginMode ? "Login" : "Create Your Account" }}
+          {{
+            isLoginMode ? "Don't have an account" : "Welcome to Project Edge"
+          }}
         </h1>
+        <button
+          class="create-account-button"
+          mat-button
+          *ngIf="isLoginMode"
+          (click)="onSwitchMode()"
+        >
+          Create Account
+        </button>
       </div>
 
       <div class="form-section">
@@ -28,36 +30,22 @@
               (ngSubmit)="onSubmit()"
             >
               <mat-form-field class="form-input" appearance="outline">
-                <mat-label>{{
-                  isLoginMode ? "Username" : "Email Address"
-                }}</mat-label>
-                <input
-                  matInput
-                  [type]="isLoginMode ? 'text' : 'email'"
-                  [formControlName]="isLoginMode ? 'username' : 'email'"
-                />
+                <mat-label>Email Address</mat-label>
+                <input matInput type="email" formControlName="email" />
                 <mat-error
                   *ngIf="
                     (isLoginMode
-                      ? loginForm.get('username')
+                      ? loginForm.get('email')
                       : createAccountForm.get('email')
                     )?.invalid
                   "
                 >
-                  {{
-                    isLoginMode
-                      ? "Please enter a valid username."
-                      : "Please enter a valid email."
-                  }}
+                  Please enter a valid email.
                 </mat-error>
               </mat-form-field>
               <mat-form-field class="form-input" appearance="outline">
                 <mat-label>Password</mat-label>
-                <input
-                  matInput
-                  type="password"
-                  [formControlName]="isLoginMode ? 'password' : 'password'"
-                />
+                <input matInput type="password" formControlName="password" />
                 <mat-error
                   *ngIf="
                     (isLoginMode
@@ -85,9 +73,6 @@
             </form>
           </mat-card-content>
         </mat-card>
-        <button mat-button (click)="onSwitchMode()">
-          {{ isLoginMode ? "Create Account" : "Login" }}
-        </button>
         <div class="divider"></div>
       </div>
     </div>

@@ -1,4 +1,5 @@
 import { Component } from "@angular/core";
+import { Router } from "@angular/router";
 
 @Component({
   selector: "app-navigation",
@@ -6,10 +7,9 @@ import { Component } from "@angular/core";
   styleUrls: ["./navigation.component.css"],
 })
 export class NavigationComponent {
-  constructor() {}
+  constructor(private router: Router) {}
 
-  logout(): void {
-    // Implement your logout logic here if needed
-    console.log("Logged out");
+  onSignInClick() {
+    this.router.navigate(["/auth"]);
   }
 }
