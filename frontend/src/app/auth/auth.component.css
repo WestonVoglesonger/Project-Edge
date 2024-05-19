@@ -1,0 +1,142 @@
+/* General styles */
+.container {
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 12px;
+    background-color: #f5f5f5;
+    min-height: 100vh;
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .header-links {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .flex-spacer {
+    flex: 1 1 auto;
+  }
+  
+  .main-content {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    width: 100%;
+    max-width: 1143px;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  
+  .content-wrapper {
+    display: flex;
+    gap: 20px;
+    width: 100%;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+  }
+  
+  .title-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 34%;
+  }
+  
+  .title {
+    text-align: center;
+    font-size: 36px;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  .form-section {
+    display: flex;
+    flex-direction: column;
+    width: 66%;
+  }
+  
+  .form-card {
+    width: 100%;
+    padding: 20px;
+    box-shadow: none;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+  }
+  
+  .form-title {
+    font-size: 24px;
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  .form-input {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  
+  .form-actions {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .form-submit {
+    width: 100%;
+    text-align: center;
+    padding: 10px;
+  }
+  
+  .divider {
+    display: none; /* Hidden as it serves no visual purpose in this design */
+  }
+  
+  .error-message {
+    color: #d9534f;
+    background-color: #f2dede;
+    border: 1px solid #ebccd1;
+    padding: 10px;
+    border-radius: 4px;
+    margin-top: 10px;
+    text-align: center;
+    font-size: 14px;
+  }
+  
+  /* Responsive Styles */
+  @media (max-width: 768px) {
+    .header-links {
+        flex-wrap: wrap;
+    }
+  
+    .main-content {
+        flex-direction: column;
+        padding: 10px;
+    }
+  
+    .content-wrapper {
+        flex-direction: column;
+        gap: 10px;
+    }
+  
+    .title-section {
+        width: 100%;
+        margin-top: 10px;
+    }
+  
+    .title {
+        font-size: 28px;
+    }
+  
+    .form-section {
+        width: 100%;
+    }
+  }
+  

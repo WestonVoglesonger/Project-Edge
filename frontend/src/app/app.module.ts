@@ -18,14 +18,12 @@ import { MatInputModule } from "@angular/material/input";
 
 // Components
 import { AppComponent } from "./app.component";
-import { CreateAccountComponent } from "./users/create-account/create-account.component";
-import { LoginComponent } from "./users/login/login.component";
+import { AuthComponent } from "./auth/auth.component";
 
 @NgModule({
   declarations: [
     AppComponent,
-    CreateAccountComponent,
-    LoginComponent,
+    AuthComponent,
     // Add other component declarations here
   ],
   imports: [
