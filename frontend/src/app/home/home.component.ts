@@ -8,7 +8,7 @@ import { Route } from "@angular/router";
 })
 export class HomeComponent {
   public static Route: Route = {
-    path: "",
+    path: "home",
     component: HomeComponent,
     title: "Home Page",
   };

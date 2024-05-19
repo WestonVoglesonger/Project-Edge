@@ -7,9 +7,5 @@ import { Router } from "@angular/router";
   styleUrls: ["./navigation.component.css"],
 })
 export class NavigationComponent {
-  constructor(private router: Router) {}
-
-  onSignInClick() {
-    this.router.navigate(["/auth"]);
-  }
+  constructor() {}
 }

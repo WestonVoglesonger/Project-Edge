@@ -11,7 +11,7 @@ import { UserService } from "../users/user.service";
 })
 export class AuthComponent implements OnInit {
   public static Route: Route = {
-    path: "auth",
+    path: "",
     component: AuthComponent,
     title: "Authorization Page",
   };
@@ -69,7 +69,7 @@ export class AuthComponent implements OnInit {
     if (this.loginForm.valid) {
       const { email, password } = this.loginForm.value;
       this.authService.login(email, password).subscribe(
-        () => this.router.navigate(["/"]),
+        () => this.router.navigate(["/home"]),
         (error) => (this.errorMessage = "Invalid email or password"),
       );
     }

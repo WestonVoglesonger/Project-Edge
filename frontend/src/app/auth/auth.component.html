@@ -1,80 +1,74 @@
 <div class="container">
-  <app-navigation></app-navigation>
-
   <div class="main-content">
-    <div class="content-wrapper">
-      <div class="title-section">
-        <h1 class="title">
-          {{
-            isLoginMode ? "Don't have an account" : "Welcome to Project Edge"
-          }}
-        </h1>
-        <button
-          class="create-account-button"
-          mat-button
-          *ngIf="isLoginMode"
-          (click)="onSwitchMode()"
+    <mat-card class="auth-card">
+      <mat-card-header>
+        <mat-card-title class="title-container">
+          <h1 class="title">
+            {{ isLoginMode ? "Login to Project Edge" : "Create an Account" }}
+          </h1>
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <form
+          [formGroup]="isLoginMode ? loginForm : createAccountForm"
+          (ngSubmit)="onSubmit()"
         >
-          Create Account
-        </button>
-      </div>
-
-      <div class="form-section">
-        <mat-card class="form-card">
-          <mat-card-title class="form-title">{{
-            isLoginMode ? "Login" : "Create Account"
-          }}</mat-card-title>
-          <mat-card-content>
-            <form
-              [formGroup]="isLoginMode ? loginForm : createAccountForm"
-              (ngSubmit)="onSubmit()"
+          <mat-form-field class="form-input" appearance="outline">
+            <mat-label>Email Address</mat-label>
+            <input matInput type="email" formControlName="email" />
+            <mat-error
+              *ngIf="
+                (isLoginMode
+                  ? loginForm.get('email')
+                  : createAccountForm.get('email')
+                )?.invalid
+              "
             >
-              <mat-form-field class="form-input" appearance="outline">
-                <mat-label>Email Address</mat-label>
-                <input matInput type="email" formControlName="email" />
-                <mat-error
-                  *ngIf="
-                    (isLoginMode
-                      ? loginForm.get('email')
-                      : createAccountForm.get('email')
-                    )?.invalid
-                  "
-                >
-                  Please enter a valid email.
-                </mat-error>
-              </mat-form-field>
-              <mat-form-field class="form-input" appearance="outline">
-                <mat-label>Password</mat-label>
-                <input matInput type="password" formControlName="password" />
-                <mat-error
-                  *ngIf="
-                    (isLoginMode
-                      ? loginForm.get('password')
-                      : createAccountForm.get('password')
-                    )?.invalid
-                  "
-                >
-                  Password must be at least 6 characters.
-                </mat-error>
-              </mat-form-field>
-              <div *ngIf="errorMessage" class="error-message">
-                {{ errorMessage }}
-              </div>
-              <mat-card-actions class="form-actions">
-                <button
-                  mat-raised-button
-                  color="primary"
-                  class="form-submit"
-                  type="submit"
-                >
-                  {{ isLoginMode ? "Login" : "Create" }}
-                </button>
-              </mat-card-actions>
-            </form>
-          </mat-card-content>
-        </mat-card>
-        <div class="divider"></div>
-      </div>
-    </div>
+              Please enter a valid email.
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field class="form-input" appearance="outline">
+            <mat-label>Password</mat-label>
+            <input matInput type="password" formControlName="password" />
+            <mat-error
+              *ngIf="
+                (isLoginMode
+                  ? loginForm.get('password')
+                  : createAccountForm.get('password')
+                )?.invalid
+              "
+            >
+              Password must be at least 6 characters.
+            </mat-error>
+          </mat-form-field>
+
+          <div *ngIf="errorMessage" class="error-message">
+            {{ errorMessage }}
+          </div>
+
+          <mat-card-actions class="form-actions">
+            <button
+              mat-raised-button
+              color="primary"
+              class="form-submit"
+              type="submit"
+            >
+              {{ isLoginMode ? "Login" : "Create Account" }}
+            </button>
+          </mat-card-actions>
+        </form>
+      </mat-card-content>
+      <mat-card-footer>
+        <div class="switch-mode">
+          {{
+            isLoginMode ? "Don't have an account?" : "Already have an account?"
+          }}
+          <button mat-button color="accent" (click)="onSwitchMode()">
+            {{ isLoginMode ? "Create Account" : "Login" }}
+          </button>
+        </div>
+      </mat-card-footer>
+    </mat-card>
   </div>
 </div>
