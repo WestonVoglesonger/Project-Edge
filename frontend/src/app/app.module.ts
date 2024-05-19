@@ -4,6 +4,7 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { HttpClientModule } from "@angular/common/http";
 import { AppRoutingModule } from "./app-routing.module";
 import { ReactiveFormsModule } from "@angular/forms";
+import { FormsModule } from "@angular/forms";
 
 // Angular Material Components
 import { MatButtonModule } from "@angular/material/button";
@@ -18,11 +19,13 @@ import { MatInputModule } from "@angular/material/input";
 // Components
 import { AppComponent } from "./app.component";
 import { CreateAccountComponent } from "./users/create-account/create-account.component";
+import { LoginComponent } from "./users/login/login.component";
 
 @NgModule({
   declarations: [
     AppComponent,
     CreateAccountComponent,
+    LoginComponent,
     // Add other component declarations here
   ],
   imports: [
@@ -30,6 +33,7 @@ import { CreateAccountComponent } from "./users/create-account/create-account.co
     BrowserAnimationsModule,
     HttpClientModule,
     AppRoutingModule,
+    FormsModule,
     ReactiveFormsModule,
 
     // Angular Material Modules

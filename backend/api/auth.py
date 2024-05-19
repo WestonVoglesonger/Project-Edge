@@ -1,23 +1,30 @@
-# backend/api/auth.py
 from datetime import timedelta
 from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from typing import Dict
 
-from backend.database import get_db
+from backend.database import db_session
 from backend.models.user import UserResponse
 from backend.models.token import Token
-from backend.services.auth import ACCESS_TOKEN_EXPIRE_MINUTES, authenticate_user, create_access_token, get_current_user
+from backend.services.auth import (
+    ACCESS_TOKEN_EXPIRE_MINUTES,
+    authenticate_user,
+    create_access_token,
+    get_current_user,
+)
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+api = APIRouter(prefix="/api/auth")
+openapi_tags = {
+    "name": "Auth",
+    "description": "Authorization related functions.",
+}
 
-auth_router = APIRouter(prefix="/api/auth", tags=["Auth"])
 
-@auth_router.post("/token", response_model=Token)
+@api.post("/token", response_model=Token)
 def login_for_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(),
-    db: Session = Depends(get_db)
+    db: Session = Depends(db_session),
 ) -> Dict[str, str]:
     """Authenticate user and return a JWT token."""
     user = authenticate_user(db, form_data.username, form_data.password)
@@ -33,7 +40,9 @@ def login_for_access_token(
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
-@auth_router.get("/users/me", response_model=UserResponse)
-def read_users_me(current_user: UserResponse = Depends(get_current_user)) -> UserResponse:
+@api.get("/users/me", response_model=UserResponse)
+def read_users_me(
+    current_user: UserResponse = Depends(get_current_user),
+) -> UserResponse:
     """Retrieve the current authenticated user."""
     return current_user
