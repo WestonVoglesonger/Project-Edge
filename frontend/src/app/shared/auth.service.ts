@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { tap } from "rxjs/operators";
+import { UserResponse } from "../shared/users/user.models";
 
 interface AuthResponse {
   access_token: string;
@@ -12,8 +13,9 @@ interface AuthResponse {
   providedIn: "root",
 })
 export class AuthService {
-  private apiUrl = "/api/auth/token";
+  private apiUrl = "/api/auth";
   private token: string | null = null;
+  private currentUser: UserResponse | null = null;
 
   constructor(private http: HttpClient) {}
 
@@ -26,8 +28,13 @@ export class AuthService {
     body.set("password", password);
 
     return this.http
-      .post<AuthResponse>(this.apiUrl, body.toString(), { headers })
-      .pipe(tap((response) => this.setToken(response.access_token)));
+      .post<AuthResponse>(`${this.apiUrl}/token`, body.toString(), { headers })
+      .pipe(
+        tap((response) => {
+          this.setToken(response.access_token);
+          this.fetchCurrentUser().subscribe();
+        }),
+      );
   }
 
   private setToken(token: string): void {
@@ -42,9 +49,27 @@ export class AuthService {
   logout(): void {
     this.token = null;
     localStorage.removeItem("access_token");
+    this.currentUser = null;
   }
 
   isLoggedIn(): boolean {
     return !!this.getToken();
+  }
+
+  fetchCurrentUser(): Observable<UserResponse> {
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${this.getToken()}`,
+    });
+    return this.http
+      .get<UserResponse>(`${this.apiUrl}/users/me`, { headers })
+      .pipe(
+        tap((user) => {
+          this.currentUser = user;
+        }),
+      );
+  }
+
+  getCurrentUser(): UserResponse | null {
+    return this.currentUser;
   }
 }

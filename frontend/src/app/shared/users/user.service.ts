@@ -23,6 +23,23 @@ export class UserService {
       .pipe(catchError(this.handleError));
   }
 
+  getUserProfile(userId: number): Observable<ProfileForm> {
+    const headers = new HttpHeaders({ "Content-Type": "application/json" });
+    return this.http
+      .get<ProfileForm>(`${this.apiUrl}/${userId}`, { headers })
+      .pipe(catchError(this.handleError));
+  }
+
+  updateUserProfile(
+    userId: number,
+    profile: ProfileForm,
+  ): Observable<ProfileForm> {
+    const headers = new HttpHeaders({ "Content-Type": "application/json" });
+    return this.http
+      .put<ProfileForm>(`${this.apiUrl}/${userId}`, profile, { headers })
+      .pipe(catchError(this.handleError));
+  }
+
   private handleError(error: HttpErrorResponse): Observable<never> {
     let errorMessage = "An unknown error occurred!";
     if (error.error instanceof ErrorEvent) {

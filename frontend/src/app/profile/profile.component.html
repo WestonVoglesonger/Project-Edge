@@ -1,0 +1,25 @@
+<div class="profile-container">
+  <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+    <div>
+      <label for="first_name">First Name:</label>
+      <input id="first_name" formControlName="first_name" />
+    </div>
+    <div>
+      <label for="last_name">Last Name:</label>
+      <input id="last_name" formControlName="last_name" />
+    </div>
+    <div>
+      <label for="email">Email:</label>
+      <input id="email" formControlName="email" [disabled]="true" />
+    </div>
+    <div>
+      <label for="bio">Bio:</label>
+      <textarea id="bio" formControlName="bio"></textarea>
+    </div>
+    <div>
+      <label for="profile_picture">Profile Picture URL:</label>
+      <input id="profile_picture" formControlName="profile_picture" />
+    </div>
+    <button type="submit">Save Changes</button>
+  </form>
+</div>

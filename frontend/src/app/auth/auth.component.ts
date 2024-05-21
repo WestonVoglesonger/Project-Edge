@@ -2,7 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { Router, ActivatedRoute, Route } from "@angular/router";
 import { AuthService } from "../shared/auth.service";
-import { UserService } from "../users/user.service";
+import { UserService } from "../shared/users/user.service";
 
 @Component({
   selector: "app-auth",
@@ -84,7 +84,7 @@ export class AuthComponent implements OnInit {
           this.errorMessage = null; // Clear any previous error message
           this.isLoginMode = true; // Switch to login mode after successful registration
         },
-        error: (error) => {
+        error: (error: string | null) => {
           this.errorMessage = error; // Set the specific error message
         },
       });
