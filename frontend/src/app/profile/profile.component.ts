@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { UserService } from "../shared/users/user.service";
 import { Route } from "@angular/router";
 import { AuthService } from "../shared/auth.service";
+import { UserResponse } from "../shared/users/user.models";
 
 @Component({
   selector: "app-profile",
@@ -17,6 +18,7 @@ export class ProfileComponent implements OnInit {
   };
   profileForm: FormGroup;
   userId: number | undefined;
+  isEditMode: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -37,29 +39,29 @@ export class ProfileComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const currentUser = this.authService.getCurrentUser();
-    if (currentUser) {
-      this.userId = currentUser.id;
-      this.userService.getUserProfile(this.userId!).subscribe((profile) => {
-        this.profileForm.patchValue(profile);
-      });
+    this.authService.fetchCurrentUser().subscribe((user: UserResponse) => {
+      this.userId = user.id;
+      this.profileForm.patchValue(user);
+    });
+  }
+
+  onEdit() {
+    this.isEditMode = !this.isEditMode;
+    if (this.isEditMode) {
+      this.profileForm.enable();
+      this.profileForm.get("email")?.disable();
     } else {
-      this.authService.fetchCurrentUser().subscribe((user) => {
-        this.userId = user.id;
-        this.userService.getUserProfile(this.userId!).subscribe((profile) => {
-          this.profileForm.patchValue(profile);
-        });
-      });
+      this.profileForm.disable();
     }
   }
 
-  onSubmit(): void {
-    if (this.profileForm.valid && this.userId !== undefined) {
+  onSubmit() {
+    if (this.profileForm.valid && this.userId) {
       this.userService
-        .updateUserProfile(this.userId, this.profileForm.getRawValue())
-        .subscribe({
-          next: () => alert("Profile updated successfully!"),
-          error: (error) => alert("An error occurred: " + error),
+        .updateUserProfile(this.userId, this.profileForm.value)
+        .subscribe(() => {
+          this.isEditMode = false;
+          this.profileForm.disable();
         });
     }
   }

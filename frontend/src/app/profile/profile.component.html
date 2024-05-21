@@ -1,25 +1,76 @@
-<div class="profile-container">
-  <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
-    <div>
-      <label for="first_name">First Name:</label>
-      <input id="first_name" formControlName="first_name" />
-    </div>
-    <div>
-      <label for="last_name">Last Name:</label>
-      <input id="last_name" formControlName="last_name" />
-    </div>
-    <div>
-      <label for="email">Email:</label>
-      <input id="email" formControlName="email" [disabled]="true" />
-    </div>
-    <div>
-      <label for="bio">Bio:</label>
-      <textarea id="bio" formControlName="bio"></textarea>
-    </div>
-    <div>
-      <label for="profile_picture">Profile Picture URL:</label>
-      <input id="profile_picture" formControlName="profile_picture" />
-    </div>
-    <button type="submit">Save Changes</button>
+<app-navigation></app-navigation>
+
+<div class="profile-container" *ngIf="profileForm">
+  <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="profile-form">
+    <mat-card>
+      <button
+        mat-icon-button
+        color="primary"
+        (click)="onEdit()"
+        class="edit-button"
+      >
+        <span class="material-icons">{{ isEditMode ? "close" : "edit" }}</span>
+      </button>
+      <mat-card-header>
+        <mat-card-title>Profile</mat-card-title>
+      </mat-card-header>
+      <div class="card-content-container">
+        <mat-card-content>
+          <mat-form-field>
+            <mat-label>Email</mat-label>
+            <input
+              matInput
+              id="email"
+              formControlName="email"
+              [disabled]="true"
+            />
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>First Name</mat-label>
+            <input
+              matInput
+              id="first_name"
+              formControlName="first_name"
+              [disabled]="!isEditMode"
+            />
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Last Name</mat-label>
+            <input
+              matInput
+              id="last_name"
+              formControlName="last_name"
+              [disabled]="!isEditMode"
+            />
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Bio</mat-label>
+            <textarea
+              matInput
+              id="bio"
+              formControlName="bio"
+              [disabled]="!isEditMode"
+            ></textarea>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Profile Picture URL</mat-label>
+            <input
+              matInput
+              id="profile_picture"
+              formControlName="profile_picture"
+              [disabled]="!isEditMode"
+            />
+          </mat-form-field>
+        </mat-card-content>
+      </div>
+
+      <mat-card-actions *ngIf="isEditMode">
+        <button mat-raised-button color="primary" type="submit">Save</button>
+      </mat-card-actions>
+    </mat-card>
   </form>
 </div>
