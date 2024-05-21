@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from typing import Dict, Optional
 
 from backend.database import db_session
+from backend.entities.user_entity import UserEntity
 from backend.models.user import UserResponse, User
 from backend.services.user import UserService
 
@@ -66,12 +67,15 @@ def get_current_user(
         email: str = payload.get("sub")
         if email is None:
             raise credentials_exception
-    except JWTError:
+        print(f"Decoded JWT payload: {payload}")  # Log the payload
+    except JWTError as e:
+        print(f"JWTError: {e}")
         raise credentials_exception
     
-    user = db.query(User).filter(User.email == email).first()
+    user = db.query(UserEntity).filter(UserEntity.email == email).first()
     if user is None:
         raise credentials_exception
+    print(f"Queried User: {user}")  # Log the user query result
     return UserResponse(
         id=user.id,
         first_name=user.first_name,
