@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { FormBuilder, FormGroup } from "@angular/forms";
 import { UserService } from "../shared/users/user.service";
 import { Route } from "@angular/router";
 import { AuthService } from "../shared/auth.service";
@@ -26,15 +26,12 @@ export class ProfileComponent implements OnInit {
     private authService: AuthService,
   ) {
     this.profileForm = this.fb.group({
-      first_name: ["", Validators.required],
-      last_name: ["", Validators.required],
-      email: [
-        { value: "", disabled: true },
-        [Validators.required, Validators.email],
-      ],
-      bio: [""],
-      profile_picture: [""],
-      accepted_community_agreement: [false, Validators.requiredTrue],
+      first_name: [{ value: "", disabled: true }],
+      last_name: [{ value: "", disabled: true }],
+      email: [{ value: "", disabled: true }],
+      bio: [{ value: "", disabled: true }],
+      profile_picture: [{ value: "", disabled: true }],
+      accepted_community_agreement: [{ value: true, disabled: true }],
     });
   }
 
@@ -56,13 +53,18 @@ export class ProfileComponent implements OnInit {
   }
 
   onSubmit() {
-    if (this.profileForm.valid && this.userId) {
-      this.userService
-        .updateUserProfile(this.userId, this.profileForm.value)
-        .subscribe(() => {
+    if (this.userId) {
+      const profileData = this.profileForm.getRawValue();
+      console.log("Submitting profile data:", profileData);
+      this.userService.updateUserProfile(this.userId, profileData).subscribe({
+        next: () => {
           this.isEditMode = false;
           this.profileForm.disable();
-        });
+        },
+        error: (err) => {
+          console.error("Error updating profile:", err);
+        },
+      });
     }
   }
 }
