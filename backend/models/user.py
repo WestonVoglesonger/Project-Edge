@@ -29,6 +29,7 @@ class ProfileForm(BaseModel):
     bio: Optional[str] = None
     profile_picture: Optional[str] = None
     email: EmailStr
+    password: Optional[str] = None
     accepted_community_agreement: bool
     
     def hash_password(self):

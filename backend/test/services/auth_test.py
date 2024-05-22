@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 from jose import jwt
 from datetime import timedelta
+from backend.entities.user_entity import UserEntity
 from backend.services.auth import (
     verify_password,
     get_password_hash,
@@ -62,21 +63,25 @@ def test_authenticate_user_invalid(session: Session):
         authenticate_user(session, "invalid@gmail.com", "studentspassword")
 
 def test_get_current_user(session: Session):
-    data = {"sub": "sally@gmail.com"}
+    data = {"sub": user.email}
     token = create_access_token(data, timedelta(minutes=15))
-    current_user = get_current_user(session, token)
+
+    # Call the function
+    current_user = get_current_user(token, session)
+
+    # Assert the result
     assert current_user.email == user.email
     assert current_user.first_name == user.first_name
 
 def test_get_current_user_invalid_token(session: Session):
     with pytest.raises(HTTPException) as exc_info:
-        get_current_user(session, "invalidtoken")
+        get_current_user("invalidtoken", session)
     assert exc_info.value.status_code == status.HTTP_401_UNAUTHORIZED
 
 def test_get_current_user_expired_token(session: Session):
-    data = {"sub": "sally@gmail.com"}
+    data = {"sub": user.email}
     expires_delta = timedelta(seconds=-1)
     token = create_access_token(data, expires_delta)
     with pytest.raises(HTTPException) as exc_info:
-        get_current_user(session, token)
+        get_current_user(token, session)
     assert exc_info.value.status_code == status.HTTP_401_UNAUTHORIZED
