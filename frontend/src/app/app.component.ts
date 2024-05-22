@@ -46,7 +46,7 @@ export class AppComponent implements OnInit, OnDestroy {
         () => {
           // Token is invalid or expired, log the user out
           this.authService.logout();
-          this.router.navigate(["/login"]);
+          this.router.navigate([""]);
         },
       );
     });

@@ -1,7 +1,8 @@
 import { Injectable } from "@angular/core";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
-import { Observable, tap } from "rxjs";
+import { Observable, of } from "rxjs";
 import { Router } from "@angular/router";
+import { tap, catchError, map } from "rxjs/operators";
 
 @Injectable({
   providedIn: "root",
@@ -75,10 +76,7 @@ export class AuthService {
     const timeout = tokenExpiryTime - Date.now() - 60000; // Refresh 1 minute before expiry
     if (timeout > 0) {
       this.refreshTokenTimeout = setTimeout(() => {
-        this.verifyToken().subscribe({
-          next: () => this.scheduleTokenRefresh(),
-          error: () => this.refreshToken().subscribe(),
-        });
+        this.refreshToken().subscribe();
       }, timeout);
     }
   }
@@ -97,13 +95,23 @@ export class AuthService {
   }
 
   refreshToken(): Observable<any> {
+    const refreshToken = this.getRefreshTokenFromLocalStorage();
+    if (!refreshToken) {
+      this.logout();
+      return of(null);
+    }
+
     const formData = new FormData();
-    formData.append("refresh_token", this.tokenRefresh || "");
+    formData.append("refresh_token", refreshToken);
 
     return this.http.post("/api/auth/refresh-token", formData).pipe(
       tap((response: any) => {
         this.storeTokens(response.access_token, response.refresh_token);
         this.scheduleTokenRefresh();
+      }),
+      catchError(() => {
+        this.logout();
+        return of(null);
       }),
     );
   }
