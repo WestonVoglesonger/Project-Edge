@@ -68,10 +68,12 @@ export class AuthComponent implements OnInit {
   login() {
     if (this.loginForm.valid) {
       const { email, password } = this.loginForm.value;
-      this.authService.login({ email, password }).subscribe(
-        () => this.router.navigate(["/home"]),
-        (error) => (this.errorMessage = "Invalid email or password"),
-      );
+      this.authService
+        .login({ email: email.toLowerCase(), password })
+        .subscribe(
+          () => this.router.navigate(["/home"]),
+          (error) => (this.errorMessage = "Invalid email or password"),
+        );
     }
   }
 

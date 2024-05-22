@@ -83,7 +83,7 @@ export class AuthService {
 
   login(credentials: { email: string; password: string }): Observable<any> {
     const formData = new FormData();
-    formData.append("username", credentials.email);
+    formData.append("username", credentials.email.toLowerCase()); // Convert email to lowercase
     formData.append("password", credentials.password);
 
     return this.http.post("/api/auth/token", formData).pipe(
