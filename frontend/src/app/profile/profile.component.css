@@ -27,8 +27,8 @@ mat-card {
 
 .edit-button {
   position: absolute;
-  top: -10px;
-  right: 5px;
+  top: 16px;
+  right: 16px;
   z-index: 1;
 }
 
@@ -37,5 +37,5 @@ button {
 }
 
 .card-content-container {
-  padding-top: 10px;
+  padding-top: 20px;
 }

@@ -15,7 +15,13 @@
         >
           <mat-form-field class="form-input" appearance="outline">
             <mat-label>Email Address</mat-label>
-            <input matInput type="email" formControlName="email" />
+            <input
+              matInput
+              type="email"
+              formControlName="email"
+              name="email"
+              autocomplete="username"
+            />
             <mat-error
               *ngIf="
                 (isLoginMode
@@ -30,7 +36,13 @@
 
           <mat-form-field class="form-input" appearance="outline">
             <mat-label>Password</mat-label>
-            <input matInput type="password" formControlName="password" />
+            <input
+              matInput
+              type="password"
+              formControlName="password"
+              name="password"
+              autocomplete="current-password"
+            />
             <mat-error
               *ngIf="
                 (isLoginMode
