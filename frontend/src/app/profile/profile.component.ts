@@ -19,6 +19,8 @@ export class ProfileComponent implements OnInit {
   profileForm: FormGroup;
   userId: number | undefined;
   isEditMode: boolean = false;
+  selectedFile: File | null = null;
+  profilePictureUrl: string | undefined;
 
   constructor(
     private fb: FormBuilder,
@@ -30,15 +32,24 @@ export class ProfileComponent implements OnInit {
       last_name: [{ value: "", disabled: true }],
       email: [{ value: "", disabled: true }],
       bio: [{ value: "", disabled: true }],
-      profile_picture: [{ value: "", disabled: true }],
-      accepted_community_agreement: [{ value: true, disabled: true }],
+      accepted_community_agreement: [{ value: true }],
     });
   }
 
   ngOnInit(): void {
     this.authService.fetchCurrentUser().subscribe((user: UserResponse) => {
+      console.log("User:", user);
       this.userId = user.id;
-      this.profileForm.patchValue(user);
+      this.profileForm.patchValue({
+        first_name: user.first_name || "",
+        last_name: user.last_name || "",
+        email: user.email || "",
+        bio: user.bio || "",
+        accepted_community_agreement: user.accepted_community_agreement,
+      });
+      if (user.profile_picture) {
+        this.profilePictureUrl = `path/to/profile/pictures/${user.profile_picture}`;
+      }
     });
   }
 
@@ -52,11 +63,36 @@ export class ProfileComponent implements OnInit {
     }
   }
 
+  onFileSelected(event: any) {
+    if (event.target.files.length > 0) {
+      this.selectedFile = event.target.files[0];
+      this.profilePictureUrl = URL.createObjectURL(this.selectedFile!);
+    }
+  }
+
   onSubmit() {
     if (this.userId) {
       const profileData = this.profileForm.getRawValue();
-      console.log("Submitting profile data:", profileData);
-      this.userService.updateUserProfile(this.userId, profileData).subscribe({
+      const formData = new FormData();
+
+      // Append profile data to FormData
+      for (const key in profileData) {
+        if (profileData.hasOwnProperty(key) && profileData[key] !== null) {
+          formData.append(key, profileData[key]);
+        }
+      }
+
+      // Append the selected file to FormData
+      if (this.selectedFile) {
+        formData.append("profile_picture", this.selectedFile);
+      }
+
+      // Log the FormData key-value pairs to the console
+      formData.forEach((value, key) => {
+        console.log(`${key}: ${value}`);
+      });
+
+      this.userService.updateUserProfile(this.userId, formData).subscribe({
         next: () => {
           this.isEditMode = false;
           this.profileForm.disable();

@@ -32,11 +32,10 @@ export class UserService {
 
   updateUserProfile(
     userId: number,
-    profile: ProfileForm,
-  ): Observable<ProfileForm> {
-    const headers = new HttpHeaders({ "Content-Type": "application/json" });
+    formData: FormData,
+  ): Observable<UserResponse> {
     return this.http
-      .put<ProfileForm>(`${this.apiUrl}/${userId}`, profile, { headers })
+      .put<UserResponse>(`${this.apiUrl}/${userId}`, formData)
       .pipe(catchError(this.handleError));
   }
 

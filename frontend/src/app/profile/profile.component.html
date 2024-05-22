@@ -4,6 +4,14 @@
   <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="profile-form">
     <mat-card>
       <mat-card-header>
+        <div class="profile-picture-container">
+          <img
+            *ngIf="profilePictureUrl"
+            [src]="profilePictureUrl"
+            alt="Profile Picture"
+            class="profile-picture"
+          />
+        </div>
         <mat-card-title>Profile</mat-card-title>
         <button
           mat-icon-button
@@ -39,14 +47,14 @@
             <textarea matInput id="bio" formControlName="bio"></textarea>
           </mat-form-field>
 
-          <mat-form-field>
-            <mat-label>Profile Picture URL</mat-label>
+          <div *ngIf="isEditMode">
+            <label for="profile_picture">Profile Picture</label>
             <input
-              matInput
+              type="file"
               id="profile_picture"
-              formControlName="profile_picture"
+              (change)="onFileSelected($event)"
             />
-          </mat-form-field>
+          </div>
         </mat-card-content>
       </div>
 
