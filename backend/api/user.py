@@ -2,13 +2,16 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Form, File, UploadFile
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
-import os
-import shutil
-
+import boto3
+from botocore.exceptions import NoCredentialsError, PartialCredentialsError
 from backend.database import db_session
 from backend.services.user import UserService
 from ..models.user import ProfileForm, UserBase, UserResponse
 from ..services.exceptions import UserNotFoundException, EmailAlreadyRegisteredException
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 api = APIRouter(prefix="/api/user")
 openapi_tags = {
@@ -18,6 +21,13 @@ openapi_tags = {
 
 def get_user_service(db: Session = Depends(db_session)) -> UserService:
     return UserService(db)
+
+# AWS S3 Configuration
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+AWS_BUCKET_NAME = os.getenv('AWS_BUCKET_NAME')
+
+s3_client = boto3.client('s3', aws_access_key_id=AWS_ACCESS_KEY_ID, aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
 
 @api.post("", response_model=UserResponse, tags=["Users"])
 def create_user(user: UserBase, user_service: UserService = Depends(get_user_service)):
@@ -56,11 +66,13 @@ async def update_user(
 
         # Handle the profile picture file
         if profile_picture:
-            os.makedirs('files', exist_ok=True)
-            file_location = f"files/{user_id}_profile_picture.png"
-            with open(file_location, "wb+") as file_object:
-                shutil.copyfileobj(profile_picture.file, file_object)
-            user_update_data["profile_picture"] = file_location
+            try:
+                file_location = f"{user_id}_profile_picture.png"
+                s3_client.upload_fileobj(profile_picture.file, AWS_BUCKET_NAME, file_location)
+                file_url = f"https://{AWS_BUCKET_NAME}.s3.amazonaws.com/{file_location}"
+                user_update_data["profile_picture"] = file_url
+            except (NoCredentialsError, PartialCredentialsError) as e:
+                raise HTTPException(status_code=500, detail=str(e))
 
         # Ensure required fields are provided
         if not email:

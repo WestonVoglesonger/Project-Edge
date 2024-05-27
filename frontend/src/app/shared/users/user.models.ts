@@ -4,7 +4,7 @@ export interface ProfileForm {
   first_name?: string;
   last_name?: string;
   bio?: string;
-  profile_picture?: File;
+  profile_picture?: string;
   accepted_community_agreement: boolean;
 }
 
@@ -15,5 +15,5 @@ export interface UserResponse {
   email: string;
   accepted_community_agreement: boolean;
   bio?: string;
-  profile_picture?: File;
+  profile_picture?: string;
 }

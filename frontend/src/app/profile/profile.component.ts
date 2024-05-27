@@ -48,7 +48,7 @@ export class ProfileComponent implements OnInit {
         accepted_community_agreement: user.accepted_community_agreement,
       });
       if (user.profile_picture) {
-        this.profilePictureUrl = `path/to/profile/pictures/${user.profile_picture}`;
+        this.profilePictureUrl = user.profile_picture; // Directly use the URL from the API
       }
     });
   }

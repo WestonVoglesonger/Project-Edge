@@ -1,4 +1,3 @@
-# models/user.py
 from pydantic import BaseModel, EmailStr
 from typing import List, Optional
 from passlib.context import CryptContext
