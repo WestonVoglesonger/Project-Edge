@@ -1,2 +1,16 @@
 <app-navigation></app-navigation>
-<p>projects works!</p>
+<div class="projects-container">
+  <h2>Explore Projects</h2>
+  <button class="create-project-button" (click)="createProject()">Create New Project</button>
+  <div class="projects-list">
+    <div *ngFor="let project of projects" class="project-card">
+      <h3>{{ project.title }}</h3>
+      <p>{{ project.description }}</p>
+      <p><strong>Categories:</strong> {{ project.categories.join(', ') }}</p>
+      <p><strong>Tags:</strong> {{ project.tags.join(', ') }}</p>
+      <button (click)="viewProjectDetails(project)">View Details</button>
+    </div>
+  </div>
+</div>
+
+  

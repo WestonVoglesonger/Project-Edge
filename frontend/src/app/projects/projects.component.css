@@ -1,0 +1,68 @@
+.projects-container {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #1a73e8; /* Tar Heel blue */
+}
+
+.create-project-button {
+  display: block;
+  margin: 0 auto 20px auto;
+  background-color: #1a73e8; /* Tar Heel blue */
+  color: #fff;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.create-project-button:hover {
+  background-color: #155bb5; /* Darker blue for hover effect */
+}
+
+.projects-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+.project-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  background-color: #f9f9f9;
+  transition: box-shadow 0.3s;
+}
+
+.project-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.project-card h3 {
+  margin-top: 0;
+  color: #1a73e8; /* Tar Heel blue */
+}
+
+.project-card p {
+  margin: 5px 0;
+}
+
+.project-card button {
+  background-color: #1a73e8; /* Tar Heel blue */
+  color: #fff;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.project-card button:hover {
+  background-color: #155bb5; /* Darker blue for hover effect */
+}
