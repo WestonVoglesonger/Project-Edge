@@ -76,15 +76,7 @@ def get_current_user(
     if user is None:
         raise CredentialsException
     print(f"Queried User: {user}")  # Log the user query result
-    return UserResponse(
-        id=user.id,
-        first_name=user.first_name,
-        last_name=user.last_name,
-        email=user.email,
-        accepted_community_agreement=user.accepted_community_agreement,
-        bio=user.bio,
-        profile_picture=user.profile_picture
-    )
+    return user.to_user_response()
 
 def create_refresh_token(data: dict, expires_delta: timedelta = None):
     to_encode = data.copy()
