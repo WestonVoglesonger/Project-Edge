@@ -19,8 +19,6 @@ export class ProfileComponent implements OnInit {
   profileForm: FormGroup;
   userId: number | undefined;
   isEditMode: boolean = false;
-  selectedFile: File | null = null;
-  profilePictureUrl: string | undefined;
 
   constructor(
     private fb: FormBuilder,
@@ -47,9 +45,6 @@ export class ProfileComponent implements OnInit {
         bio: user.bio || "",
         accepted_community_agreement: user.accepted_community_agreement,
       });
-      if (user.profile_picture) {
-        this.profilePictureUrl = user.profile_picture; // Directly use the URL from the API
-      }
     });
   }
 
@@ -63,36 +58,10 @@ export class ProfileComponent implements OnInit {
     }
   }
 
-  onFileSelected(event: any) {
-    if (event.target.files.length > 0) {
-      this.selectedFile = event.target.files[0];
-      this.profilePictureUrl = URL.createObjectURL(this.selectedFile!);
-    }
-  }
-
   onSubmit() {
     if (this.userId) {
       const profileData = this.profileForm.getRawValue();
-      const formData = new FormData();
-
-      // Append profile data to FormData
-      for (const key in profileData) {
-        if (profileData.hasOwnProperty(key) && profileData[key] !== null) {
-          formData.append(key, profileData[key]);
-        }
-      }
-
-      // Append the selected file to FormData
-      if (this.selectedFile) {
-        formData.append("profile_picture", this.selectedFile);
-      }
-
-      // Log the FormData key-value pairs to the console
-      formData.forEach((value, key) => {
-        console.log(`${key}: ${value}`);
-      });
-
-      this.userService.updateUserProfile(this.userId, formData).subscribe({
+      this.userService.updateUserProfile(this.userId, profileData).subscribe({
         next: () => {
           this.isEditMode = false;
           this.profileForm.disable();
