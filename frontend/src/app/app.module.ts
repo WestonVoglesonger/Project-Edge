@@ -22,6 +22,7 @@ import { AuthComponent } from "./auth/auth.component";
 import { NavigationComponent } from "./navigation/navigation.component";
 import { HomeComponent } from "./home/home.component";
 import { ProfileComponent } from "./profile/profile.component";
+import { ProjectsComponent } from "./projects/projects.component";
 
 @NgModule({
   declarations: [
@@ -30,6 +31,7 @@ import { ProfileComponent } from "./profile/profile.component";
     NavigationComponent,
     HomeComponent,
     ProfileComponent,
+    ProjectsComponent,
     // Add other component declarations here
   ],
   imports: [
