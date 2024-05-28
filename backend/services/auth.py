@@ -9,6 +9,7 @@ from typing import Dict, Optional
 from backend.database import db_session
 from backend.entities.user_entity import UserEntity
 from backend.models.user import UserResponse, User
+from backend.services.exceptions import CredentialsException
 from backend.services.user import UserService
 
 # Load environment variables
@@ -20,8 +21,8 @@ if not SECRET_KEY:
     raise ValueError("JWT_SECRET environment variable is not set")
 
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
-REFRESH_TOKEN_EXPIRE_DAYS = 7  
+ACCESS_TOKEN_EXPIRE_MINUTES = 30  # 30 minutes
+REFRESH_TOKEN_EXPIRE_DAYS = 7  # 7 days
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -58,24 +59,22 @@ def get_current_user(
     token: str = Depends(oauth2_scheme),
     db: Session = Depends(db_session)
 ) -> UserResponse:
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         email: str = payload.get("sub")
         if email is None:
-            raise credentials_exception
+            raise CredentialsException
+        expiration = payload.get("exp")
+        if expiration and datetime.fromtimestamp(expiration, tz=timezone.utc) < datetime.now(tz=timezone.utc):
+            raise CredentialsException
         print(f"Decoded JWT payload: {payload}")  # Log the payload
     except JWTError as e:
         print(f"JWTError: {e}")
-        raise credentials_exception
+        raise CredentialsException
     
     user = db.query(UserEntity).filter(UserEntity.email == email).first()
     if user is None:
-        raise credentials_exception
+        raise CredentialsException
     print(f"Queried User: {user}")  # Log the user query result
     return UserResponse(
         id=user.id,

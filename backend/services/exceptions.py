@@ -18,3 +18,9 @@ class TagNotFoundException(Exception):
         self.tag_id = tag_id
         self.message = f"User with id {tag_id} not found."
         super().__init__(self.message)
+
+class CredentialsException(Exception):
+    """Exception raised when the credentials could not be validated"""
+    def __init__(self):
+        self.message="Could not validate credentials"
+        super().__init__(self.message)

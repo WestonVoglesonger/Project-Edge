@@ -76,3 +76,8 @@ def read_users_me(
 ) -> UserResponse:
     """Retrieve the current authenticated user."""
     return current_user
+
+@api.get("/verify")
+def verify_jwt_token(current_user: UserResponse = Depends(get_current_user)):
+    """Verify the JWT token."""
+    return {"status": "Token is valid"}
