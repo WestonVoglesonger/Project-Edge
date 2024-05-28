@@ -18,15 +18,15 @@ sys.path.append("/workspace")
 
 from sqlalchemy import select, join
 from sqlalchemy.orm import joinedload, aliased
-from backend.database import db_session
-from backend.services import PermissionService, UserService
+from backend.database import db_session, engine
+from backend.models.user import UserBase
+from backend.services.user import UserService
 
 print("=== Edge Carolina Development Repl ===\n")
 
 print("The following globals are initialized:\n")
 
 from backend.entities import *
-
 
 print(" - all entities in backend/entities/__init__.py")
 print(" - all entities in backend/entities/coworking/__init__.py")
@@ -37,13 +37,11 @@ from backend.models import *
 print(" - all models in backend/models/__init__.py")
 print(" - all models in backend/models/coworking/__init__.py")
 
+# Initialize a session
 session = next(db_session())
 print(" - session: a SQLAlchemy ORM Session")
 
-permission_svc = PermissionService(session)
-print(" - permission_svc: a PermissionService")
-
-user_svc = UserService(session, permission_svc)
+user_svc = UserService(session)
 print(" - user_svc: a UserService")
 
 print("\n=============================\n")

@@ -12,10 +12,8 @@ __authors__ = ["Kris Jordan"]
 __copyright__ = "Copyright 2023"
 __license__ = "MIT"
 
-
 @pytest.fixture(autouse=True)
 def setup_insert_data_fixture(session: Session):
     user_data.insert_fake_data(session)
-
     session.commit()
     yield

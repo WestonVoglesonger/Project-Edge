@@ -1,22 +1,21 @@
-"""Shared pytest fixtures for database dependent tests."""
+"""Shared pytest fixtures for database-dependent tests."""
 
 import pytest
-
 from sqlalchemy import create_engine, text, Engine
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import OperationalError, ProgrammingError
 
+from backend.entities.base import Base
+
 from ...database import _engine_str
 from ...env import getenv
-from ... import entities
 
 POSTGRES_DATABASE = f'{getenv("POSTGRES_DATABASE")}_test'
 POSTGRES_USER = getenv("POSTGRES_USER")
 
 __authors__ = ["Kris Jordan"]
-__copyright__ = "Copyright 2023"
+__copyright__ = ["Copyright 2023"]
 __license__ = "MIT"
-
 
 def reset_database():
     engine = create_engine(_engine_str(""))
@@ -40,17 +39,15 @@ def reset_database():
             )
         )
 
-
 @pytest.fixture(scope="session")
 def test_engine() -> Engine:
     reset_database()
     return create_engine(_engine_str(POSTGRES_DATABASE))
 
-
 @pytest.fixture(scope="function")
 def session(test_engine: Engine):
-    entities.EntityBase.metadata.drop_all(test_engine)
-    entities.EntityBase.metadata.create_all(test_engine)
+    Base.metadata.drop_all(test_engine)
+    Base.metadata.create_all(test_engine)
     session = Session(test_engine)
     try:
         yield session
