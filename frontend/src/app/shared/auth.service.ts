@@ -13,7 +13,7 @@ export class AuthService {
   private refreshTokenTimeout: any;
   private logoutTimeout: any;
   private inactivityTimeout: any;
-  private inactivityDuration = 30 * 60 * 1000; // 5 minutes of inactivity for testing
+  private inactivityDuration = 5 * 60 * 1000; // 5 minutes of inactivity for testing
   public token: string | null = null;
   public tokenRefresh: string | null = null;
 
@@ -42,8 +42,11 @@ export class AuthService {
         }),
       })
       .pipe(
+        tap(() => {
+          // Token is valid
+        }),
         catchError(() => {
-          this.logout();
+          // Token is invalid or expired
           return of(null);
         }),
       );
@@ -114,7 +117,7 @@ export class AuthService {
 
   login(credentials: { email: string; password: string }): Observable<any> {
     const formData = new FormData();
-    formData.append("username", credentials.email.toLowerCase());
+    formData.append("username", credentials.email.toLowerCase()); // Convert email to lowercase
     formData.append("password", credentials.password);
 
     return this.http.post("/api/auth/token", formData).pipe(
@@ -184,11 +187,32 @@ export class AuthService {
   initializeAuthState(): Observable<any> {
     if (this.isLoggedIn()) {
       return this.verifyToken().pipe(
+        tap(() => {
+          // Token is valid, setting user as logged in
+          this.setUserAsAuthenticated();
+        }),
         catchError(() => {
-          return this.refreshToken();
+          return this.refreshToken().pipe(
+            tap(() => {
+              // Token refreshed, setting user as logged in
+              this.setUserAsAuthenticated();
+            }),
+            catchError(() => {
+              this.logout();
+              return of(null);
+            }),
+          );
         }),
       );
     }
     return of(null);
+  }
+
+  private setUserAsAuthenticated(): void {
+    // Assuming fetchCurrentUser sets some user state in the application
+    this.fetchCurrentUser().subscribe(() => {
+      // Navigate to home after user is set
+      this.router.navigate(["/home"]);
+    });
   }
 }

@@ -1,3 +1,4 @@
+import logging
 import os
 from datetime import datetime, timedelta, timezone
 from fastapi import Depends, HTTPException, status
@@ -25,6 +26,8 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30  # 30 minutes
 REFRESH_TOKEN_EXPIRE_DAYS = 7  # 7 days
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+logger = logging.getLogger(__name__)
+
 
 # Define oauth2_scheme once and reuse it
 from fastapi.security import OAuth2PasswordBearer
@@ -50,21 +53,22 @@ def get_current_user(
     db: Session = Depends(db_session)
 ) -> UserResponse:
     try:
+        print(f"Received token: {token}")  # Log received token
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         email: str = payload.get("sub")
         if email is None:
-            raise CredentialsException
+            raise CredentialsException()
         expiration = payload.get("exp")
         if expiration and datetime.fromtimestamp(expiration, tz=timezone.utc) < datetime.now(tz=timezone.utc):
-            raise CredentialsException
+            raise CredentialsException()
         print(f"Decoded JWT payload: {payload}")  # Log the payload
     except JWTError as e:
         print(f"JWTError: {e}")
-        raise CredentialsException
+        raise CredentialsException()
     
     user = db.query(UserEntity).filter(UserEntity.email == email).first()
     if user is None:
-        raise CredentialsException
+        raise CredentialsException()
     print(f"Queried User: {user}")  # Log the user query result
     return user.to_user_response()
 

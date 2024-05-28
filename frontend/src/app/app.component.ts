@@ -36,10 +36,20 @@ export class AppComponent implements OnInit, OnDestroy {
   startAuthCheck(): void {
     this.authCheckSubscription = interval(60000).subscribe(() => {
       this.authService.verifyToken().subscribe(
-        () => {},
         () => {
-          this.authService.logout();
-          this.router.navigate([""]);
+          console.log("Token is valid and user is logged in");
+        },
+        () => {
+          this.authService.refreshToken().subscribe(
+            () => {
+              console.log("Token refreshed");
+            },
+            () => {
+              console.log("Token refresh failed, logging out");
+              this.authService.logout();
+              this.router.navigate([""]);
+            },
+          );
         },
       );
     });
