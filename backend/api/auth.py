@@ -1,4 +1,5 @@
 from datetime import timedelta
+import logging
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
@@ -24,12 +25,14 @@ openapi_tags = {
     "description": "Authorization related functions.",
 }
 
+logger = logging.getLogger(__name__)
+
+
 @api.post("/token", response_model=Token)
 def login_for_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(db_session),
 ) -> Dict[str, str]:
-    """Authenticate user and return a JWT token."""
     user = authenticate_user(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
@@ -52,7 +55,6 @@ def refresh_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(db_session),
 ) -> Dict[str, str]:
-    """Refresh the access token using the refresh token."""
     user = get_user_by_email(db, form_data.username)
     if not user or not verify_refresh_token(form_data.password):
         raise HTTPException(
@@ -70,14 +72,10 @@ def refresh_access_token(
     )
     return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
 
-@api.get("/users/me", response_model=UserResponse)
-def read_users_me(
-    current_user: UserResponse = Depends(get_current_user),
-) -> UserResponse:
-    """Retrieve the current authenticated user."""
-    return current_user
-
 @api.get("/verify")
 def verify_jwt_token(current_user: UserResponse = Depends(get_current_user)):
-    """Verify the JWT token."""
     return {"status": "Token is valid"}
+
+@api.get("/users/me", response_model=UserResponse)
+def read_users_me(current_user: UserResponse = Depends(get_current_user)) -> UserResponse:
+    return current_user

@@ -5,7 +5,7 @@ import { AuthService } from "./shared/auth.service";
 
 @Component({
   selector: "app-root",
-  template: ` <router-outlet> </router-outlet> `,
+  template: `<router-outlet> </router-outlet>`,
 })
 export class AppComponent implements OnInit, OnDestroy {
   private authCheckSubscription!: Subscription;
@@ -16,19 +16,15 @@ export class AppComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    if (this.authService.isLoggedIn()) {
-      this.authService.verifyToken().subscribe({
-        next: () => {
-          this.startAuthCheck();
-        },
-        error: () => {
-          this.authService.logout();
-          this.router.navigate([""]);
-        },
-      });
-    } else {
-      this.router.navigate([""]);
-    }
+    this.authService.initializeAuthState().subscribe({
+      next: () => {
+        this.startAuthCheck();
+      },
+      error: () => {
+        this.authService.logout();
+        this.router.navigate([""]);
+      },
+    });
   }
 
   ngOnDestroy(): void {
@@ -40,11 +36,8 @@ export class AppComponent implements OnInit, OnDestroy {
   startAuthCheck(): void {
     this.authCheckSubscription = interval(60000).subscribe(() => {
       this.authService.verifyToken().subscribe(
+        () => {},
         () => {
-          // Token is valid
-        },
-        () => {
-          // Token is invalid or expired, log the user out
           this.authService.logout();
           this.router.navigate([""]);
         },

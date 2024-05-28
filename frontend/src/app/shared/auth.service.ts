@@ -13,7 +13,7 @@ export class AuthService {
   private refreshTokenTimeout: any;
   private logoutTimeout: any;
   private inactivityTimeout: any;
-  private inactivityDuration = 5 * 60 * 1000; // 5 minutes of inactivity for testing
+  private inactivityDuration = 30 * 60 * 1000; // 5 minutes of inactivity for testing
   public token: string | null = null;
   public tokenRefresh: string | null = null;
 
@@ -24,10 +24,6 @@ export class AuthService {
   ) {
     this.token = this.getTokenFromLocalStorage();
     this.tokenRefresh = this.getRefreshTokenFromLocalStorage();
-    this.scheduleTokenRefresh();
-    this.scheduleLogout();
-    this.resetInactivityTimer();
-    this.setupActivityListeners();
   }
 
   fetchCurrentUser(): Observable<any> {
@@ -46,11 +42,7 @@ export class AuthService {
         }),
       })
       .pipe(
-        tap(() => {
-          // Token is valid
-        }),
         catchError(() => {
-          // Token is invalid or expired, log the user out
           this.logout();
           return of(null);
         }),
@@ -67,15 +59,6 @@ export class AuthService {
 
   private getRefreshTokenFromLocalStorage(): string | null {
     return localStorage.getItem(this.refreshTokenKey);
-  }
-
-  private storeTokens(accessToken: string, refreshToken: string): void {
-    localStorage.setItem(this.tokenKey, accessToken);
-    localStorage.setItem(this.refreshTokenKey, refreshToken);
-    this.token = accessToken;
-    this.tokenRefresh = refreshToken;
-    this.scheduleTokenRefresh();
-    this.scheduleLogout();
   }
 
   private clearTokens(): void {
@@ -131,14 +114,27 @@ export class AuthService {
 
   login(credentials: { email: string; password: string }): Observable<any> {
     const formData = new FormData();
-    formData.append("username", credentials.email.toLowerCase()); // Convert email to lowercase
+    formData.append("username", credentials.email.toLowerCase());
     formData.append("password", credentials.password);
 
     return this.http.post("/api/auth/token", formData).pipe(
       tap((response: any) => {
-        this.storeTokens(response.access_token, response.refresh_token);
+        if (response.access_token && response.refresh_token) {
+          this.storeTokens(response.access_token, response.refresh_token);
+        } else {
+          console.error("Tokens are missing in the response:", response);
+        }
       }),
     );
+  }
+
+  private storeTokens(accessToken: string, refreshToken: string): void {
+    localStorage.setItem(this.tokenKey, accessToken);
+    localStorage.setItem(this.refreshTokenKey, refreshToken);
+    this.token = accessToken;
+    this.tokenRefresh = refreshToken;
+    this.scheduleTokenRefresh();
+    this.scheduleLogout();
   }
 
   refreshToken(): Observable<any> {
@@ -183,5 +179,16 @@ export class AuthService {
     if (this.inactivityTimeout) {
       clearTimeout(this.inactivityTimeout);
     }
+  }
+
+  initializeAuthState(): Observable<any> {
+    if (this.isLoggedIn()) {
+      return this.verifyToken().pipe(
+        catchError(() => {
+          return this.refreshToken();
+        }),
+      );
+    }
+    return of(null);
   }
 }
