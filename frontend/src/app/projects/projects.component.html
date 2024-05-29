@@ -1,11 +1,12 @@
 <app-navigation></app-navigation>
 <div class="projects-container">
   <h2>Explore Projects</h2>
+  <input type="text" placeholder="Search projects..." [(ngModel)]="searchQuery" class="search-input" (input)="filterProjects()">
   <button mat-raised-button color="primary" class="create-project-button" (click)="createProject()">
     Create New Project
   </button>
   <div class="projects-list">
-    <mat-card *ngFor="let project of projects" class="project-card">
+    <mat-card *ngFor="let project of filteredProjects" class="project-card">
       <mat-card-header>
         <mat-card-title>{{ project.name }}</mat-card-title>
       </mat-card-header>

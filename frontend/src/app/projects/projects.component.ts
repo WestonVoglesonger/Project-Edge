@@ -1,4 +1,3 @@
-// src/app/projects/projects.component.ts
 import { Component, OnInit } from '@angular/core';
 import { Route, Router } from '@angular/router';
 import { ProjectService } from './projects.service';
@@ -17,6 +16,8 @@ export class ProjectsComponent implements OnInit {
   };
 
   projects: ProjectResponse[] = [];
+  filteredProjects: ProjectResponse[] = [];
+  searchQuery: string = '';
 
   constructor(
     private projectService: ProjectService,
@@ -31,6 +32,7 @@ export class ProjectsComponent implements OnInit {
     this.projectService.getAllProjects().subscribe(
       (projects: ProjectResponse[]) => {
         this.projects = projects;
+        this.filteredProjects = projects;
       },
       error => {
         console.error('Error loading projects', error);
@@ -45,4 +47,11 @@ export class ProjectsComponent implements OnInit {
   createProject(): void {
     this.router.navigate(['/projects/new']);
   }
+
+  filterProjects(): void {
+    this.filteredProjects = this.projects.filter(project =>
+      project.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+      project.description.toLowerCase().includes(this.searchQuery.toLowerCase())
+    );
+  }  
 }
