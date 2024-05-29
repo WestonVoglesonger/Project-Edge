@@ -1,68 +1,74 @@
 .projects-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   padding: 20px;
-  max-width: 800px;
-  margin: 0 auto;
+  box-sizing: border-box;
+  width: 100%;
 }
 
-h2 {
-  text-align: center;
+.header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 20px;
-  color: #1a73e8; /* Tar Heel blue */
-}
-
-.create-project-button {
-  display: block;
-  margin: 0 auto 20px auto;
-  background-color: #1a73e8; /* Tar Heel blue */
-  color: #fff;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.create-project-button:hover {
-  background-color: #155bb5; /* Darker blue for hover effect */
 }
 
 .projects-list {
-  display: grid;
-  grid-template-columns: 1fr;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
   gap: 20px;
+  justify-content: center;
 }
 
 .project-card {
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 20px;
-  background-color: #f9f9f9;
-  transition: box-shadow 0.3s;
+  flex: 1 1 calc(33% - 20px);
+  max-width: 100%;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
 }
 
-.project-card:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+mat-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
-.project-card h3 {
-  margin-top: 0;
-  color: #1a73e8; /* Tar Heel blue */
+mat-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.project-card p {
-  margin: 5px 0;
+mat-card-title {
+  font-size: 24px;
+  font-weight: bold;
+  word-break: break-word;
 }
 
-.project-card button {
-  background-color: #1a73e8; /* Tar Heel blue */
-  color: #fff;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s;
+.project-description {
+  font-size: 16px;
+  color: #666;
+  word-break: break-word;
 }
 
-.project-card button:hover {
-  background-color: #155bb5; /* Darker blue for hover effect */
+mat-card-actions {
+  margin-top: auto;
+  display: flex;
+  justify-content: flex-end;
+}
+
+@media (max-width: 768px) {
+  .project-card {
+    flex: 1 1 calc(50% - 20px);
+  }
+}
+
+@media (max-width: 480px) {
+  .project-card {
+    flex: 1 1 calc(100% - 20px);
+  }
 }

@@ -1,31 +1,47 @@
 <app-navigation></app-navigation>
 <div class="project-form-container">
-  <h2>{{ isNewProject ? 'Create New Project' : 'Edit Project' }}</h2>
-  <form [formGroup]="projectForm" (ngSubmit)="saveProject()">
-    <div class="form-group">
-      <label for="name">Name of Project</label>
-      <input type="text" id="name" formControlName="name" />
-      <div *ngIf="projectForm.controls['name'].touched && projectForm.controls['name'].invalid" class="error-message">
-        <div *ngIf="projectForm.controls['name'].errors?.['required']">Name is required.</div>
-        <div *ngIf="projectForm.controls['name'].errors?.['minlength']">Name must be at least 3 characters long.</div>
+  <form [formGroup]="projectForm" (ngSubmit)="saveProject()" class="project-form">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>{{ isNewProject ? 'Create New Project' : 'Update Project' }}</mat-card-title>
+      </mat-card-header>
+      <div class="card-content-container">
+        <mat-card-content>
+          <mat-form-field>
+            <mat-label>Name of Project</mat-label>
+            <input matInput id="name" formControlName="name" />
+            <mat-error *ngIf="f['name'].touched && f['name'].invalid">
+              <span *ngIf="f['name'].errors?.['required']">Name is required.</span>
+              <span *ngIf="f['name'].errors?.['minlength']">Name must be at least 3 characters long.</span>
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Description</mat-label>
+            <textarea matInput id="description" formControlName="description"></textarea>
+            <mat-error *ngIf="f['description'].touched && f['description'].invalid">
+              <span *ngIf="f['description'].errors?.['required']">Description is required.</span>
+              <span *ngIf="f['description'].errors?.['minlength']">Description must be at least 10 characters long.</span>
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Current Users</mat-label>
+            <input matInput id="current-users" formControlName="current_users" />
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Owners</mat-label>
+            <input matInput id="owners" formControlName="owners" />
+          </mat-form-field>
+        </mat-card-content>
       </div>
-    </div>
-    <div class="form-group">
-      <label for="description">Description</label>
-      <textarea id="description" formControlName="description"></textarea>
-      <div *ngIf="projectForm.controls['description'].touched && projectForm.controls['description'].invalid" class="error-message">
-        <div *ngIf="projectForm.controls['description'].errors?.['required']">Description is required.</div>
-        <div *ngIf="projectForm.controls['description'].errors?.['minlength']">Description must be at least 10 characters long.</div>
-      </div>
-    </div>
-    <div class="form-group">
-      <label for="current_users">Current Users</label>
-      <input type="text" id="current_users" formControlName="current_users" />
-    </div>
-    <div class="form-group">
-      <label for="owners">Owners</label>
-      <input type="text" id="owners" formControlName="owners" />
-    </div>
-    <button type="submit" [disabled]="projectForm.invalid">{{ isNewProject ? 'Create Project' : 'Update Project' }}</button>
+
+      <mat-card-actions>
+        <button mat-raised-button color="primary" type="submit" [disabled]="projectForm.invalid">
+          {{ isNewProject ? 'Create Project' : 'Update Project' }}
+        </button>
+      </mat-card-actions>
+    </mat-card>
   </form>
 </div>

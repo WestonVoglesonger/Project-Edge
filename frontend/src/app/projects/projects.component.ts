@@ -1,6 +1,8 @@
+// src/app/projects/projects.component.ts
 import { Component, OnInit } from '@angular/core';
 import { Route, Router } from '@angular/router';
 import { ProjectService } from './projects.service';
+import { ProjectResponse } from './project.models';
 
 @Component({
   selector: 'app-projects',
@@ -13,9 +15,13 @@ export class ProjectsComponent implements OnInit {
     component: ProjectsComponent,
     title: "Projects Page",
   };
-  projects: any[] = [];
 
-  constructor(private router: Router, private projectService: ProjectService) {}
+  projects: ProjectResponse[] = [];
+
+  constructor(
+    private projectService: ProjectService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.loadProjects();
@@ -23,25 +29,20 @@ export class ProjectsComponent implements OnInit {
 
   loadProjects(): void {
     this.projectService.getAllProjects().subscribe(
-      projects => {
+      (projects: ProjectResponse[]) => {
         this.projects = projects;
       },
       error => {
-        console.error('Error fetching projects', error);
+        console.error('Error loading projects', error);
       }
     );
   }
 
-  viewProjectDetails(project: any): void {
-    // Implement the logic to view project details
-    console.log('Viewing project details for:', project);
+  viewProjectDetails(project: ProjectResponse): void {
+    this.router.navigate(['/projects', project.id]);
   }
 
   createProject(): void {
-    this.router.navigate(['projects/new']);
-  }
-
-  editProject(project: any): void {
-    this.router.navigate([`projects/${project.id}`]);
+    this.router.navigate(['/projects/new']);
   }
 }

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Route, Router } from '@angular/router';
 import { ProjectService } from '../projects.service';
@@ -9,7 +9,7 @@ import { UserResponse } from 'src/app/shared/users/user.models';
   templateUrl: './project-form.component.html',
   styleUrls: ['./project-form.component.css']
 })
-export class ProjectFormComponent {
+export class ProjectFormComponent implements OnInit {
   public static Route: Route = {
     path: "projects/:id",
     component: ProjectFormComponent,
@@ -86,4 +86,6 @@ export class ProjectFormComponent {
       }
     }
   }
+
+  get f() { return this.projectForm.controls; }
 }

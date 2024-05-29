@@ -13,3 +13,11 @@ export interface ProjectUpdate {
     current_users?: UserResponse[];
     owners?: UserResponse[];
   }
+
+export interface ProjectResponse {
+    id: number;
+    name: string;
+    description: string;
+    current_users: UserResponse[];
+    owners: UserResponse[];
+  }
