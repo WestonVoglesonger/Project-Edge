@@ -27,6 +27,15 @@ def test_get_project(project_svc: ProjectService):
     assert fetched_project.name == created_project.name
     assert fetched_project.description == created_project.description
 
+def test_get_all_projects(project_svc: ProjectService):
+    project_svc.create_project(new_project)
+
+    # Fetch all projects
+    projects = project_svc.get_all_projects()
+
+    # Assert that the correct number of projects are fetched
+    assert len(projects) == 2
+
 def test_update_project(project_svc: ProjectService):
     created_project = project_svc.create_project(project)
     updated_project_data = project_svc.update_project(created_project.id, updated_project)
