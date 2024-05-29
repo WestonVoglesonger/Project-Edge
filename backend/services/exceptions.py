@@ -24,3 +24,7 @@ class CredentialsException(Exception):
     def __init__(self):
         self.message="Could not validate credentials"
         super().__init__(self.message)
+
+class ProjectNotFoundException(Exception):
+    """Exception raised when a project is not found."""
+    pass

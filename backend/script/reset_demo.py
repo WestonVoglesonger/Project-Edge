@@ -2,7 +2,7 @@ import sys
 import subprocess
 from sqlalchemy.orm import Session
 from backend.entities.base import Base
-from backend.test.services import user_data
+from backend.test.services import project_data, user_data
 from ..database import engine
 from ..env import getenv
 from ..entities.user_entity import UserEntity  # Ensure all your entities are imported
@@ -31,5 +31,6 @@ print("Tables created successfully.")
 # Initialize the SQLAlchemy session
 with Session(engine) as session:
     user_data.insert_fake_data(session)
+    project_data.insert_fake_data(session)
     # Commit changes to the database
     session.commit()

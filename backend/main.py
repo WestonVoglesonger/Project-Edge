@@ -6,7 +6,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.gzip import GZipMiddleware
 
-from backend.api import static_files
+from backend.api import project, static_files
 from backend.api import user, auth
 from backend.logging_config import configure_logging
 
@@ -29,6 +29,7 @@ app = FastAPI(
     openapi_tags=[
         user.openapi_tags,
         auth.openapi_tags,
+        project.openapi_tags,
     ],
 )
 
@@ -38,7 +39,8 @@ app.add_middleware(GZipMiddleware)
 # Plugging in each of the router APIs
 feature_apis = [
     user,
-    auth
+    auth,
+    project
 ]
 
 for feature_api in feature_apis:

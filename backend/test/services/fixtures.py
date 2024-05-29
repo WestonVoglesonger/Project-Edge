@@ -3,6 +3,7 @@
 import pytest
 from sqlalchemy.orm import Session
 
+from backend.services.project import ProjectService
 from backend.services.user import UserService
 
 __authors__ = ["Weston Voglesonger"]
@@ -21,3 +22,8 @@ def add_test_user(user_svc: UserService):
     from .user_data import user
     user_svc.create_user(user)
     yield
+    
+@pytest.fixture
+def project_svc(session: Session) -> ProjectService:
+    """This fixture is used to test the ProjectService class."""
+    return ProjectService(session)
