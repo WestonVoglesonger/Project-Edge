@@ -29,37 +29,34 @@ class ProjectService:
 
         return new_project_entity.to_project_response()
 
-    def update_project(self, project_id: int, project_data: ProjectUpdate) -> ProjectResponse:
+    def update_project(self, project_id: int, project_update: ProjectUpdate) -> ProjectResponse:
         project_entity = self.db.query(ProjectEntity).filter(ProjectEntity.id == project_id).first()
         
         if not project_entity:
             raise ProjectNotFoundException(f"Project with id {project_id} not found")
         
-        update_data = project_data.model_dump(exclude_unset=True)
+        update_data = project_update.model_dump(exclude_unset=True)
         
-        # Update `current_users` if provided
         if "current_users" in update_data:
             current_users: List[UserEntity] = []
             for user in update_data["current_users"]:
-                if isinstance(user, dict):  # Ensure user is a User instance
+                if isinstance(user, dict):
                     user = UserResponse(**user)
                 user_entity = self.db.query(UserEntity).filter(UserEntity.email == user.email).first()
                 if user_entity:
                     current_users.append(user_entity)
             project_entity.current_users = current_users
 
-        # Update `owners` if provided
         if "owners" in update_data:
             owners: List[UserEntity] = []
             for user in update_data["owners"]:
-                if isinstance(user, dict):  # Ensure user is a User instance
+                if isinstance(user, dict):
                     user = UserResponse(**user)
                 user_entity = self.db.query(UserEntity).filter(UserEntity.email == user.email).first()
                 if user_entity:
                     owners.append(user_entity)
             project_entity.owners = owners
 
-        # Update other fields
         for key, value in update_data.items():
             if key not in ["current_users", "owners"]:
                 setattr(project_entity, key, value)
