@@ -4,7 +4,7 @@ from sqlalchemy.exc import IntegrityError
 from backend.entities.project_entity import ProjectEntity
 from backend.entities.user_entity import UserEntity
 from backend.models.project import Project, ProjectCreate, ProjectResponse, ProjectUpdate
-from backend.models.user import User
+from backend.models.user import User, UserResponse
 from backend.services.exceptions import ProjectNotFoundException  # Adjust the import based on your project structure
 
 class ProjectService:
@@ -42,7 +42,7 @@ class ProjectService:
             current_users: List[UserEntity] = []
             for user in update_data["current_users"]:
                 if isinstance(user, dict):  # Ensure user is a User instance
-                    user = User(**user)
+                    user = UserResponse(**user)
                 user_entity = self.db.query(UserEntity).filter(UserEntity.email == user.email).first()
                 if user_entity:
                     current_users.append(user_entity)
@@ -53,7 +53,7 @@ class ProjectService:
             owners: List[UserEntity] = []
             for user in update_data["owners"]:
                 if isinstance(user, dict):  # Ensure user is a User instance
-                    user = User(**user)
+                    user = UserResponse(**user)
                 user_entity = self.db.query(UserEntity).filter(UserEntity.email == user.email).first()
                 if user_entity:
                     owners.append(user_entity)
@@ -73,6 +73,10 @@ class ProjectService:
         if not project:
             raise ProjectNotFoundException(f"Project with id {project_id} not found.")
         return project.to_project_response()
+    
+    def get_all_projects(self) -> List[ProjectResponse]:
+        projects = self.db.query(ProjectEntity).all()
+        return [project.to_project_response() for project in projects]
 
     def delete_project(self, project_id: int):
         project_entity = self.db.query(ProjectEntity).filter_by(id=project_id).first()

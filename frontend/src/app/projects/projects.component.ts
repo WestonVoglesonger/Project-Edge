@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Route, Router } from '@angular/router';
+import { ProjectService } from './projects.service';
 
 @Component({
   selector: 'app-projects',
@@ -12,28 +13,24 @@ export class ProjectsComponent implements OnInit {
     component: ProjectsComponent,
     title: "Projects Page",
   };
+  projects: any[] = [];
 
-  projects = [
-    // Example projects data
-    {
-      title: 'Project 1',
-      description: 'Description for project 1',
-      categories: ['Web Development'],
-      tags: ['Angular', 'TypeScript']
-    },
-    {
-      title: 'Project 2',
-      description: 'Description for project 2',
-      categories: ['Machine Learning'],
-      tags: ['Python', 'TensorFlow']
-    }
-    // Add more project data as needed
-  ];
+  constructor(private router: Router, private projectService: ProjectService) {}
 
-  constructor(private router: Router) {
+  ngOnInit(): void {
+    this.loadProjects();
   }
 
-  ngOnInit(): void {}
+  loadProjects(): void {
+    this.projectService.getAllProjects().subscribe(
+      projects => {
+        this.projects = projects;
+      },
+      error => {
+        console.error('Error fetching projects', error);
+      }
+    );
+  }
 
   viewProjectDetails(project: any): void {
     // Implement the logic to view project details
@@ -41,15 +38,10 @@ export class ProjectsComponent implements OnInit {
   }
 
   createProject(): void {
-    this.router.navigate(['projects/creation'])
+    this.router.navigate(['projects/new']);
+  }
+
+  editProject(project: any): void {
+    this.router.navigate([`projects/${project.id}`]);
   }
 }
-
-
-
-
-
-
-
-
-

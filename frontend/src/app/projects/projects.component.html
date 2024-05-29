@@ -4,13 +4,12 @@
   <button class="create-project-button" (click)="createProject()">Create New Project</button>
   <div class="projects-list">
     <div *ngFor="let project of projects" class="project-card">
-      <h3>{{ project.title }}</h3>
+      <h3>{{ project.name }}</h3>
       <p>{{ project.description }}</p>
-      <p><strong>Categories:</strong> {{ project.categories.join(', ') }}</p>
-      <p><strong>Tags:</strong> {{ project.tags.join(', ') }}</p>
+      <p><strong>Categories:</strong> {{ project.categories?.join(', ') }}</p>
+      <p><strong>Tags:</strong> {{ project.tags?.join(', ') }}</p>
       <button (click)="viewProjectDetails(project)">View Details</button>
+      <button (click)="editProject(project)">Edit Project</button>
     </div>
   </div>
 </div>
-
-  

@@ -26,6 +26,7 @@ user2 = User(
     accepted_community_agreement=True
 )
 
+
 new_user = UserBase(
     email="newuser@gmail.com",
     password="newpassword",

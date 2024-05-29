@@ -23,7 +23,7 @@ import { NavigationComponent } from "./navigation/navigation.component";
 import { HomeComponent } from "./home/home.component";
 import { ProfileComponent } from "./profile/profile.component";
 import { ProjectsComponent } from "./projects/projects.component";
-import { ProjectCreationComponent } from "./projects/project-creation/project-creation.component";
+import { ProjectFormComponent } from "./projects/project-form/project-form.component";
 
 @NgModule({
   declarations: [
@@ -33,7 +33,7 @@ import { ProjectCreationComponent } from "./projects/project-creation/project-cr
     HomeComponent,
     ProfileComponent,
     ProjectsComponent,
-    ProjectCreationComponent,
+    ProjectFormComponent,
     // Add other component declarations here
   ],
   imports: [

@@ -10,14 +10,14 @@ from .user_data import user1, user2
 project = ProjectCreate(
     name="Test Project",
     description="A test project",
-    current_users=[user1],
-    owners=[user2]
+    current_users=[user1.to_user_response()],
+    owners=[user2.to_user_response()]
 )
 
 new_project = ProjectCreate(
     name="Test Project",
     description="A test project",
-    current_users=[user1],
+    current_users=[user1.to_user_response()],
     owners=[]
 )
 
@@ -25,14 +25,14 @@ new_project = ProjectCreate(
 updated_project = ProjectUpdate(
     name="Updated Project",
     description="An updated description for the project",
-    current_users=[user1, user2],
-    owners=[user2]
+    current_users=[user1.to_user_response(), user2.to_user_response()],
+    owners=[user2.to_user_response()]
 )
 
 updated_project_2 = ProjectUpdate(
     name="Updated Project 2",
     description="An updated 2 description for the project",
-    current_users=[user1, user2],
+    current_users=[user1.to_user_response(), user2.to_user_response()],
     owners=[]
 )
 

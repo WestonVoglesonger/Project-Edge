@@ -26,6 +26,10 @@ def read_project(project_id: int, project_service: ProjectService = Depends(get_
         return project_service.get_project(project_id=project_id)
     except ProjectNotFoundException as e:
         raise HTTPException(status_code=404, detail=str(e))
+    
+@api.get("", response_model=List[ProjectResponse], tags=["Projects"])
+def read_projects(project_service: ProjectService = Depends(get_project_service)):
+    return project_service.get_all_projects()
 
 @api.put("/{project_id}", response_model=ProjectResponse, tags=["Projects"])
 def update_project(project_id: int, project_update: ProjectUpdate, project_service: ProjectService = Depends(get_project_service)):
