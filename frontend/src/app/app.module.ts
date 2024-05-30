@@ -15,6 +15,7 @@ import { MatListModule } from "@angular/material/list";
 import { MatCardModule } from "@angular/material/card";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
+import { MatAutocompleteModule } from "@angular/material/autocomplete";
 
 // Components
 import { AppComponent } from "./app.component";
@@ -53,6 +54,7 @@ import { ProjectFormComponent } from "./projects/project-form/project-form.compo
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
+    MatAutocompleteModule,
     // Add other module imports as necessary
   ],
   providers: [],

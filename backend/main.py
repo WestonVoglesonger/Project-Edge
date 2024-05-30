@@ -2,8 +2,7 @@
 
 from pathlib import Path
 import logging
-from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI
 from fastapi.middleware.gzip import GZipMiddleware
 
 from backend.api import project, static_files

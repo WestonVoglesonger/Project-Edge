@@ -7,7 +7,7 @@ from .reset_table_id_seq import reset_table_id_seq
 user1 = User(
     id=1,
     first_name="Sally",
-    last_name="Student",
+    last_name="Doe",
     bio="I am a student at the University of North Carolina.",
     profile_picture="https://example.com/profile.jpg",
     email="sally@gmail.com",
