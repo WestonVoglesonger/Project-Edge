@@ -44,3 +44,20 @@ button {
 .card-content-container {
   padding-top: 20px;
 }
+
+.user-grid, .owner-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.user-chip, .owner-chip {
+  padding: 8px 12px;
+  background-color: #e0e0e0;
+  border-radius: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}

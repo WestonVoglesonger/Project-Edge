@@ -136,6 +136,15 @@ export class ProjectFormComponent implements OnInit {
     }
   }
 
+  addUser(user: UserResponse, type: 'users' | 'owners', input: HTMLInputElement): void {
+    if (type === 'users') {
+      this.currentUsers.push(this.fb.control(user));
+    } else {
+      this.owners.push(this.fb.control(user));
+    }
+    input.value = ''; // Clear the input field
+  }
+
   get f(): { [key: string]: AbstractControl } {
     return this.projectForm.controls;
   }

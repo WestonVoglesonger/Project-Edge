@@ -26,23 +26,27 @@
 
           <mat-form-field>
             <mat-label>Current Users</mat-label>
-            <input matInput (input)="searchUsers($event, 'users')" [matAutocomplete]="autoUsers" />
-            <mat-autocomplete #autoUsers="matAutocomplete">
-              <mat-option *ngFor="let user of filteredUsers" [value]="user.email">{{ user.email }}</mat-option>
+            <input matInput #currentUsersInput (input)="searchUsers($event, 'users')" [matAutocomplete]="autoUsers" />
+            <mat-autocomplete #autoUsers="matAutocomplete" (optionSelected)="addUser($event.option.value, 'users', currentUsersInput)">
+              <mat-option *ngFor="let user of filteredUsers" [value]="user">{{ user.email }}</mat-option>
             </mat-autocomplete>
-            <div *ngFor="let user of currentUsers.controls; let i = index">
-              {{ user.value.email }}
+            <div class="user-grid">
+              <div class="user-chip" *ngFor="let user of currentUsers.controls; let i = index">
+                {{ user.value.email }}
+              </div>
             </div>
           </mat-form-field>
 
           <mat-form-field>
             <mat-label>Owners</mat-label>
-            <input matInput (input)="searchUsers($event, 'owners')" [matAutocomplete]="autoOwners" />
-            <mat-autocomplete #autoOwners="matAutocomplete">
-              <mat-option *ngFor="let user of filteredOwners" [value]="user.email">{{ user.email }}</mat-option>
+            <input matInput #ownersInput (input)="searchUsers($event, 'owners')" [matAutocomplete]="autoOwners" />
+            <mat-autocomplete #autoOwners="matAutocomplete" (optionSelected)="addUser($event.option.value, 'owners', ownersInput)">
+              <mat-option *ngFor="let user of filteredOwners" [value]="user">{{ user.email }}</mat-option>
             </mat-autocomplete>
-            <div *ngFor="let owner of owners.controls; let i = index">
-              {{ owner.value.email }}
+            <div class="owner-grid">
+              <div class="owner-chip" *ngFor="let owner of owners.controls; let i = index">
+                {{ owner.value.email }}
+              </div>
             </div>
           </mat-form-field>
         </mat-card-content>
