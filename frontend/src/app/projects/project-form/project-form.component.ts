@@ -21,13 +21,13 @@ export class ProjectFormComponent implements OnInit {
 
   projectForm: FormGroup;
   isNewProject: boolean = true;
-  filteredUsers: UserResponse[] = [];
-  filteredOwners: UserResponse[] = [];
+  filteredMembers: UserResponse[] = [];
+  filteredLeaders: UserResponse[] = [];
   currentUser: UserResponse | null = null;
-  isOwner: boolean = false;
+  isLeader: boolean = false;
 
-  @ViewChild('currentUsersInput') currentUsersInput!: ElementRef;
-  @ViewChild('ownersInput') ownersInput!: ElementRef;
+  @ViewChild('currentMembersInput') currentMembersInput!: ElementRef;
+  @ViewChild('leadersInput') leadersInput!: ElementRef;
 
   private originalProjectData: any;
 
@@ -42,8 +42,8 @@ export class ProjectFormComponent implements OnInit {
     this.projectForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
       description: ['', [Validators.required, Validators.minLength(10)]],
-      current_users: this.fb.array([]),
-      owners: this.fb.array([], minLengthArray(1))
+      team_members: this.fb.array([]),
+      project_leaders: this.fb.array([], minLengthArray(1))
     });
   }
 
@@ -57,7 +57,7 @@ export class ProjectFormComponent implements OnInit {
             this.isNewProject = false;
             this.loadProject(id);
           } else {
-            this.addCurrentUserToOwners();
+            this.addCurrentUserToProjectLeaders();
           }
         });
       },
@@ -67,18 +67,18 @@ export class ProjectFormComponent implements OnInit {
     );
   }
 
-  addCurrentUserToOwners(): void {
+  addCurrentUserToProjectLeaders(): void {
     if (this.currentUser) {
-      this.owners.push(this.fb.control(this.currentUser));
+      this.project_leaders.push(this.fb.control(this.currentUser));
     }
   }
 
   get currentUsers(): FormArray {
-    return this.projectForm.get('current_users') as FormArray;
+    return this.projectForm.get('team_members') as FormArray;
   }
 
-  get owners(): FormArray {
-    return this.projectForm.get('owners') as FormArray;
+  get project_leaders(): FormArray {
+    return this.projectForm.get('project_leaders') as FormArray;
   }
 
   loadProject(id: string): void {
@@ -88,16 +88,16 @@ export class ProjectFormComponent implements OnInit {
           name: project.name,
           description: project.description,
         });
-        this.setCurrentUsers(project.current_users);
-        this.setOwners(project.owners);
+        this.setTeamMembers(project.team_members);
+        this.setProjectLeaders(project.project_leaders);
         this.originalProjectData = {
           ...project,
-          current_users: [...project.current_users],
-          owners: [...project.owners]
+          team_members: [...project.team_members],
+          project_leaders: [...project.project_leaders]
         };
 
-        this.isOwner = project.owners.some((owner: { email: string | undefined; }) => owner.email === this.currentUser?.email);
-        if (!this.isOwner) {
+        this.isLeader = project.project_leaders.some((leader: { email: string | undefined; }) => leader.email === this.currentUser?.email);
+        if (!this.isLeader) {
           this.projectForm.disable();
         }
       },
@@ -107,20 +107,20 @@ export class ProjectFormComponent implements OnInit {
     );
   }
 
-  setCurrentUsers(users: UserResponse[]): void {
+  setTeamMembers(users: UserResponse[]): void {
     users.forEach(user => this.currentUsers.push(this.fb.control(user)));
   }
 
-  setOwners(users: UserResponse[]): void {
-    users.forEach(user => this.owners.push(this.fb.control(user)));
+  setProjectLeaders(users: UserResponse[]): void {
+    users.forEach(user => this.project_leaders.push(this.fb.control(user)));
   }
 
   saveProject(): void {
     if (this.projectForm.valid) {
       const projectData = {
         ...this.projectForm.value,
-        current_users: this.currentUsers.value.filter((user: UserResponse) => user.email),
-        owners: this.owners.value.filter((user: UserResponse) => user.email)
+        team_members: this.currentUsers.value.filter((user: UserResponse) => user.email),
+        project_leaders: this.project_leaders.value.filter((user: UserResponse) => user.email)
       };
 
       if (this.isNewProject) {
@@ -148,22 +148,22 @@ export class ProjectFormComponent implements OnInit {
     }
   }
 
-  searchUsers(event: Event, type: 'users' | 'owners' = 'users'): void {
+  searchUsers(event: Event, type: 'users' | 'leaders' = 'users'): void {
     const input = event.target as HTMLInputElement;
     const query = input.value;
   
     if (query.length > 2) {
       this.userService.searchUsers(query).subscribe(users => {
         console.log('Users', users);
-        const selectedUsers = type === 'users' ? this.currentUsers.value : this.owners.value;
+        const selectedUsers = type === 'users' ? this.currentUsers.value : this.project_leaders.value;
         const selectedUserEmails = selectedUsers.map((user: UserResponse) => user.email);
   
         const filtered = users.filter(user => !selectedUserEmails.includes(user.email));
         
         if (type === 'users') {
-          this.filteredUsers = filtered;
+          this.filteredMembers = filtered;
         } else {
-          this.filteredOwners = filtered;
+          this.filteredLeaders = filtered;
         }
       },
       error => {
@@ -171,32 +171,32 @@ export class ProjectFormComponent implements OnInit {
       });
     } else {
       if (type === 'users') {
-        this.filteredUsers = [];
+        this.filteredMembers = [];
       } else {
-        this.filteredOwners = [];
+        this.filteredLeaders = [];
       }
     }
   }  
 
-  addUser(user: UserResponse, type: 'users' | 'owners', input: HTMLInputElement): void {
+  addUser(user: UserResponse, type: 'users' | 'leaders', input: HTMLInputElement): void {
     if (type === 'users') {
       this.currentUsers.push(this.fb.control(user));
     } else {
-      this.owners.push(this.fb.control(user));
+      this.project_leaders.push(this.fb.control(user));
     }
     input.value = ''; // Clear the input field
   }
 
-  removeUser(index: number, type: 'users' | 'owners'): void {
-    if ((this.isOwner || this.isNewProject) && (type === 'users' || type === 'owners')) {
+  removeUser(index: number, type: 'users' | 'leaders'): void {
+    if ((this.isLeader || this.isNewProject) && (type === 'users' || type === 'leaders')) {
       if (type === 'users') {
         this.currentUsers.removeAt(index);
       } else {
-        this.owners.removeAt(index);
+        this.project_leaders.removeAt(index);
       }
   
       // Re-fetch users to update the dropdown
-      const inputElement = type === 'users' ? this.currentUsersInput.nativeElement : this.ownersInput.nativeElement;
+      const inputElement = type === 'users' ? this.currentMembersInput.nativeElement : this.leadersInput.nativeElement;
       this.searchUsers({ target: inputElement } as Event, type);
     }
   }
@@ -205,21 +205,21 @@ export class ProjectFormComponent implements OnInit {
     if (this.isNewProject) {
       this.projectForm.reset();
       this.currentUsers.clear();
-      this.owners.clear();
+      this.project_leaders.clear();
     } else {
       this.projectForm.patchValue({
         name: this.originalProjectData.name,
         description: this.originalProjectData.description,
       });
 
-      // Clear and reset current_users and owners FormArrays
+      // Clear and reset team_members and project_leaders FormArrays
       this.currentUsers.clear();
-      this.owners.clear();
-      this.originalProjectData.current_users.forEach((user: UserResponse) => {
+      this.project_leaders.clear();
+      this.originalProjectData.team_members.forEach((user: UserResponse) => {
         this.currentUsers.push(this.fb.control(user));
       });
-      this.originalProjectData.owners.forEach((user: UserResponse) => {
-        this.owners.push(this.fb.control(user));
+      this.originalProjectData.project_leaders.forEach((user: UserResponse) => {
+        this.project_leaders.push(this.fb.control(user));
       });
     }
     this.router.navigate(['/projects']);

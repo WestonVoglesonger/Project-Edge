@@ -10,30 +10,30 @@ from .user_data import user1, user2
 project = ProjectCreate(
     name="Test Project",
     description="A test project",
-    current_users=[user1.to_user_response()],
-    owners=[user2.to_user_response()]
+    team_members=[user1.to_user_response()],
+    project_leaders=[user2.to_user_response()]
 )
 
 new_project = ProjectCreate(
     name="Test Project",
     description="A test project",
-    current_users=[user1.to_user_response()],
-    owners=[]
+    team_members=[user1.to_user_response()],
+    project_leaders=[]
 )
 
 # Updated project data fixture
 updated_project = ProjectUpdate(
     name="Updated Project",
     description="An updated description for the project",
-    current_users=[user1.to_user_response(), user2.to_user_response()],
-    owners=[user2.to_user_response()]
+    team_members=[user1.to_user_response(), user2.to_user_response()],
+    project_leaders=[user2.to_user_response()]
 )
 
 updated_project_2 = ProjectUpdate(
     name="Updated Project 2",
     description="An updated 2 description for the project",
-    current_users=[user1.to_user_response(), user2.to_user_response()],
-    owners=[]
+    team_members=[user1.to_user_response(), user2.to_user_response()],
+    project_leaders=[]
 )
 
 projects = [project]
@@ -44,12 +44,7 @@ def insert_fake_data(session: Session):
 
     entities = []
     for project in projects:
-        entity = ProjectEntity(
-            name=project.name,
-            description=project.description,
-            current_users=[user1_entity],
-            owners=[user2_entity]
-        )
+        entity = ProjectEntity.from_model(project, [user1_entity], [user2_entity])
         session.add(entity)
         entities.append(entity)
     session.commit()

@@ -1,3 +1,4 @@
+import logging
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
@@ -6,6 +7,8 @@ from backend.database import db_session
 from backend.models.project import ProjectCreate, ProjectUpdate, ProjectResponse
 from backend.services.exceptions import ProjectNotFoundException
 from backend.services.project import ProjectService
+
+logger = logging.getLogger(__name__)
 
 api = APIRouter(prefix="/api/projects")
 openapi_tags = {

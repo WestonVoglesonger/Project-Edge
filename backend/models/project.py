@@ -9,24 +9,24 @@ class ProjectIdentity(BaseModel):
 class Project(ProjectIdentity):
     name: str
     description: str
-    current_users: List[UserResponse]
-    owners: List[UserResponse]
+    team_members: List[UserResponse]
+    project_leaders: List[UserResponse]
 
 class ProjectCreate(BaseModel):
     name: str
     description: str
-    current_users: Optional[List[UserResponse]] = None
-    owners: Optional[List[UserResponse]] = None
+    team_members: Optional[List[UserResponse]] = None
+    project_leaders: Optional[List[UserResponse]] = None
 
 class ProjectUpdate(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
-    current_users: Optional[List[UserResponse]] = None
-    owners: Optional[List[UserResponse]] = None
+    team_members: Optional[List[UserResponse]] = None
+    project_leaders: Optional[List[UserResponse]] = None
 
 class ProjectResponse(ProjectIdentity):
     name: str
     description: str
-    current_users: List[UserResponse]
-    owners: List[UserResponse]
+    team_members: List[UserResponse]
+    project_leaders: List[UserResponse]
 

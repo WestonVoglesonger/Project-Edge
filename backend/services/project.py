@@ -5,61 +5,73 @@ from backend.entities.project_entity import ProjectEntity
 from backend.entities.user_entity import UserEntity
 from backend.models.project import Project, ProjectCreate, ProjectResponse, ProjectUpdate
 from backend.models.user import User, UserResponse
-from backend.services.exceptions import ProjectNotFoundException  # Adjust the import based on your project structure
+from backend.services.exceptions import ProjectNotFoundException
+from sqlalchemy.orm.exc import NoResultFound 
+
 
 class ProjectService:
     def __init__(self, db: Session):
         self.db = db
 
     def create_project(self, project_data: ProjectCreate) -> ProjectResponse:
-        current_users: List[UserEntity] = []
-        for user in project_data.current_users:
+        team_members: List[UserEntity] = []
+        for user in project_data.team_members:
             user_entity = self.db.query(UserEntity).filter(UserEntity.email == user.email).first()
-            current_users.append(user_entity)        
+            team_members.append(user_entity)        
 
-        owners: List[UserEntity] = []
-        for owner in project_data.owners:
-            owner_entity = self.db.query(UserEntity).filter(UserEntity.email == owner.email).first()
-            owners.append(owner_entity)
+        project_leaders: List[UserEntity] = []
+        for leader in project_data.project_leaders:
+            leaders_entity = self.db.query(UserEntity).filter(UserEntity.email == leader.email).first()
+            project_leaders.append(leaders_entity)
 
-        new_project_entity = ProjectEntity.from_model(project_data, current_users, owners)
+        new_project_entity = ProjectEntity.from_model(project_data, team_members, project_leaders)
         self.db.add(new_project_entity)
         self.db.commit()
         self.db.refresh(new_project_entity)  # Refresh to get the ID
 
         return new_project_entity.to_project_response()
 
-    def update_project(self, project_id: int, project_update: ProjectUpdate) -> ProjectResponse:
-        project_entity = self.db.query(ProjectEntity).filter(ProjectEntity.id == project_id).first()
-        
-        if not project_entity:
+    def update_project(self, project_id: int, project_update: ProjectUpdate,
+) -> ProjectResponse:
+        try:
+            project_entity = self.db.query(ProjectEntity).filter(ProjectEntity.id == project_id).one()
+        except NoResultFound:
             raise ProjectNotFoundException(f"Project with id {project_id} not found")
-        
+
+
         update_data = project_update.model_dump(exclude_unset=True)
-        
-        if "current_users" in update_data:
-            current_users: List[UserEntity] = []
-            for user in update_data["current_users"]:
-                if isinstance(user, dict):
-                    user = UserResponse(**user)
-                user_entity = self.db.query(UserEntity).filter(UserEntity.email == user.email).first()
-                if user_entity:
-                    current_users.append(user_entity)
-            project_entity.current_users = current_users
 
-        if "owners" in update_data:
-            owners: List[UserEntity] = []
-            for user in update_data["owners"]:
-                if isinstance(user, dict):
-                    user = UserResponse(**user)
-                user_entity = self.db.query(UserEntity).filter(UserEntity.email == user.email).first()
-                if user_entity:
-                    owners.append(user_entity)
-            project_entity.owners = owners
+        # Fetch all users from the database
+        all_users = {user.email: user for user in self.db.query(UserEntity).all()}
 
-        for key, value in update_data.items():
-            if key not in ["current_users", "owners"]:
-                setattr(project_entity, key, value)
+        # Update team_members
+        team_members = []
+        for user_data in update_data.get("team_members", []):
+            user_email = user_data["email"]
+            user_entity = all_users[user_email]
+            team_members.append(user_entity)
+
+        # Remove users that are no longer in team_members
+        users_to_remove = set(project_entity.team_members) - set(team_members)
+        for user in users_to_remove:
+            project_entity.team_members.remove(user)
+
+        # Update project_leaders
+        project_leaders = []
+        for user_data in update_data.get("project_leaders", []):
+            user_email = user_data["email"]
+            user_entity = all_users[user_email]
+            project_leaders.append(user_entity)
+
+        # Remove users that are no longer in project_leaders
+        users_to_remove = set(project_entity.project_leaders) - set(project_leaders)
+        for user in users_to_remove:
+            project_entity.project_leaders.remove(user)
+
+        # Update other fields
+        for field, value in update_data.items():
+            if field not in ["team_members", "project_leaders"]:
+                setattr(project_entity, field, value)
 
         self.db.commit()
         self.db.refresh(project_entity)

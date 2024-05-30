@@ -1,6 +1,7 @@
 import pytest
 from sqlalchemy.orm import Session
 
+from backend.entities.project_entity import ProjectEntity
 from backend.services.exceptions import ProjectNotFoundException
 from backend.services.project import ProjectService
 from backend.services.user import UserService
@@ -18,12 +19,12 @@ def test_create_project(project_svc: ProjectService):
     created_project = project_svc.create_project(project)
     assert created_project.name == project.name
     assert created_project.description == project.description
-    assert created_project.current_users[0].email == project.current_users[0].email
-    assert created_project.owners[0].email == project.owners[0].email
+    assert created_project.team_members[0].email == project.team_members[0].email
+    assert created_project.project_leaders[0].email == project.project_leaders[0].email
 
-def test_create_project_no_owners(project_svc: ProjectService):
+def test_create_project_no_project_leaders(project_svc: ProjectService):
     created_project = project_svc.create_project(new_project)
-    assert created_project.owners == new_project.owners
+    assert created_project.project_leaders == new_project.project_leaders
 
 def test_get_project(project_svc: ProjectService):
     created_project = project_svc.create_project(project)
@@ -46,10 +47,10 @@ def test_update_project(project_svc: ProjectService):
     assert updated_project_data.name == updated_project.name
     assert updated_project_data.description == updated_project.description
 
-def test_update_project_remove_owners(project_svc: ProjectService):
+def test_update_project_remove_project_leaders(project_svc: ProjectService):
     created_project = project_svc.create_project(project)
     updated_project_data = project_svc.update_project(created_project.id, updated_project_2)
-    assert updated_project_data.owners == updated_project_2.owners
+    assert updated_project_data.project_leaders == updated_project_2.project_leaders
 
 def test_delete_project(project_svc: ProjectService):    
     created_project = project_svc.create_project(project)
@@ -65,6 +66,7 @@ def test_get_project_not_found(project_svc: ProjectService):
 def test_update_project_not_found(project_svc: ProjectService):
     with pytest.raises(ProjectNotFoundException):
         project_svc.update_project(999, updated_project)
+
     
 def test_delete_project_not_found(project_svc: ProjectService):
     with pytest.raises(ProjectNotFoundException):
