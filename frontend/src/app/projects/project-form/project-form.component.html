@@ -52,7 +52,8 @@
             <mat-error *ngIf="project_leaders.invalid && project_leaders.errors?.['minLengthArray']">
               <span>Project must have at least one leader.</span>
             </mat-error>
-          </mat-form-field>          
+          </mat-form-field>
+          
         </mat-card-content>
       </div>
       <mat-card-actions *ngIf="isLeader || isNewProject">

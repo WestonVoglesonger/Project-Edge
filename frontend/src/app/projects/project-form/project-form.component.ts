@@ -6,7 +6,8 @@ import { UserResponse } from 'src/app/shared/users/user.models';
 import { UserService } from 'src/app/shared/users/user.service';
 import { AuthService } from 'src/app/shared/auth.service';
 import { minLengthArray } from 'src/app/shared/min-length-array.validator';
-import { Subject, Observable, combineLatest, map, startWith, debounceTime, distinctUntilChanged, switchMap, takeUntil, catchError, of, fromEvent } from 'rxjs';
+import { Subject, Observable, of } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap, catchError, map, takeUntil } from 'rxjs/operators';
 
 interface ProjectData {
   name: string;
@@ -34,11 +35,13 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
   currentUser: UserResponse | null = null;
   isLeader: boolean = false;
 
-  @ViewChild('currentMembersInput', { static: true }) currentMembersInput!: ElementRef;
-  @ViewChild('leadersInput', { static: true }) leadersInput!: ElementRef;
+  @ViewChild('currentMembersInput') currentMembersInput!: ElementRef;
+  @ViewChild('leadersInput') leadersInput!: ElementRef;
 
   private originalProjectData: ProjectData | null = null;
   private destroy$ = new Subject<void>();
+  private memberSearchSubject = new Subject<string>();
+  private leaderSearchSubject = new Subject<string>();
 
   constructor(
     private fb: FormBuilder,
@@ -55,43 +58,33 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
       project_leaders: this.fb.array([], minLengthArray(1))
     });
 
-    this.filteredMembers$ = combineLatest([
-      this.currentUsers.valueChanges.pipe(
-        startWith([]),
-        map(currentUsers => currentUsers.map((user: UserResponse) => user.email))
-      ),
-      fromEvent<InputEvent>(this.currentMembersInput.nativeElement, 'input').pipe(
-        debounceTime(300),
-        distinctUntilChanged(),
-        map((event: InputEvent) => (event.target as HTMLInputElement).value.trim())
-      )
-    ]).pipe(
-      switchMap(([currentUserEmails, searchQuery]) =>
-        this.userService.searchUsers(searchQuery).pipe(
-          map(users => users.filter(user => !currentUserEmails.includes(user.email))),
+    this.filteredMembers$ = this.memberSearchSubject.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap((searchQuery: string) => {
+        if (searchQuery.length < 3) {
+          return of([] as UserResponse[]);
+        }
+        return this.userService.searchUsers(searchQuery).pipe(
           catchError(() => of([]))
-        )
-      ),
+        );
+      }),
+      map(users => users.filter(user => !this.currentUsers.value.some((currentUser: UserResponse) => currentUser.email === user.email)).slice(0, 5)),
       takeUntil(this.destroy$)
     );
-    
-    this.filteredLeaders$ = combineLatest([
-      this.project_leaders.valueChanges.pipe(
-        startWith([]),
-        map(projectLeaders => projectLeaders.map((user: UserResponse) => user.email))
-      ),
-      fromEvent<InputEvent>(this.leadersInput.nativeElement, 'input').pipe(
-        debounceTime(300),
-        distinctUntilChanged(),
-        map((event: InputEvent) => (event.target as HTMLInputElement).value.trim())
-      )
-    ]).pipe(
-      switchMap(([projectLeaderEmails, searchQuery]) =>
-        this.userService.searchUsers(searchQuery).pipe(
-          map(users => users.filter(user => !projectLeaderEmails.includes(user.email))),
+
+    this.filteredLeaders$ = this.leaderSearchSubject.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap((searchQuery: string) => {
+        if (searchQuery.length < 3) {
+          return of([] as UserResponse[]);
+        }
+        return this.userService.searchUsers(searchQuery).pipe(
           catchError(() => of([]))
-        )
-      ),
+        );
+      }),
+      map(users => users.filter(user => !this.project_leaders.value.some((projectLeader: UserResponse) => projectLeader.email === user.email)).slice(0, 5)),
       takeUntil(this.destroy$)
     );
   }
@@ -258,7 +251,13 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
 
   searchUsers(event: Event, type: 'users' | 'leaders' = 'users'): void {
     const input = event.target as HTMLInputElement;
-    const query = input.value;
+    const query = input.value.trim();
+
+    if (type === 'users') {
+      this.memberSearchSubject.next(query);
+    } else {
+      this.leaderSearchSubject.next(query);
+    }
   }
 
   get f(): { [key: string]: AbstractControl } {
