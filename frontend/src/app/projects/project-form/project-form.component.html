@@ -27,12 +27,12 @@
 
           <mat-form-field>
             <mat-label>Team Members</mat-label>
-            <input matInput #currentMembersInput (input)="searchUsers($event, 'users')" [matAutocomplete]="autoUsers" [readonly]="!isLeader && !isNewProject" />
-            <mat-autocomplete #autoUsers="matAutocomplete" (optionSelected)="addUser($event.option.value, 'users', currentMembersInput)">
-              <mat-option *ngFor="let user of filteredMembers$ | async" [value]="user">{{ user.email }}</mat-option>
+            <input matInput #currentUsersInput (input)="searchUsers($event, 'users')" [matAutocomplete]="autoUsers" [readonly]="!isLeader && !isNewProject" />
+            <mat-autocomplete #autoUsers="matAutocomplete" (optionSelected)="addUser($event.option.value, 'users', currentUsersInput)">
+              <mat-option *ngFor="let user of filteredMembers" [value]="user">{{ user.email }}</mat-option>
             </mat-autocomplete>
             <div class="user-grid">
-              <div class="user-chip" *ngFor="let user of currentUsers.controls; let i = index" [attr.data-index]="i" (dblclick)="removeUser(i, 'users')">
+              <div class="user-chip" *ngFor="let user of currentUsers.controls; let i = index" [attr.data-index]="i" (dblclick)="removeUser(i, 'users', $event)">
                 {{ user.value?.email }}
               </div>
             </div>
@@ -40,20 +40,19 @@
           
           <mat-form-field>
             <mat-label>Project Leaders</mat-label>
-            <input matInput #leadersInput (input)="searchUsers($event, 'leaders')" [matAutocomplete]="autoLeaders" [readonly]="!isLeader && !isNewProject" />
-            <mat-autocomplete #autoLeaders="matAutocomplete" (optionSelected)="addUser($event.option.value, 'leaders', leadersInput)">
-              <mat-option *ngFor="let user of filteredLeaders$ | async" [value]="user">{{ user.email }}</mat-option>
+            <input matInput #ownersInput (input)="searchUsers($event, 'leaders')" [matAutocomplete]="autoOwners" [readonly]="!isLeader && !isNewProject" />
+            <mat-autocomplete #autoOwners="matAutocomplete" (optionSelected)="addUser($event.option.value, 'leaders', ownersInput)">
+              <mat-option *ngFor="let user of filteredLeaders" [value]="user">{{ user.email }}</mat-option>
             </mat-autocomplete>
-            <div class="leader-grid">
-              <div class="leader-chip" *ngFor="let leader of project_leaders.controls; let i = index" [attr.data-index]="i" (dblclick)="removeUser(i, 'leaders')">
+            <div class="owner-grid">
+              <div class="owner-chip" *ngFor="let leader of project_leaders.controls; let i = index" [attr.data-index]="i" (dblclick)="removeUser(i, 'leaders', $event)">
                 {{ leader.value?.email }}
               </div>
             </div>
             <mat-error *ngIf="project_leaders.invalid && project_leaders.errors?.['minLengthArray']">
               <span>Project must have at least one leader.</span>
             </mat-error>
-          </mat-form-field>
-          
+          </mat-form-field>          
         </mat-card-content>
       </div>
       <mat-card-actions *ngIf="isLeader || isNewProject">

@@ -23,8 +23,8 @@ export class ProjectFormComponent implements OnInit, AfterViewInit {
 
   projectForm: FormGroup;
   isNewProject: boolean = true;
-  filteredMembers$: Observable<UserResponse[]>;
-  filteredLeaders$: Observable<UserResponse[]>;
+  filteredMembers: UserResponse[] = [];
+  filteredLeaders: UserResponse[] = [];
   currentUser: UserResponse | null = null;
   isLeader: boolean = false;
 
@@ -33,10 +33,7 @@ export class ProjectFormComponent implements OnInit, AfterViewInit {
   @ViewChild('currentUsersInput', { read: MatAutocompleteTrigger }) currentUsersInputTrigger!: MatAutocompleteTrigger;
   @ViewChild('ownersInput', { read: MatAutocompleteTrigger }) ownersInputTrigger!: MatAutocompleteTrigger;
 
-  private originalProjectData: ProjectData | null = null;
-  private destroy$ = new Subject<void>();
-  private memberSearchSubject = new Subject<string>();
-  private leaderSearchSubject = new Subject<string>();
+  private originalProjectData: any;
 
   constructor(
     private fb: FormBuilder,
@@ -52,58 +49,26 @@ export class ProjectFormComponent implements OnInit, AfterViewInit {
       team_members: this.fb.array([]),
       project_leaders: this.fb.array([], minLengthArray(1))
     });
-
-    this.filteredMembers$ = this.memberSearchSubject.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-      switchMap((searchQuery: string) => {
-        if (searchQuery.length < 3) {
-          return of([] as UserResponse[]);
-        }
-        return this.userService.searchUsers(searchQuery).pipe(
-          catchError(() => of([]))
-        );
-      }),
-      map(users => users.filter(user => !this.currentUsers.value.some((currentUser: UserResponse) => currentUser.email === user.email)).slice(0, 5)),
-      takeUntil(this.destroy$)
-    );
-
-    this.filteredLeaders$ = this.leaderSearchSubject.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-      switchMap((searchQuery: string) => {
-        if (searchQuery.length < 3) {
-          return of([] as UserResponse[]);
-        }
-        return this.userService.searchUsers(searchQuery).pipe(
-          catchError(() => of([]))
-        );
-      }),
-      map(users => users.filter(user => !this.project_leaders.value.some((projectLeader: UserResponse) => projectLeader.email === user.email)).slice(0, 5)),
-      takeUntil(this.destroy$)
-    );
   }
 
   ngOnInit(): void {
-    this.authService.fetchCurrentUser()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(
-        user => {
-          this.currentUser = user;
-          this.route.paramMap.subscribe(params => {
-            const id = params.get('id');
-            if (id && id !== 'new') {
-              this.isNewProject = false;
-              this.loadProject(id);
-            } else {
-              this.addCurrentUserToProjectLeaders();
-            }
-          });
-        },
-        error => {
-          console.error('Error fetching current user', error);
-        }
-      );
+    this.authService.fetchCurrentUser().subscribe(
+      user => {
+        this.currentUser = user;
+        this.route.paramMap.subscribe(params => {
+          const id = params.get('id');
+          if (id && id !== 'new') {
+            this.isNewProject = false;
+            this.loadProject(id);
+          } else {
+            this.addCurrentUserToProjectLeaders();
+          }
+        });
+      },
+      error => {
+        console.error('Error fetching current user', error);
+      }
+    );
   }
 
   ngAfterViewInit(): void {
@@ -131,40 +96,36 @@ export class ProjectFormComponent implements OnInit, AfterViewInit {
   }
 
   loadProject(id: string): void {
-    this.projectService.getProject(id)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(
-        project => {
-          this.projectForm.patchValue({
-            name: project.name,
-            description: project.description,
-          });
-          this.setTeamMembers(project.team_members);
-          this.setProjectLeaders(project.project_leaders);
-          this.originalProjectData = {
-            ...project,
-            team_members: [...project.team_members],
-            project_leaders: [...project.project_leaders]
-          };
+    this.projectService.getProject(id).subscribe(
+      project => {
+        this.projectForm.patchValue({
+          name: project.name,
+          description: project.description,
+        });
+        this.setTeamMembers(project.team_members);
+        this.setProjectLeaders(project.project_leaders);
+        this.originalProjectData = {
+          ...project,
+          team_members: [...project.team_members],
+          project_leaders: [...project.project_leaders]
+        };
 
-          this.isLeader = project.project_leaders.some((leader: UserResponse) => leader.email === this.currentUser?.email);
-          if (!this.isLeader) {
-            this.projectForm.disable();
-          }
-        },
-        error => {
-          console.error('Error loading project', error);
+        this.isLeader = project.project_leaders.some((leader: { email: string | undefined; }) => leader.email === this.currentUser?.email);
+        if (!this.isLeader) {
+          this.projectForm.disable();
         }
-      );
+      },
+      error => {
+        console.error('Error loading project', error);
+      }
+    );
   }
 
   setTeamMembers(users: UserResponse[]): void {
-    this.currentUsers.clear();
     users.forEach(user => this.currentUsers.push(this.fb.control(user)));
   }
 
   setProjectLeaders(users: UserResponse[]): void {
-    this.project_leaders.clear();
     users.forEach(user => this.project_leaders.push(this.fb.control(user)));
   }
 
@@ -177,53 +138,84 @@ export class ProjectFormComponent implements OnInit, AfterViewInit {
       };
 
       if (this.isNewProject) {
-        this.projectService.createProject(projectData)
-          .pipe(takeUntil(this.destroy$))
-          .subscribe(
-            response => {
-              console.log('Project created successfully', response);
-              this.router.navigate(['/projects']);
-            },
-            error => {
-              console.error('Error creating project', error);
-            }
-          );
+        this.projectService.createProject(projectData).subscribe(
+          response => {
+            console.log('Project created successfully', response);
+            this.router.navigate(['/projects']);
+          },
+          error => {
+            console.error('Error creating project', error);
+          }
+        );
       } else {
         const id = this.route.snapshot.paramMap.get('id');
-        this.projectService.updateProject(id!, projectData)
-          .pipe(takeUntil(this.destroy$))
-          .subscribe(
-            response => {
-              console.log('Project updated successfully', response);
-              this.router.navigate(['/projects']);
-            },
-            error => {
-              console.error('Error updating project', error);
-            }
-          );
+        this.projectService.updateProject(id!, projectData).subscribe(
+          response => {
+            console.log('Project updated successfully', response);
+            this.router.navigate(['/projects']);
+          },
+          error => {
+            console.error('Error updating project', error);
+          }
+        );
       }
     }
   }
 
+  searchUsers(event: Event, type: 'users' | 'leaders' = 'users'): void {
+    const input = event.target as HTMLInputElement;
+    const query = input.value;
+  
+    if (query.length > 2) {
+      this.userService.searchUsers(query).subscribe(users => {
+        console.log('Users', users);
+        const selectedUsers = type === 'users' ? this.currentUsers.value : this.project_leaders.value;
+        const selectedUserEmails = selectedUsers.map((user: UserResponse) => user.email);
+  
+        const filtered = users.filter(user => !selectedUserEmails.includes(user.email));
+        
+        if (type === 'users') {
+          this.filteredMembers = filtered;
+        } else {
+          this.filteredLeaders = filtered;
+        }
+      },
+      error => {
+        console.error(`Error Code: ${error.status}\nMessage: ${error.message}`);
+      });
+    } else {
+      if (type === 'users') {
+        this.filteredMembers = [];
+      } else {
+        this.filteredLeaders = [];
+      }
+    }
+  }  
+
   addUser(user: UserResponse, type: 'users' | 'leaders', input: HTMLInputElement): void {
     if (type === 'users') {
       this.currentUsers.push(this.fb.control(user));
+      this.currentUsersInputTrigger.closePanel();
     } else {
       this.project_leaders.push(this.fb.control(user));
+      this.ownersInputTrigger.closePanel();
     }
     input.value = ''; // Clear the input field
   }
 
-  removeUser(index: number, type: 'users' | 'leaders'): void {
+  removeUser(index: number, type: 'users' | 'leaders', event: Event): void {
+    event.stopPropagation(); // Prevent the input field from gaining focus
     if ((this.isLeader || this.isNewProject) && (type === 'users' || type === 'leaders')) {
       if (type === 'users') {
         this.currentUsers.removeAt(index);
+        this.filteredMembers = [];
         if (this.currentUsersInput) {
           this.currentUsersInput.nativeElement.value = '';
           this.currentUsersInputTrigger.closePanel();
         }
       } else {
         this.project_leaders.removeAt(index);
+        this.filteredLeaders = [];
         if (this.ownersInput) {
           this.ownersInput.nativeElement.value = '';
           this.ownersInputTrigger.closePanel();
@@ -239,32 +231,21 @@ export class ProjectFormComponent implements OnInit, AfterViewInit {
       this.project_leaders.clear();
     } else {
       this.projectForm.patchValue({
-        name: this.originalProjectData!.name,
-        description: this.originalProjectData!.description,
+        name: this.originalProjectData.name,
+        description: this.originalProjectData.description,
       });
 
       // Clear and reset team_members and project_leaders FormArrays
       this.currentUsers.clear();
       this.project_leaders.clear();
-      this.originalProjectData!.team_members.forEach((user: UserResponse) => {
+      this.originalProjectData.team_members.forEach((user: UserResponse) => {
         this.currentUsers.push(this.fb.control(user));
       });
-      this.originalProjectData!.project_leaders.forEach((user: UserResponse) => {
+      this.originalProjectData.project_leaders.forEach((user: UserResponse) => {
         this.project_leaders.push(this.fb.control(user));
       });
     }
     this.router.navigate(['/projects']);
-  }
-
-  searchUsers(event: Event, type: 'users' | 'leaders' = 'users'): void {
-    const input = event.target as HTMLInputElement;
-    const query = input.value.trim();
-
-    if (type === 'users') {
-      this.memberSearchSubject.next(query);
-    } else {
-      this.leaderSearchSubject.next(query);
-    }
   }
 
   get f(): { [key: string]: AbstractControl } {
