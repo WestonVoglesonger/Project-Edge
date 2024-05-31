@@ -1,3 +1,4 @@
+import logging
 from typing import List
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
@@ -7,6 +8,8 @@ from ..models.user import ProfileForm, User, UserBase, UserResponse
 from .exceptions import EmailAlreadyRegisteredException, UserNotFoundException
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+logger = logging.getLogger(__name__)
 
 class UserService:
     def __init__(self, db: Session):

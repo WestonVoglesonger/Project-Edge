@@ -1,3 +1,4 @@
+import logging
 from typing import Dict, List
 from pytest import Session
 from sqlalchemy.exc import IntegrityError
@@ -8,6 +9,7 @@ from backend.models.user import User, UserResponse
 from backend.services.exceptions import ProjectNotFoundException
 from sqlalchemy.orm.exc import NoResultFound 
 
+logger = logging.getLogger(__name__)
 
 class ProjectService:
     def __init__(self, db: Session):
@@ -31,13 +33,15 @@ class ProjectService:
 
         return new_project_entity.to_project_response()
 
-    def update_project(self, project_id: int, project_update: ProjectUpdate,
-) -> ProjectResponse:
+    def update_project(self, project_id: int, project_update: ProjectUpdate) -> ProjectResponse:
+        logger.info(f"Starting update for project with id {project_id}")
+
         try:
             project_entity = self.db.query(ProjectEntity).filter(ProjectEntity.id == project_id).one()
+            logger.info(f"Found project with id {project_id}")
         except NoResultFound:
+            logger.error(f"Project with id {project_id} not found")
             raise ProjectNotFoundException(f"Project with id {project_id} not found")
-
 
         update_data = project_update.model_dump(exclude_unset=True)
 
@@ -48,25 +52,41 @@ class ProjectService:
         team_members = []
         for user_data in update_data.get("team_members", []):
             user_email = user_data["email"]
-            user_entity = all_users[user_email]
-            team_members.append(user_entity)
+            user_entity = all_users.get(user_email)
+            if user_entity:
+                team_members.append(user_entity)
+            else:
+                logger.warning(f"User with email {user_email} not found in database")
 
         # Remove users that are no longer in team_members
         users_to_remove = set(project_entity.team_members) - set(team_members)
         for user in users_to_remove:
             project_entity.team_members.remove(user)
 
+        # Add new team members
+        users_to_add = set(team_members) - set(project_entity.team_members)
+        for user in users_to_add:
+            project_entity.team_members.append(user)
+
         # Update project_leaders
         project_leaders = []
         for user_data in update_data.get("project_leaders", []):
             user_email = user_data["email"]
-            user_entity = all_users[user_email]
-            project_leaders.append(user_entity)
+            user_entity = all_users.get(user_email)
+            if user_entity:
+                project_leaders.append(user_entity)
+            else:
+                logger.warning(f"User with email {user_email} not found in database")
 
         # Remove users that are no longer in project_leaders
         users_to_remove = set(project_entity.project_leaders) - set(project_leaders)
         for user in users_to_remove:
             project_entity.project_leaders.remove(user)
+
+        # Add new project leaders
+        users_to_add = set(project_leaders) - set(project_entity.project_leaders)
+        for user in users_to_add:
+            project_entity.project_leaders.append(user)
 
         # Update other fields
         for field, value in update_data.items():
@@ -74,8 +94,13 @@ class ProjectService:
                 setattr(project_entity, field, value)
 
         self.db.commit()
+        logger.info(f"Project with id {project_id} successfully updated in the database")
+
         self.db.refresh(project_entity)
+        logger.info(f"Project with id {project_id} refreshed from the database")
+
         return project_entity.to_project_response()
+
 
     def get_project(self, project_id: int) -> ProjectResponse:
         project = self.db.query(ProjectEntity).filter_by(id=project_id).first()

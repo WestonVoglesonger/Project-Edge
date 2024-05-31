@@ -1,18 +1,20 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormArray, AbstractControl } from '@angular/forms';
 import { ActivatedRoute, Route, Router } from '@angular/router';
+import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { ProjectService } from '../projects.service';
 import { UserResponse } from 'src/app/shared/users/user.models';
 import { UserService } from 'src/app/shared/users/user.service';
 import { AuthService } from 'src/app/shared/auth.service';
 import { minLengthArray } from 'src/app/shared/min-length-array.validator';
+import { Project } from '../project.models';
 
 @Component({
   selector: 'app-project-form',
   templateUrl: './project-form.component.html',
   styleUrls: ['./project-form.component.css']
 })
-export class ProjectFormComponent implements OnInit {
+export class ProjectFormComponent implements OnInit, AfterViewInit {
   public static Route: Route = {
     path: "projects/:id",
     component: ProjectFormComponent,
@@ -26,8 +28,10 @@ export class ProjectFormComponent implements OnInit {
   currentUser: UserResponse | null = null;
   isLeader: boolean = false;
 
-  @ViewChild('currentMembersInput') currentMembersInput!: ElementRef;
-  @ViewChild('leadersInput') leadersInput!: ElementRef;
+  @ViewChild('currentUsersInput') currentUsersInput!: ElementRef;
+  @ViewChild('ownersInput') ownersInput!: ElementRef;
+  @ViewChild('currentUsersInput', { read: MatAutocompleteTrigger }) currentUsersInputTrigger!: MatAutocompleteTrigger;
+  @ViewChild('ownersInput', { read: MatAutocompleteTrigger }) ownersInputTrigger!: MatAutocompleteTrigger;
 
   private originalProjectData: any;
 
@@ -65,6 +69,16 @@ export class ProjectFormComponent implements OnInit {
         console.error('Error fetching current user', error);
       }
     );
+  }
+
+  ngAfterViewInit(): void {
+    // Ensure input elements are available after view initialization
+    if (this.currentUsersInput) {
+      console.log('currentUsersInput is available');
+    }
+    if (this.ownersInput) {
+      console.log('ownersInput is available');
+    }
   }
 
   addCurrentUserToProjectLeaders(): void {
@@ -117,7 +131,7 @@ export class ProjectFormComponent implements OnInit {
 
   saveProject(): void {
     if (this.projectForm.valid) {
-      const projectData = {
+      const projectData: Project = {
         ...this.projectForm.value,
         team_members: this.currentUsers.value.filter((user: UserResponse) => user.email),
         project_leaders: this.project_leaders.value.filter((user: UserResponse) => user.email)
@@ -191,13 +205,17 @@ export class ProjectFormComponent implements OnInit {
     if ((this.isLeader || this.isNewProject) && (type === 'users' || type === 'leaders')) {
       if (type === 'users') {
         this.currentUsers.removeAt(index);
+        if (this.currentUsersInput) {
+          this.currentUsersInput.nativeElement.value = '';
+          this.currentUsersInputTrigger.closePanel();
+        }
       } else {
         this.project_leaders.removeAt(index);
+        if (this.ownersInput) {
+          this.ownersInput.nativeElement.value = '';
+          this.ownersInputTrigger.closePanel();
+        }
       }
-  
-      // Re-fetch users to update the dropdown
-      const inputElement = type === 'users' ? this.currentMembersInput.nativeElement : this.leadersInput.nativeElement;
-      this.searchUsers({ target: inputElement } as Event, type);
     }
   }
 

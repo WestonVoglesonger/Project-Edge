@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ProjectCreate, ProjectUpdate } from './project.models';
+import { Project } from './project.models';
 
 @Injectable({
   providedIn: 'root'
@@ -11,11 +11,11 @@ export class ProjectService {
 
   constructor(private http: HttpClient) {}
 
-  createProject(project: ProjectCreate): Observable<any> {
+  createProject(project: Project): Observable<any> {
     return this.http.post(this.apiUrl, project);
   }
 
-  updateProject(id: string, project: ProjectUpdate): Observable<any> {
+  updateProject(id: string, project: Project): Observable<any> {
     return this.http.put(`${this.apiUrl}/${id}`, project);
   }
 
