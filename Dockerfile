@@ -3,12 +3,13 @@ FROM node:18 as build
 COPY ./frontend/package.json /workspace/frontend/package.json
 COPY ./frontend/angular.json /workspace/frontend/angular.json
 WORKDIR /workspace/frontend
-RUN npm install -g @angular/cli && npm install
+RUN npm install && npm install -g @angular/cli
 ENV SHELL=/bin/bash
 RUN ng analytics disable
 COPY ./frontend/src /workspace/frontend/src
 COPY ./frontend/*.json /workspace/frontend
-RUN ng build --optimization --output-path ../static
+RUN ng build --output-path /workspace/static
+
 
 
 # Back-end Build Steps

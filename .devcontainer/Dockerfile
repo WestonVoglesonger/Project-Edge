@@ -8,13 +8,13 @@ WORKDIR /workspace
 ENV TZ=America/New_York
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
-	&& apt-get install --yes \
+    && apt-get install --yes \
         apt-transport-https \
         ca-certificates \
-	    curl \
+        curl \
         debian-keyring \
         debian-archive-keyring \
-	    git \
+        git \
         gnupg \
         locales \
         postgresql-client \
@@ -81,25 +81,18 @@ USER $USERNAME
 ENV HOME /home/$USERNAME
 
 # Add zsh theme with niceties
-RUN curl https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh | bash - \
-    && sed -i 's/robbyrussell/kennethreitz/g' ~/.zshrc \
+WORKDIR $HOME
+RUN curl -Lo install.sh https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh \
+    && sh install.sh --unattended \
+    && sed -i 's/robbyrussell/agnoster/g' ~/.zshrc \
     && echo 'source <(ng completion script)' >>~/.zshrc \
     && echo 'export PATH=$PATH:$HOME/.local/bin' >>~/.zshrc
 
 # Set Locale for Functional Autocompletion in zsh
 RUN sudo locale-gen en_US.UTF-8
 
-# Add `oc` OpenShift Client to DevContainer
-RUN arch="$(arch)"; \
-    case "$arch" in \
-        x86_64) export TARGET='' ;; \
-        aarch64) export TARGET='arm64-' ;; \
-    esac; \
-    wget -O /tmp/oc.tgz "https://github.com/okd-project/okd/releases/download/4.14.0-0.okd-2023-12-01-225814/openshift-client-linux-${TARGET}4.14.0-0.okd-2023-12-01-225814.tar.gz" && \
-    cd /tmp && \
-    tar -xvzf oc.tgz && \
-    sudo mv oc /usr/bin/oc && \
-    rm kubectl oc.tgz README.md
+# Set the working directory back to /workspace
+WORKDIR /workspace
 
 # Install Database Dependencies
 COPY backend/requirements.txt /workspace/backend/requirements.txt

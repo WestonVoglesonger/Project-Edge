@@ -19,7 +19,8 @@
                 "matthewpi.caddyfile-support",
                 "dbaeumer.vscode-eslint",
                 "esbenp.prettier-vscode",
-                "ckolkman.vscode-postgres"
+                "ckolkman.vscode-postgres",
+                "deepakm0113.filetree"
             ],
             "settings": {
                 "editor.formatOnSave": true,
