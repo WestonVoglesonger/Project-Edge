@@ -1,8 +1,22 @@
 from typing import List
-from sqlalchemy import Column, Integer, String, Boolean, Text
+from sqlalchemy import Column, Integer, String, Boolean, Text, ForeignKey, Table
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from .base import Base
 from ..models.user import ProfileForm, User, UserBase, UserResponse
+
+association_table_team_members = Table(
+    'association_team_members', Base.metadata,
+    Column('project_id', ForeignKey('projects.id'), primary_key=True),
+    Column('user_id', ForeignKey('users.id'), primary_key=True),
+    extend_existing=True
+)
+
+association_table_project_leaders = Table(
+    'association_project_leaders', Base.metadata,
+    Column('project_id', ForeignKey('projects.id'), primary_key=True),
+    Column('user_id', ForeignKey('users.id'), primary_key=True),
+    extend_existing=True
+)
 
 class UserEntity(Base):
     __tablename__ = 'users'
@@ -16,6 +30,11 @@ class UserEntity(Base):
     bio: Mapped[Text] = mapped_column(Text, nullable=True)
     profile_picture: Mapped[str] = mapped_column(String, nullable=True)
 
+    projects_as_member: Mapped[List['ProjectEntity']] = relationship(
+        'ProjectEntity', secondary=association_table_team_members, back_populates='team_members')
+    projects_as_leader: Mapped[List['ProjectEntity']] = relationship(
+        'ProjectEntity', secondary=association_table_project_leaders, back_populates='project_leaders')
+
     def to_user_response(self):
         return UserResponse(
             id=self.id,
@@ -26,7 +45,7 @@ class UserEntity(Base):
             bio=self.bio,
             profile_picture=self.profile_picture,
         )
-    
+
     def to_user(self):
         return User(
             id=self.id,
@@ -39,14 +58,13 @@ class UserEntity(Base):
             profile_picture=self.profile_picture,
         )
 
-
     @staticmethod
-    def from_model(user: ProfileForm, hashed_password: str):
+    def from_existing_model(user: User):
         return UserEntity(
             first_name=user.first_name,
             last_name=user.last_name,
             email=user.email,
-            hashed_password=hashed_password,
+            hashed_password=user.hash_password(),
             accepted_community_agreement=user.accepted_community_agreement,
             bio=user.bio,
             profile_picture=user.profile_picture,

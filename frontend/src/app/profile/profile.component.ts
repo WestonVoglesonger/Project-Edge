@@ -61,7 +61,17 @@ export class ProfileComponent implements OnInit {
   onSubmit() {
     if (this.userId) {
       const profileData = this.profileForm.getRawValue();
-      this.userService.updateUserProfile(this.userId, profileData).subscribe({
+      const formData = new FormData();
+      formData.append("first_name", profileData.first_name);
+      formData.append("last_name", profileData.last_name);
+      formData.append("email", profileData.email);
+      formData.append("bio", profileData.bio);
+      formData.append(
+        "accepted_community_agreement",
+        String(profileData.accepted_community_agreement),
+      );
+
+      this.userService.updateUserProfile(this.userId, formData).subscribe({
         next: () => {
           this.isEditMode = false;
           this.profileForm.disable();

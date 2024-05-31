@@ -1,0 +1,66 @@
+<app-navigation></app-navigation>
+<div class="project-form-container">
+  <form [formGroup]="projectForm" (ngSubmit)="saveProject()" class="project-form">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>{{ isNewProject ? 'Create New Project' : 'Update Project' }}</mat-card-title>
+      </mat-card-header>
+      <div class="card-content-container">
+        <mat-card-content>
+          <mat-form-field>
+            <mat-label>Name of Project</mat-label>
+            <input matInput formControlName="name" [readonly]="!isLeader && !isNewProject" />
+            <mat-error *ngIf="f['name'].touched && f['name'].invalid">
+              <span *ngIf="f['name'].errors?.['required']">Name is required.</span>
+              <span *ngIf="f['name'].errors?.['minlength']">Name must be at least 3 characters long.</span>
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Description</mat-label>
+            <textarea matInput formControlName="description" [readonly]="!isLeader && !isNewProject"></textarea>
+            <mat-error *ngIf="f['description'].touched && f['description'].invalid">
+              <span *ngIf="f['description'].errors?.['required']">Description is required.</span>
+              <span *ngIf="f['description'].errors?.['minlength']">Description must be at least 10 characters long.</span>
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Team Members</mat-label>
+            <input matInput #currentUsersInput (input)="searchUsers($event, 'users')" [matAutocomplete]="autoUsers" [readonly]="!isLeader && !isNewProject" />
+            <mat-autocomplete #autoUsers="matAutocomplete" (optionSelected)="addUser($event.option.value, 'users', currentUsersInput)">
+              <mat-option *ngFor="let user of filteredMembers" [value]="user">{{ user.email }}</mat-option>
+            </mat-autocomplete>
+            <div class="user-grid">
+              <div class="user-chip" *ngFor="let user of currentUsers.controls; let i = index" [attr.data-index]="i" (dblclick)="removeUser(i, 'users', $event)">
+                {{ user.value?.email }}
+              </div>
+            </div>
+          </mat-form-field>
+          
+          <mat-form-field>
+            <mat-label>Project Leaders</mat-label>
+            <input matInput #ownersInput (input)="searchUsers($event, 'leaders')" [matAutocomplete]="autoOwners" [readonly]="!isLeader && !isNewProject" />
+            <mat-autocomplete #autoOwners="matAutocomplete" (optionSelected)="addUser($event.option.value, 'leaders', ownersInput)">
+              <mat-option *ngFor="let user of filteredLeaders" [value]="user">{{ user.email }}</mat-option>
+            </mat-autocomplete>
+            <div class="owner-grid">
+              <div class="owner-chip" *ngFor="let leader of project_leaders.controls; let i = index" [attr.data-index]="i" (dblclick)="removeUser(i, 'leaders', $event)">
+                {{ leader.value?.email }}
+              </div>
+            </div>
+            <mat-error *ngIf="project_leaders.invalid && project_leaders.errors?.['minLengthArray']">
+              <span>Project must have at least one leader.</span>
+            </mat-error>
+          </mat-form-field>          
+        </mat-card-content>
+      </div>
+      <mat-card-actions *ngIf="isLeader || isNewProject">
+        <button mat-raised-button color="primary" type="submit" [disabled]="projectForm.invalid">
+          {{ isNewProject ? 'Create Project' : 'Update Project' }}
+        </button>
+        <button mat-raised-button color="warn" type="button" (click)="cancelChanges()">Cancel</button>
+      </mat-card-actions>
+    </mat-card>
+  </form>
+</div>

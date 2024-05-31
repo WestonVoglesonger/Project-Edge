@@ -2,6 +2,7 @@ import {
   HttpClient,
   HttpHeaders,
   HttpErrorResponse,
+  HttpParams,
 } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable, throwError } from "rxjs";
@@ -36,6 +37,14 @@ export class UserService {
   ): Observable<UserResponse> {
     return this.http
       .put<UserResponse>(`${this.apiUrl}/${userId}`, formData)
+      .pipe(catchError(this.handleError));
+  }
+
+  searchUsers(name: string): Observable<UserResponse[]> {
+    const headers = new HttpHeaders({ "Content-Type": "application/json" });
+    const params = new HttpParams().set("name", name);
+    return this.http
+      .get<UserResponse[]>(`${this.apiUrl}/search`, { params, headers })
       .pipe(catchError(this.handleError));
   }
 

@@ -15,6 +15,7 @@ import { MatListModule } from "@angular/material/list";
 import { MatCardModule } from "@angular/material/card";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
+import { MatAutocompleteModule } from "@angular/material/autocomplete";
 
 // Components
 import { AppComponent } from "./app.component";
@@ -22,6 +23,8 @@ import { AuthComponent } from "./auth/auth.component";
 import { NavigationComponent } from "./navigation/navigation.component";
 import { HomeComponent } from "./home/home.component";
 import { ProfileComponent } from "./profile/profile.component";
+import { ProjectsComponent } from "./projects/projects.component";
+import { ProjectFormComponent } from "./projects/project-form/project-form.component";
 
 @NgModule({
   declarations: [
@@ -30,6 +33,8 @@ import { ProfileComponent } from "./profile/profile.component";
     NavigationComponent,
     HomeComponent,
     ProfileComponent,
+    ProjectsComponent,
+    ProjectFormComponent,
     // Add other component declarations here
   ],
   imports: [
@@ -49,6 +54,7 @@ import { ProfileComponent } from "./profile/profile.component";
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
+    MatAutocompleteModule,
     // Add other module imports as necessary
   ],
   providers: [],
