@@ -17,9 +17,16 @@ RUN ng build --optimization --output-path ../static
 # Back-end Build Steps
 FROM python:3.11-slim-buster
 WORKDIR /app
+
+# Ensure the requirements.txt file is copied to the correct location
+COPY ./backend/requirements.txt /workspace/backend/requirements.txt
+
 RUN pip install --upgrade pip && \
-    pip install -r /workspaces/The-Innovation-Club/backend/requirements.txt
-COPY ./backend/ .
-CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "1380"] 
+    pip install -r /workspace/backend/requirements.txt
+
+# Copy the rest of the backend code
+COPY ./backend/ /app
+
+CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "1380"]
 
 EXPOSE 1380
