@@ -27,19 +27,19 @@ RUN ng build --optimization --output-path ../static
 FROM python:3.11-slim-buster
 
 # Set working directory
-WORKDIR /app
+WORKDIR /workspace/backend
 
 # Ensure the requirements.txt file is copied to the correct location
-COPY ./backend/requirements.txt /app/requirements.txt
+COPY ./backend/requirements.txt /workspace/backend/requirements.txt
 
 # Install Python dependencies
-RUN pip install --upgrade pip && pip install -r /app/requirements.txt
+RUN pip install --upgrade pip && pip install -r /workspace/backend/requirements.txt
 
 # Copy the rest of the backend code
-COPY ./backend/ /app
+COPY ./backend/ /workspace/backend
 
 # Set PYTHONPATH environment variable
-ENV PYTHONPATH=/app
+ENV PYTHONPATH=/workspace/backend
 
 # Set the entrypoint for the backend service
 CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "1380"]
