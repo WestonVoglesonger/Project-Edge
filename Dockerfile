@@ -1,5 +1,9 @@
 # Front-end Build Steps
 FROM node:18 as build
+
+# Set environment variable to increase memory limit
+ENV NODE_OPTIONS=--max-old-space-size=4096
+
 COPY ./frontend/package.json /workspace/frontend/package.json
 COPY ./frontend/angular.json /workspace/frontend/angular.json
 WORKDIR /workspace/frontend
@@ -9,7 +13,6 @@ RUN ng analytics disable
 COPY ./frontend/src /workspace/frontend/src
 COPY ./frontend/*.json /workspace/frontend
 RUN ng build --optimization --output-path ../static
-
 
 # Back-end Build Steps
 FROM python:3.11-slim-buster
