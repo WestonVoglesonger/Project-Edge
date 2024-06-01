@@ -21,6 +21,10 @@ WORKDIR /app
 # Ensure the requirements.txt file is copied to the correct location
 COPY ./backend/requirements.txt /workspace/backend/requirements.txt
 
+# Install PostgreSQL development package
+RUN apt-get update && \
+    apt-get install -y libpq-dev
+
 RUN pip install --upgrade pip && \
     pip install -r /workspace/backend/requirements.txt
 
