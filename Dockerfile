@@ -38,6 +38,9 @@ RUN pip install --upgrade pip && pip install -r /workspace/backend/requirements.
 # Copy the rest of the backend code
 COPY ./backend/ /workspace/backend
 
+# Copy the built static files from the frontend build stage
+COPY --from=build /workspace/static /workspace/static
+
 # Set PYTHONPATH environment variable
 ENV PYTHONPATH=/workspace/backend
 
