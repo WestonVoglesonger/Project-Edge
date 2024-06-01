@@ -8,16 +8,17 @@ WORKDIR /workspace
 ENV TZ=America/New_York
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
-	&& apt-get install --yes \
+    && apt-get install --yes \
         apt-transport-https \
         ca-certificates \
-	    curl \
+        curl \
         debian-keyring \
         debian-archive-keyring \
-	    git \
+        git \
         gnupg \
         locales \
         postgresql-client \
+        libpq-dev \  # Add this line to install PostgreSQL development libraries
         software-properties-common \
         sudo \
         tzdata \
@@ -50,7 +51,7 @@ RUN add-apt-repository ppa:deadsnakes/ppa \
     && apt install --yes \
         python3.11 \
         python3-pip \
-        libpq-dev \
+        libpq-dev \  # Ensure this is here for pg_config
         python3.11-dev \
     && rm -rf /var/lib/apt/lists* \
     && unlink /usr/bin/python3 \
