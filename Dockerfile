@@ -31,6 +31,6 @@ RUN pip install --upgrade pip && \
 # Copy the rest of the backend code
 COPY ./backend/ /app
 
-CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "1380"]
+CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8080"]
 
-EXPOSE 1380
+EXPOSE 8080
