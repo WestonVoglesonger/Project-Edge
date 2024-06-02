@@ -1,51 +1,26 @@
 # Front-end Build Steps
 FROM node:18 as build
-
-# Set environment variable to increase memory limit
-ENV NODE_OPTIONS=--max-old-space-size=4096
-
-# Set working directory
+COPY ./frontend/package.json /workspace/frontend/package.json
+COPY ./frontend/angular.json /workspace/frontend/angular.json
 WORKDIR /workspace/frontend
-
-# Copy package files
-COPY ./frontend/package.json ./frontend/angular.json ./
-
-# Install dependencies and Angular CLI
-RUN npm install -g @angular/cli && npm install
-
-# Disable Angular analytics
+RUN npm install -g yarn --force
+RUN yarn global add @angular/cli
+RUN yarn install
+ENV SHELL=/bin/bash
 RUN ng analytics disable
-
-# Copy source files
-COPY ./frontend/src ./src
-COPY ./frontend/*.json ./
-
-# Build the Angular project
+COPY ./frontend/src /workspace/frontend/src
+COPY ./frontend/*.json /workspace/frontend
 RUN ng build --optimization --output-path ../static
 
 # Back-end Build Steps
-FROM python:3.11-slim-buster
-
-# Set working directory
-WORKDIR /workspace/backend
-
-# Ensure the requirements.txt file is copied to the correct location
+FROM python:3.11
+RUN python3 -m pip install --upgrade pip
 COPY ./backend/requirements.txt /workspace/backend/requirements.txt
-
-# Install Python dependencies
-RUN pip install --upgrade pip && pip install -r /workspace/backend/requirements.txt
-
-# Copy the rest of the backend code
-COPY ./backend/ /workspace/backend
-
-# Copy the built static files from the frontend build stage
+RUN pip install --no-cache-dir --upgrade -r /workspace/backend/requirements.txt
 COPY --from=build /workspace/static /workspace/static
-
-# Set PYTHONPATH environment variable
-ENV PYTHONPATH=/workspace/backend
-
-# Set the entrypoint for the backend service
-CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "1380"]
-
-# Expose the port for the backend service
-EXPOSE 1380
+COPY ./backend /workspace/backend
+COPY ./alembic.ini /workspace/alembic.ini
+WORKDIR /workspace
+CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8080"]
+ENV TZ="America/New_York"
+EXPOSE 8080

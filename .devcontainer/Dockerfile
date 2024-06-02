@@ -1,3 +1,4 @@
+# .devcontainer/Dockerfile
 FROM ubuntu:22.04
 
 # Setup workspace directory
@@ -69,6 +70,7 @@ RUN groupadd --gid $USER_GID $USERNAME \
 
 # Set code to default git commit editor
 RUN git config --system core.editor "code --wait"
+
 # Set Safe Directory
 RUN git config --system safe.directory '/workspace'
 
