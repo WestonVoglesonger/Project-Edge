@@ -45,11 +45,8 @@ feature_apis = [
 for feature_api in feature_apis:
     app.include_router(feature_api.api)
 
-# Mount the Angular build directory to serve static files
-app.mount("/static", StaticFiles(directory=Path("./static")), name="static")
-
-# Mount the Angular build directory to serve the Angular application
-app.mount("/", StaticFiles(directory=Path("./dist/project-edge"), html=True), name="angular")
+# Static file mount used for serving Angular front-end in production, as well as static assets
+app.mount("/", static_files.StaticFileMiddleware(directory=Path("./static")))
 
 # Serve the Angular index.html for all non-API routes
 @app.get("/{full_path:path}", include_in_schema=False)
