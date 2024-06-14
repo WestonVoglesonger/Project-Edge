@@ -5,6 +5,7 @@ applications:
       phases:
         preBuild:
           commands:
+            - nvm install 18.19.1
             - npm ci
             - npm install -g @angular/cli
         build:
