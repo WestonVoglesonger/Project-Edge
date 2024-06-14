@@ -11,6 +11,10 @@ services:
     command: /bin/sh -c "while sleep 1000; do :; done"
     environment:
       - windir # Defined on Windows but not on other platforms
+    deploy:
+      resources:
+        limits:
+          memory: 8g
   db:
     image: postgres:15.2
     restart: unless-stopped

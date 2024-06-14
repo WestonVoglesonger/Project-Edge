@@ -1,13 +1,11 @@
 # Front-end Build Steps
 FROM node:18 as build
-
-# Set environment variable to increase memory limit
-ENV NODE_OPTIONS=--max-old-space-size=4096
-
 COPY ./frontend/package.json /workspace/frontend/package.json
 COPY ./frontend/angular.json /workspace/frontend/angular.json
 WORKDIR /workspace/frontend
-RUN npm install -g @angular/cli && npm install
+RUN npm install -g yarn --force
+RUN yarn global add @angular/cli
+RUN yarn install
 ENV SHELL=/bin/bash
 RUN ng analytics disable
 COPY ./frontend/src /workspace/frontend/src
@@ -15,22 +13,14 @@ COPY ./frontend/*.json /workspace/frontend
 RUN ng build --optimization --output-path ../static
 
 # Back-end Build Steps
-FROM python:3.11-slim-buster
-WORKDIR /app
-
-# Ensure the requirements.txt file is copied to the correct location
+FROM python:3.11
+RUN python3 -m pip install --upgrade pip
 COPY ./backend/requirements.txt /workspace/backend/requirements.txt
-
-# Install PostgreSQL development package
-RUN apt-get update && \
-    apt-get install -y libpq-dev
-
-RUN pip install --upgrade pip && \
-    pip install -r /workspace/backend/requirements.txt
-
-# Copy the rest of the backend code
-COPY ./backend/ /app
-
+RUN pip install --no-cache-dir --upgrade -r /workspace/backend/requirements.txt
+COPY --from=build /workspace/static /workspace/static
+COPY ./backend /workspace/backend
+COPY ./alembic.ini /workspace/alembic.ini
+WORKDIR /workspace
 CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8080"]
-
+ENV TZ="America/New_York"
 EXPOSE 8080

@@ -11,7 +11,6 @@ __authors__ = ["Kris Jordan", "Ajay Gandecha"]
 __copyright__ = "Copyright 2023"
 __license__ = "MIT"
 
-# Ensures that the script can only be run in development mode
 if getenv("MODE") != "development":
     print("This script can only be run in development mode.", file=sys.stderr)
     print("Add MODE=development to your .env file in workspace's `backend/` directory")
@@ -32,5 +31,4 @@ print("Tables created successfully.")
 with Session(engine) as session:
     user_data.insert_fake_data(session)
     project_data.insert_fake_data(session)
-    # Commit changes to the database
     session.commit()

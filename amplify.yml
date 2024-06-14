@@ -1,0 +1,46 @@
+version: 1
+applications:
+  - appRoot: frontend
+    frontend:
+      phases:
+        preBuild:
+          commands:
+            - npm ci
+        build:
+          commands:
+            - ng build --configuration production
+      artifacts:
+        baseDirectory: docs
+        files:
+          - '**/*'
+      cache:
+        paths:
+          - node_modules/**/*
+  - appRoot: backend
+    backend:
+      phases:
+        preBuild:
+          commands:
+            - python -m venv venv
+            - . venv/bin/activate
+            - pip install -r requirements.txt
+        build:
+          commands:
+            - echo "Backend build phase"
+      artifacts:
+        baseDirectory: .  # No specific build artifacts for the backend, but specify the base directory
+        files:
+          - '**/*'
+      cache:
+        paths:
+          - venv/**/*
+    environment:
+      variables:
+        MODE: development
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
+        POSTGRES_HOST: db
+        POSTGRES_PORT: 5432
+        POSTGRES_DATABASE: projectedge
+        HOST: projectedge
+        JWT_SECRET: 5b197014-d20c-4c8c-9733-41690deeec09
