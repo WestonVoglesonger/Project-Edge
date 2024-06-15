@@ -1,7 +1,7 @@
-# discussions_entity.py
-
+# backend/entities/discussion_entity.py
+from datetime import datetime, timezone
 from typing import List
-from sqlalchemy import Column, Integer, String, Table, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Table
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from .base import Base
 from backend.models.discussion import DiscussionCreate, DiscussionUpdate, DiscussionResponse
@@ -20,24 +20,27 @@ class DiscussionEntity(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True, autoincrement=True)
     title: Mapped[str] = mapped_column(String, nullable=False)
     description: Mapped[str] = mapped_column(String, nullable=False)
-    author_id: Mapped[int] = mapped_column(ForeignKey('users.id'), nullable=False)
-    author: Mapped[UserEntity] = relationship('UserEntity', back_populates='authored_discussions')
-    participants: Mapped[List[UserEntity]] = relationship('UserEntity', secondary=association_table_discussion_participants, back_populates='participating_discussions')
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'), nullable=False)
+    participants: Mapped[List[UserEntity]] = relationship('UserEntity', secondary=association_table_discussion_participants, back_populates='discussions')
 
     def to_discussion_response(self):
         return DiscussionResponse(
             id=self.id,
             title=self.title,
             description=self.description,
-            author=self.author.to_user_response(),
+            created_at=self.created_at,
+            updated_at=self.updated_at,
+            user_id=self.user_id,
             participants=[participant.to_user_response() for participant in self.participants]
         )
 
     @staticmethod
-    def from_model(discussion: DiscussionCreate, author: UserEntity, participants: List[UserEntity]):
+    def from_model(discussion: DiscussionCreate, participants: List[UserEntity]):
         return DiscussionEntity(
             title=discussion.title,
             description=discussion.description,
-            author=author,
+            user_id=discussion.user_id,
             participants=participants
         )
