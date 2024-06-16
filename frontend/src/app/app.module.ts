@@ -25,6 +25,7 @@ import { HomeComponent } from "./home/home.component";
 import { ProfileComponent } from "./profile/profile.component";
 import { ProjectsComponent } from "./projects/projects.component";
 import { ProjectFormComponent } from "./projects/project-form/project-form.component";
+import { ProjectCard } from "./shared/widgets/project-card/project-card";
 
 @NgModule({
   declarations: [
@@ -35,6 +36,7 @@ import { ProjectFormComponent } from "./projects/project-form/project-form.compo
     ProfileComponent,
     ProjectsComponent,
     ProjectFormComponent,
+    ProjectCard,
     // Add other component declarations here
   ],
   imports: [
