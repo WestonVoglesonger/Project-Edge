@@ -1,0 +1,25 @@
+<app-navigation></app-navigation>
+<div class="discussions-container">
+  <h2>Explore Discussions</h2>
+  <input
+    type="text"
+    placeholder="Search discussions..."
+    [(ngModel)]="searchQuery"
+    class="search-input"
+    (input)="filterDiscussions()"
+  />
+  <button
+    mat-raised-button
+    color="primary"
+    class="create-discussion-button"
+    (click)="createDiscussion()"
+  >
+    Create New Discussion
+  </button>
+  <div class="discussions-list">
+    <app-discussion-card
+      *ngFor="let discussion of filteredDiscussions"
+      [discussion]="discussion"
+    ></app-discussion-card>
+  </div>
+</div>
