@@ -28,3 +28,9 @@ class CredentialsException(Exception):
 class ProjectNotFoundException(Exception):
     """Exception raised when a project is not found."""
     pass
+
+class DiscussionNotFoundException(Exception):
+    """Exception raised when a discussion is not found."""
+    def __init__(self, message: str):
+        self.message = message
+        super().__init__(self.message)

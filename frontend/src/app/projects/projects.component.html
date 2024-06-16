@@ -6,16 +6,6 @@
     Create New Project
   </button>
   <div class="projects-list">
-    <mat-card *ngFor="let project of filteredProjects" class="project-card">
-      <mat-card-header>
-        <mat-card-title>{{ project.name }}</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <p>{{ project.description }}</p>
-      </mat-card-content>
-      <mat-card-actions>
-        <button mat-raised-button color="accent" (click)="viewProjectDetails(project)">View Details</button>
-      </mat-card-actions>
-    </mat-card>
+    <app-project-card *ngFor="let project of filteredProjects" [project]="project"></app-project-card>
   </div>
 </div>

@@ -1,0 +1,50 @@
+.discussion-card {
+    flex: 1 1 calc(33% - 20px);
+    max-width: 100%;
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  mat-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  
+  mat-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  mat-card-title {
+    font-size: 24px;
+    font-weight: bold;
+    word-break: break-word;
+  }
+  
+  .project-description {
+    font-size: 16px;
+    color: #666;
+    word-break: break-word;
+  }
+  
+  mat-card-actions {
+    margin-top: auto;
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+  @media (max-width: 768px) {
+    .discussion-card {
+      flex: 1 1 calc(50% - 20px);
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .discussion-card {
+      flex: 1 1 calc(100% - 20px);
+    }
+  }
+  

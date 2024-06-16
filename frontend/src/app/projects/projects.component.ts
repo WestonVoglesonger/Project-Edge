@@ -40,10 +40,6 @@ export class ProjectsComponent implements OnInit {
     );
   }
 
-  viewProjectDetails(project: ProjectResponse): void {
-    this.router.navigate(['/projects', project.id]);
-  }
-
   createProject(): void {
     this.router.navigate(['/projects/new']);
   }

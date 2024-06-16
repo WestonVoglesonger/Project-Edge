@@ -15,8 +15,8 @@ project = ProjectCreate(
 )
 
 new_project = ProjectCreate(
-    name="Test Project",
-    description="A test project",
+    name="New Test Project",
+    description="A new test project",
     team_members=[user1.to_user_response()],
     project_leaders=[]
 )
@@ -42,9 +42,14 @@ def insert_fake_data(session: Session):
     user1_entity = session.query(UserEntity).filter_by(email=user1.email).first()
     user2_entity = session.query(UserEntity).filter_by(email=user2.email).first()
 
+    if not user1_entity or not user2_entity:
+        raise ValueError("User entities must be present in the database before inserting projects")
+
     entities = []
     for project in projects:
-        entity = ProjectEntity.from_model(project, [user1_entity], [user2_entity])
+        team_members = [user1_entity] if user1_entity else []
+        project_leaders = [user2_entity] if user2_entity else []
+        entity = ProjectEntity.from_model(project, team_members, project_leaders)
         session.add(entity)
         entities.append(entity)
     session.commit()

@@ -25,6 +25,10 @@ import { HomeComponent } from "./home/home.component";
 import { ProfileComponent } from "./profile/profile.component";
 import { ProjectsComponent } from "./projects/projects.component";
 import { ProjectFormComponent } from "./projects/project-form/project-form.component";
+import { ProjectCard } from "./shared/widgets/project-card/project-card";
+import { DiscussionsComponent } from "./discussions/discussions.component";
+import { DiscussionCard } from "./shared/widgets/discussion-card/discussion-card";
+import { DiscussionFormComponent } from "./discussions/discussion-form/discussion-form.component";
 
 @NgModule({
   declarations: [
@@ -35,6 +39,10 @@ import { ProjectFormComponent } from "./projects/project-form/project-form.compo
     ProfileComponent,
     ProjectsComponent,
     ProjectFormComponent,
+    ProjectCard,
+    DiscussionsComponent,
+    DiscussionCard,
+    DiscussionFormComponent,
     // Add other component declarations here
   ],
   imports: [
