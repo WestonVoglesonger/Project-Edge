@@ -70,4 +70,12 @@
       </mat-card-actions>
     </mat-card>
   </form>
+
+  <div class="comments-section">
+    <h3>Comments</h3>
+    <div *ngFor="let comment of comments">
+      <app-comment-card [comment]="comment"></app-comment-card>
+    </div>
+    <app-comment-form [discussion_id]="discussion_id"></app-comment-form>
+  </div>
 </div>

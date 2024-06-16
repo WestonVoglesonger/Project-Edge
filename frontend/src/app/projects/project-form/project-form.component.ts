@@ -8,13 +8,15 @@ import { UserService } from 'src/app/shared/users/user.service';
 import { AuthService } from 'src/app/shared/auth.service';
 import { minLengthArray } from 'src/app/shared/min-length-array.validator';
 import { Project } from '../project.models';
+import { CommentService } from 'src/app/shared/comment.service';
+import { CommentResponse } from 'src/app/shared/comment.models';
 
 @Component({
   selector: 'app-project-form',
   templateUrl: './project-form.component.html',
   styleUrls: ['./project-form.component.css']
 })
-export class ProjectFormComponent implements OnInit, AfterViewInit {
+export class ProjectFormComponent implements OnInit {
   public static Route: Route = {
     path: "projects/:id",
     component: ProjectFormComponent,
@@ -27,6 +29,8 @@ export class ProjectFormComponent implements OnInit, AfterViewInit {
   filteredLeaders: UserResponse[] = [];
   currentUser: UserResponse | null = null;
   isLeader: boolean = false;
+  comments: CommentResponse[] = [];
+  project_id!: number;
 
   @ViewChild('currentUsersInput') currentUsersInput!: ElementRef;
   @ViewChild('ownersInput') ownersInput!: ElementRef;
@@ -40,6 +44,7 @@ export class ProjectFormComponent implements OnInit, AfterViewInit {
     private projectService: ProjectService,
     private userService: UserService,
     private authService: AuthService,
+    private commentService: CommentService,
     private route: ActivatedRoute,
     private router: Router
   ) {
@@ -59,7 +64,9 @@ export class ProjectFormComponent implements OnInit, AfterViewInit {
           const id = params.get('id');
           if (id && id !== 'new') {
             this.isNewProject = false;
-            this.loadProject(id);
+            this.project_id = +id;
+            this.loadProject(this.project_id);
+            this.loadComments(this.project_id);
           } else {
             this.addCurrentUserToProjectLeaders();
           }
@@ -71,15 +78,6 @@ export class ProjectFormComponent implements OnInit, AfterViewInit {
     );
   }
 
-  ngAfterViewInit(): void {
-    // Ensure input elements are available after view initialization
-    if (this.currentUsersInput) {
-      console.log('currentUsersInput is available');
-    }
-    if (this.ownersInput) {
-      console.log('ownersInput is available');
-    }
-  }
 
   addCurrentUserToProjectLeaders(): void {
     if (this.currentUser) {
@@ -95,7 +93,7 @@ export class ProjectFormComponent implements OnInit, AfterViewInit {
     return this.projectForm.get('project_leaders') as FormArray;
   }
 
-  loadProject(id: string): void {
+  loadProject(id: number): void {
     this.projectService.getProject(id).subscribe(
       project => {
         this.projectForm.patchValue({
@@ -117,6 +115,17 @@ export class ProjectFormComponent implements OnInit, AfterViewInit {
       },
       error => {
         console.error('Error loading project', error);
+      }
+    );
+  }
+
+  loadComments(projectId: number): void {
+    this.commentService.getCommentsByProject(projectId).subscribe(
+      (comments: CommentResponse[]) => {
+        this.comments = comments;
+      },
+      (error) => {
+        console.error('Error loading comments', error);
       }
     );
   }
@@ -148,8 +157,7 @@ export class ProjectFormComponent implements OnInit, AfterViewInit {
           }
         );
       } else {
-        const id = this.route.snapshot.paramMap.get('id');
-        this.projectService.updateProject(id!, projectData).subscribe(
+        this.projectService.updateProject(this.project_id, projectData).subscribe(
           response => {
             console.log('Project updated successfully', response);
             this.router.navigate(['/projects']);

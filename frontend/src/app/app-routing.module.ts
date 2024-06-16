@@ -7,6 +7,7 @@ import { ProjectsComponent } from "./projects/projects.component";
 import { ProjectFormComponent } from "./projects/project-form/project-form.component";
 import { DiscussionsComponent } from "./discussions/discussions.component";
 import { DiscussionFormComponent } from "./discussions/discussion-form/discussion-form.component";
+import { CommentFormComponent } from "./comment-form/comment-form.component";
 
 const routes: Routes = [
   HomeComponent.Route,
@@ -16,6 +17,7 @@ const routes: Routes = [
   ProjectFormComponent.Route,
   DiscussionsComponent.Route,
   DiscussionFormComponent.Route,
+  CommentFormComponent.Route,
 ];
 
 @NgModule({

@@ -1,7 +1,7 @@
 import logging
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 
 from backend.database import db_session
 from backend.models.comment import CommentCreate, CommentUpdate, CommentResponse
@@ -19,42 +19,58 @@ openapi_tags = {
 def get_comment_service(db: Session = Depends(db_session)) -> CommentService:
     return CommentService(db)
 
-@api.post("", response_model=CommentResponse, tags=["Comments"])
+@api.post("", response_model=CommentResponse, tags=["Comments"], status_code=status.HTTP_201_CREATED)
 def create_comment(comment: CommentCreate, comment_service: CommentService = Depends(get_comment_service)):
     try:
         return comment_service.create_comment(comment)
     except UserNotFoundException as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    except Exception as e:
+        logger.error(f"Error creating comment: {e}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An unexpected error occurred.")
 
 @api.get("/{comment_id}", response_model=CommentResponse, tags=["Comments"])
 def read_comment(comment_id: int, comment_service: CommentService = Depends(get_comment_service)):
     try:
         return comment_service.get_comment(comment_id=comment_id)
     except CommentNotFoundException as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    except Exception as e:
+        logger.error(f"Error reading comment: {e}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An unexpected error occurred.")
 
 @api.get("", response_model=List[CommentResponse], tags=["Comments"])
-def read_comments(post_id: int = None, discussion_id: int = None, comment_service: CommentService = Depends(get_comment_service)):
+def read_comments(
+    project_id: Optional[int] = Query(None, alias="projectId"), 
+    discussion_id: Optional[int] = Query(None, alias="discussionId"), 
+    comment_service: CommentService = Depends(get_comment_service)
+):
     try:
-        if post_id:
-            return comment_service.get_comments_by_post(post_id=post_id)
-        elif discussion_id:
+        if project_id is not None:
+            return comment_service.get_comments_by_project(project_id=project_id)
+        elif discussion_id is not None:
             return comment_service.get_comments_by_discussion(discussion_id=discussion_id)
         else:
-            raise HTTPException(status_code=400, detail="post_id or discussion_id must be provided")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="project_id or discussion_id must be provided")
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An unexpected error occurred.")
 
 @api.put("/{comment_id}", response_model=CommentResponse, tags=["Comments"])
 def update_comment(comment_id: int, comment_update: CommentUpdate, comment_service: CommentService = Depends(get_comment_service)):
     try:
         return comment_service.update_comment(comment_id=comment_id, comment_update=comment_update)
     except CommentNotFoundException as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    except Exception as e:
+        logger.error(f"Error updating comment: {e}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An unexpected error occurred.")
 
 @api.delete("/{comment_id}", response_model=CommentResponse, tags=["Comments"])
 def delete_comment(comment_id: int, comment_service: CommentService = Depends(get_comment_service)):
     try:
         return comment_service.delete_comment(comment_id=comment_id)
     except CommentNotFoundException as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    except Exception as e:
+        logger.error(f"Error deleting comment: {e}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An unexpected error occurred.")

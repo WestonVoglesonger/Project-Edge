@@ -1,59 +1,37 @@
 import { Injectable } from "@angular/core";
-import { HttpClient, HttpErrorResponse } from "@angular/common/http";
-import { Observable, throwError } from "rxjs";
-import { catchError } from "rxjs/operators";
+import { HttpClient } from "@angular/common/http";
+import { Observable } from "rxjs";
 import { CommentCreate, CommentUpdate } from "./comment.models";
 
 @Injectable({
   providedIn: "root",
 })
 export class CommentService {
-  private baseUrl = "/api/comments";
+  private apiUrl = "/api/comments";
 
   constructor(private http: HttpClient) {}
 
-  createComment(commentData: CommentCreate): Observable<Comment> {
-    return this.http
-      .post<Comment>(this.baseUrl, commentData)
-      .pipe(catchError(this.handleError));
+  createComment(comment: CommentCreate): Observable<any> {
+    return this.http.post(this.apiUrl, comment);
   }
 
-  getCommentsByPost(postId: number): Observable<Comment[]> {
-    return this.http
-      .get<Comment[]>(`${this.baseUrl}?postId=${postId}`)
-      .pipe(catchError(this.handleError));
+  updateComment(comment_id: number, comment: CommentUpdate): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${comment_id}`, comment);
   }
 
-  getCommentsByDiscussion(discussionId: number): Observable<Comment[]> {
-    return this.http
-      .get<Comment[]>(`${this.baseUrl}?discussionId=${discussionId}`)
-      .pipe(catchError(this.handleError));
+  getComment(id: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/${id}`);
   }
 
-  updateComment(
-    commentId: number,
-    commentUpdate: CommentUpdate,
-  ): Observable<Comment> {
-    return this.http
-      .put<Comment>(`${this.baseUrl}/${commentId}`, commentUpdate)
-      .pipe(catchError(this.handleError));
+  getCommentsByDiscussion(discussionId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}?discussionId=${discussionId}`);
   }
 
-  deleteComment(commentId: number): Observable<Comment> {
-    return this.http
-      .delete<Comment>(`${this.baseUrl}/${commentId}`)
-      .pipe(catchError(this.handleError));
+  getCommentsByProject(projectId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}?projectId=${projectId}`);
   }
 
-  private handleError(error: HttpErrorResponse) {
-    let errorMessage = "Unknown error!";
-    if (error.error instanceof ErrorEvent) {
-      // Client-side errors
-      errorMessage = `Error: ${error.error.message}`;
-    } else {
-      // Server-side errors
-      errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
-    }
-    return throwError(errorMessage);
+  deleteComment(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 }

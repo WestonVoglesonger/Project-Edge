@@ -1,15 +1,16 @@
-import { Component, OnInit, ViewChild, ElementRef } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
+import { ActivatedRoute, Route, Router } from "@angular/router";
 import {
   FormGroup,
   FormBuilder,
   Validators,
-  FormArray,
   AbstractControl,
 } from "@angular/forms";
-import { ActivatedRoute, Route, Router } from "@angular/router";
 import { AuthService } from "src/app/shared/auth.service";
 import { Discussion } from "../discussion.models";
 import { DiscussionService } from "../discussions.service";
+import { CommentResponse } from "src/app/shared/comment.models";
+import { CommentService } from "src/app/shared/comment.service";
 
 @Component({
   selector: "app-discussion-form",
@@ -27,12 +28,15 @@ export class DiscussionFormComponent implements OnInit {
   isNewDiscussion: boolean = true;
   currentUser: any | null = null;
   isAuthor: boolean = false;
+  comments: CommentResponse[] = [];
+  discussion_id!: number;
 
   private originalDiscussionData: any;
 
   constructor(
     private fb: FormBuilder,
     private discussionService: DiscussionService,
+    private commentService: CommentService,
     private authService: AuthService,
     private route: ActivatedRoute,
     private router: Router,
@@ -51,7 +55,9 @@ export class DiscussionFormComponent implements OnInit {
           const id = params.get("id");
           if (id && id !== "new") {
             this.isNewDiscussion = false;
-            this.loadDiscussion(+id); // Convert id to a number
+            this.discussion_id = +id;
+            this.loadDiscussion(this.discussion_id);
+            this.loadComments(this.discussion_id);
           }
         });
       },
@@ -81,6 +87,17 @@ export class DiscussionFormComponent implements OnInit {
     );
   }
 
+  loadComments(DiscussionId: number): void {
+    this.commentService.getCommentsByDiscussion(DiscussionId).subscribe(
+      (comments: CommentResponse[]) => {
+        this.comments = comments;
+      },
+      (error) => {
+        console.error("Error loading comments", error);
+      },
+    );
+  }
+
   saveDiscussion(): void {
     if (this.discussionForm.valid) {
       const discussionData: Discussion = {
@@ -99,16 +116,17 @@ export class DiscussionFormComponent implements OnInit {
           },
         );
       } else {
-        const id = +this.route.snapshot.paramMap.get("id")!; // Convert id to a number
-        this.discussionService.updateDiscussion(id, discussionData).subscribe(
-          (response) => {
-            console.log("Discussion updated successfully", response);
-            this.router.navigate(["/discussions"]);
-          },
-          (error) => {
-            console.error("Error updating discussion", error);
-          },
-        );
+        this.discussionService
+          .updateDiscussion(this.discussion_id, discussionData)
+          .subscribe(
+            (response) => {
+              console.log("Discussion updated successfully", response);
+              this.router.navigate(["/discussions"]);
+            },
+            (error) => {
+              console.error("Error updating discussion", error);
+            },
+          );
       }
     }
   }

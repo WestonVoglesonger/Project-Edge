@@ -1,0 +1,22 @@
+<div class="comment-form-container">
+  <form [formGroup]="commentForm" (ngSubmit)="saveComment()">
+    <mat-form-field>
+      <mat-label>Comment</mat-label>
+      <textarea matInput formControlName="description"></textarea>
+      <mat-error *ngIf="f['description'].touched && f['description'].invalid">
+        <span *ngIf="f['description'].errors?.['required']"
+          >Description is required.</span
+        >
+      </mat-error>
+    </mat-form-field>
+    <button
+      mat-raised-button
+      color="primary"
+      type="submit"
+      [disabled]="commentForm.invalid"
+    >
+      {{ isEditMode ? "Update Comment" : "Create Comment" }}
+    </button>
+    <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+  </form>
+</div>
