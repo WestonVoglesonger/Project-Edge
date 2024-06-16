@@ -5,6 +5,8 @@ import { HomeComponent } from "./home/home.component";
 import { ProfileComponent } from "./profile/profile.component";
 import { ProjectsComponent } from "./projects/projects.component";
 import { ProjectFormComponent } from "./projects/project-form/project-form.component";
+import { DiscussionsComponent } from "./discussions/discussions.component";
+import { DiscussionFormComponent } from "./discussions/discussion-form/discussion-form.component";
 
 const routes: Routes = [
   HomeComponent.Route,
@@ -12,6 +14,8 @@ const routes: Routes = [
   ProfileComponent.Route,
   ProjectsComponent.Route,
   ProjectFormComponent.Route,
+  DiscussionsComponent.Route,
+  DiscussionFormComponent.Route,
 ];
 
 @NgModule({
