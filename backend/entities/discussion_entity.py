@@ -16,6 +16,8 @@ class DiscussionEntity(Base):
     author_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'), nullable=False)
     author: Mapped['UserEntity'] = relationship(back_populates='authored_discussions')
 
+    comments = relationship("CommentEntity", back_populates="discussion", cascade="all, delete-orphan")
+
     def to_discussion_response(self):
         return DiscussionResponse(
             id=self.id,

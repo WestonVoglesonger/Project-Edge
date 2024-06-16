@@ -3,6 +3,7 @@
 import pytest
 from sqlalchemy.orm import Session
 
+from backend.services.comment import CommentService
 from backend.services.discussion import DiscussionService
 from backend.services.project import ProjectService
 from backend.services.user import UserService
@@ -20,7 +21,7 @@ def user_svc(session: Session):
 @pytest.fixture()
 def add_test_user(user_svc: UserService):
     """This fixture adds a test user to the database."""
-    from .user_data import user
+    from .demo_data.user_data import user
     user_svc.create_user(user)
     yield
     
@@ -33,3 +34,7 @@ def project_svc(session: Session) -> ProjectService:
 def discussion_svc(session: Session) -> DiscussionService:
     """This fixture is used to test the DiscussionService class."""
     return DiscussionService(session)
+
+@pytest.fixture
+def comment_svc(session: Session):
+    return CommentService(session)

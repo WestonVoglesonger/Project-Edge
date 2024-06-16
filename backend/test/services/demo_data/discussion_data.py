@@ -2,7 +2,7 @@ import pytest
 from sqlalchemy.orm import Session
 from backend.entities.discussion_entity import DiscussionEntity
 from backend.models.discussion import DiscussionCreate, DiscussionUpdate
-from .reset_table_id_seq import reset_table_id_seq
+from ..reset_table_id_seq import reset_table_id_seq
 from .user_data import user1, user2
 
 # Discussion fixture

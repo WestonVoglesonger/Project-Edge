@@ -15,10 +15,10 @@ from backend.services.auth import (
 )
 from backend.services.exceptions import UserNotFoundException, CredentialsException
 from backend.services.user import UserService
-from .user_data import user1
+from .demo_data.user_data import user1
 
 # Data Setup and Injected Service Fixtures
-from .core_data import setup_insert_data_fixture
+from .demo_data.core_data import setup_insert_data_fixture
 from .fixtures import add_test_user
 
 # Load environment variables

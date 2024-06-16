@@ -28,6 +28,8 @@ class ProjectEntity(Base):
     team_members: Mapped[List[UserEntity]] = relationship('UserEntity', secondary=association_table_team_members, back_populates='projects_as_member')
     project_leaders: Mapped[List[UserEntity]] = relationship('UserEntity', secondary=association_table_project_leaders, back_populates='projects_as_leader')
 
+    comments = relationship("CommentEntity", back_populates="project", cascade="all, delete-orphan")
+
     def to_project_response(self):
         return ProjectResponse(
             id=self.id,

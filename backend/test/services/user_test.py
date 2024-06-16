@@ -6,9 +6,9 @@ from backend.models.user import ProfileForm, UserBase
 from backend.services.user import UserService
 
 # Data Setup and Injected Service Fixtures
-from .core_data import setup_insert_data_fixture
+from .demo_data.core_data import setup_insert_data_fixture
 from .fixtures import user_svc
-from .user_data import new_user, user1, update_data
+from .demo_data.user_data import new_user, user1, update_data
 
 def test_create_user(user_svc: UserService):
     created_user = user_svc.create_user(new_user)

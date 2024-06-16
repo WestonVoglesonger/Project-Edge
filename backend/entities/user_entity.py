@@ -37,6 +37,8 @@ class UserEntity(Base):
     
     authored_discussions: Mapped[List['DiscussionEntity']] = relationship('DiscussionEntity', back_populates='author')
 
+    comments = relationship("CommentEntity", back_populates="user", cascade="all, delete-orphan")
+
     def to_user_response(self):
         return UserResponse(
             id=self.id,

@@ -2,7 +2,7 @@ import pytest
 from sqlalchemy.orm import Session
 from backend.models.user import User, UserBase, ProfileForm
 from backend.entities.user_entity import UserEntity
-from .reset_table_id_seq import reset_table_id_seq
+from ..reset_table_id_seq import reset_table_id_seq
 
 user1 = User(
     id=1,

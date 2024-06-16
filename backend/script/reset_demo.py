@@ -2,7 +2,8 @@ import sys
 import subprocess
 from sqlalchemy.orm import Session
 from backend.entities.base import Base
-from backend.test.services import discussion_data, project_data, user_data
+from backend.test.services.demo_data import user_data
+from backend.test.services.demo_data import discussion_data, project_data
 from ..database import engine
 from ..env import getenv
 from ..entities.user_entity import UserEntity  # Ensure all your entities are imported

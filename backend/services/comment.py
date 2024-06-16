@@ -40,8 +40,8 @@ class CommentService:
             raise CommentNotFoundException(f"Comment with id {comment_id} not found.")
         return comment.to_comment_response()
 
-    def get_comments_by_post(self, post_id: int) -> List[CommentResponse]:
-        comments = self.db.query(CommentEntity).filter_by(post_id=post_id).all()
+    def get_comments_by_project(self, project_id: int) -> List[CommentResponse]:
+        comments = self.db.query(CommentEntity).filter_by(project_id=project_id).all()
         return [comment.to_comment_response() for comment in comments]
 
     def get_comments_by_discussion(self, discussion_id: int) -> List[CommentResponse]:
