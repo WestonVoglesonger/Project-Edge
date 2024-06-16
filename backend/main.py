@@ -5,7 +5,7 @@ from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.staticfiles import StaticFiles
 from starlette.responses import FileResponse
 from starlette.middleware.trustedhost import TrustedHostMiddleware
-from backend.api import discussion, project, static_files
+from backend.api import comment, discussion, project, static_files
 from backend.api import user, auth
 from backend.logging_config import configure_logging
 
@@ -29,7 +29,8 @@ app = FastAPI(
         user.openapi_tags,
         auth.openapi_tags,
         project.openapi_tags,
-        discussion.openapi_tags
+        discussion.openapi_tags,
+        comment.openapi_tags,
     ],
 )
 
@@ -41,7 +42,8 @@ feature_apis = [
     user,
     auth,
     project,
-    discussion
+    discussion,
+    comment,
 ]
 
 for feature_api in feature_apis:
