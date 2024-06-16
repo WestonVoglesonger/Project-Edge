@@ -9,7 +9,7 @@ class DiscussionIdentity(BaseModel):
 class DiscussionCreate(BaseModel):
     title: str
     description: str
-    user_id: int
+    author_id: int 
 
 class DiscussionUpdate(BaseModel):
     title: Optional[str] = None
@@ -20,5 +20,4 @@ class DiscussionResponse(DiscussionIdentity):
     description: str
     created_at: datetime
     updated_at: datetime
-    user_id: int
-    participants: List[UserResponse]
+    author_id: int

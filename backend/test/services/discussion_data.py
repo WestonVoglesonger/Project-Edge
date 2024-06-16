@@ -1,7 +1,6 @@
 import pytest
 from sqlalchemy.orm import Session
 from backend.entities.discussion_entity import DiscussionEntity
-from backend.entities.user_entity import UserEntity
 from backend.models.discussion import DiscussionCreate, DiscussionUpdate
 from .reset_table_id_seq import reset_table_id_seq
 from .user_data import user1, user2
@@ -10,13 +9,13 @@ from .user_data import user1, user2
 discussion = DiscussionCreate(
     title="Test Discussion",
     description="A test discussion",
-    user_id=user1.id
+    author_id=user1.id  # Ensure this matches the actual user ID
 )
 
 new_discussion = DiscussionCreate(
     title="New Discussion",
     description="A new test discussion",
-    user_id=user2.id
+    author_id=user2.id  # Ensure this matches the actual user ID
 )
 
 # Updated discussion data fixture
@@ -25,14 +24,12 @@ updated_discussion = DiscussionUpdate(
     description="An updated description for the discussion"
 )
 
-discussions = [discussion]
+discussions = [discussion, new_discussion]
 
 def insert_fake_data(session: Session):
-    user1_entity = session.query(UserEntity).filter_by(email=user1.email).first()
-
     entities = []
     for discussion in discussions:
-        entity = DiscussionEntity.from_model(discussion, user1_entity)
+        entity = DiscussionEntity.from_model(discussion)
         session.add(entity)
         entities.append(entity)
     session.commit()

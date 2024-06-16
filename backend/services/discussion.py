@@ -6,7 +6,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from backend.entities.discussion_entity import DiscussionEntity
 from backend.entities.user_entity import UserEntity
 from backend.models.discussion import DiscussionCreate, DiscussionResponse, DiscussionUpdate
-from backend.services.exceptions import DiscussionNotFoundException
+from backend.services.exceptions import DiscussionNotFoundException, UserNotFoundException
 
 logger = logging.getLogger(__name__)
 
@@ -15,9 +15,10 @@ class DiscussionService:
         self.db = db
 
     def create_discussion(self, discussion_data: DiscussionCreate) -> DiscussionResponse:
-        user_entity = self.db.query(UserEntity).filter(UserEntity.email == discussion_data.user_email).first()
-
-        new_discussion_entity = DiscussionEntity.from_model(discussion_data, user_entity)
+        if (self.db.query(UserEntity).filter(UserEntity.id == discussion_data.author_id).count() == 0):
+            raise UserNotFoundException(f"User with id {discussion_data.author_id} not found")
+        
+        new_discussion_entity = DiscussionEntity.from_model(discussion_data)
         self.db.add(new_discussion_entity)
         self.db.commit()
         self.db.refresh(new_discussion_entity)  # Refresh to get the ID
@@ -46,7 +47,7 @@ class DiscussionService:
         logger.info(f"Discussion with id {discussion_id} refreshed from the database")
 
         return discussion_entity.to_discussion_response()
-
+    
     def get_discussion(self, discussion_id: int) -> DiscussionResponse:
         discussion = self.db.query(DiscussionEntity).filter_by(id=discussion_id).first()
         if not discussion:

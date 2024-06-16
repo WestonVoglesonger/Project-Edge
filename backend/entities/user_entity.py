@@ -34,6 +34,8 @@ class UserEntity(Base):
         'ProjectEntity', secondary=association_table_team_members, back_populates='team_members')
     projects_as_leader: Mapped[List['ProjectEntity']] = relationship(
         'ProjectEntity', secondary=association_table_project_leaders, back_populates='project_leaders')
+    
+    authored_discussions: Mapped[List['DiscussionEntity']] = relationship('DiscussionEntity', back_populates='author')
 
     def to_user_response(self):
         return UserResponse(
@@ -56,18 +58,6 @@ class UserEntity(Base):
             accepted_community_agreement=self.accepted_community_agreement,
             bio=self.bio,
             profile_picture=self.profile_picture,
-        )
-
-    @staticmethod
-    def from_existing_model(user: User):
-        return UserEntity(
-            first_name=user.first_name,
-            last_name=user.last_name,
-            email=user.email,
-            hashed_password=user.hash_password(),
-            accepted_community_agreement=user.accepted_community_agreement,
-            bio=user.bio,
-            profile_picture=user.profile_picture,
         )
 
     @staticmethod
