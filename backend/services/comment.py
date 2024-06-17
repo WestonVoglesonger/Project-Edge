@@ -48,6 +48,10 @@ class CommentService:
         comments = self.db.query(CommentEntity).filter_by(discussion_id=discussion_id, parent_id=None).all()
         return [comment.to_comment_response() for comment in comments]
 
+    def get_comments_by_user(self, author_id: int) -> List[CommentResponse]:
+        comments = self.db.query(CommentEntity).filter_by(author_id=author_id).all()
+        return [comment.to_comment_response() for comment in comments]
+
     def delete_comment(self, comment_id: int):
         comment_entity = self.db.query(CommentEntity).filter_by(id=comment_id).first()
         if comment_entity is None:

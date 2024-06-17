@@ -37,6 +37,10 @@ def read_discussion(discussion_id: int, discussion_service: DiscussionService = 
 def read_discussions(discussion_service: DiscussionService = Depends(get_discussion_service)):
     return discussion_service.get_all_discussions()
 
+@api.get("/{author_id}", response_model=List[DiscussionResponse], tags=["Discussions"])
+def read_discussions_by_user(author_id: int, discussion_service: DiscussionService = Depends(get_discussion_service)):
+    return discussion_service.get_discussions_by_user(author_id=author_id)
+
 @api.put("/{discussion_id}", response_model=DiscussionResponse, tags=["Discussions"])
 def update_discussion(discussion_id: int, discussion_update: DiscussionUpdate, discussion_service: DiscussionService = Depends(get_discussion_service)):
     try:

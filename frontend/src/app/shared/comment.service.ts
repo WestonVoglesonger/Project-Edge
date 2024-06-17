@@ -35,6 +35,10 @@ export class CommentService {
     return this.http.get<any[]>(`${this.apiUrl}?parentId=${parentId}`);
   }
 
+  getCommentsByAuthor(authorId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}?authorId=${authorId}`);
+  }
+
   deleteComment(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }

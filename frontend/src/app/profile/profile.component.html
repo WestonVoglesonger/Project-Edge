@@ -46,4 +46,13 @@
       </mat-card-actions>
     </mat-card>
   </form>
+
+  <div class="discussions-list">
+    <app-discussion-card
+      *ngFor="let discussion of discussions"
+      [discussion]="discussion"
+      [currentUser]="currentUser"
+      (discussionDeleted)="handleDiscussionDeleted($event)"
+    ></app-discussion-card>
+  </div>
 </div>
