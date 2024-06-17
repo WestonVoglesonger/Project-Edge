@@ -1,10 +1,65 @@
-<mat-card class="comment-card">
+<mat-card class="comment-card" (dblclick)="navigateToForm()">
   <mat-card-content>
-    <p>{{ comment.description }}</p>
+    <ng-container *ngIf="!isEditing">
+      <p>{{ truncatedComment }}</p>
+      <button
+        *ngIf="isTruncated && !isExpanded"
+        mat-button
+        color="primary"
+        (click)="navigateToForm()"
+      >
+        Show More
+      </button>
+    </ng-container>
+    <div *ngIf="isEditing">
+      <form [formGroup]="editCommentForm" (ngSubmit)="saveComment()">
+        <mat-form-field class="full-width">
+          <mat-label>Edit Comment</mat-label>
+          <textarea
+            matInput
+            formControlName="description"
+            maxlength="1000"
+          ></textarea>
+          <mat-error
+            *ngIf="cf['description'].touched && cf['description'].invalid"
+          >
+            <span *ngIf="cf['description'].errors?.['required']">
+              Description is required.
+            </span>
+            <span *ngIf="cf['description'].errors?.['maxlength']">
+              Description cannot exceed 1000 characters.
+            </span>
+          </mat-error>
+        </mat-form-field>
+        <div class="edit-button">
+          <button
+            mat-raised-button
+            color="primary"
+            type="submit"
+            [disabled]="editCommentForm.invalid"
+          >
+            Save
+          </button>
+          <button
+            mat-raised-button
+            color="warn"
+            type="button"
+            (click)="isEditing = false"
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
   </mat-card-content>
   <mat-card-actions>
-    <button mat-button color="primary" (click)="viewOrEditCommentDetails()">
-      View/Edit
+    <button
+      *ngIf="!isEditing && isAuthor"
+      mat-icon-button
+      color="primary"
+      (click)="enableEditMode()"
+    >
+      <mat-icon>edit</mat-icon>
     </button>
   </mat-card-actions>
 </mat-card>
