@@ -1,4 +1,10 @@
-import { Component, Input, OnInit, OnDestroy } from "@angular/core";
+import {
+  Component,
+  Input,
+  OnInit,
+  OnDestroy,
+  ChangeDetectorRef,
+} from "@angular/core";
 import {
   FormBuilder,
   FormGroup,
@@ -45,6 +51,7 @@ export class CommentFormComponent implements OnInit {
     private authService: AuthService,
     private router: Router,
     private route: ActivatedRoute,
+    private cdr: ChangeDetectorRef,
   ) {
     this.replyForm = this.fb.group({
       description: [

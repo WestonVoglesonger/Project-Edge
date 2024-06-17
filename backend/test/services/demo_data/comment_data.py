@@ -10,41 +10,38 @@ from .user_data import user1, user2
 from .project_data import project
 from .discussion_data import discussion
 
-
-# Comment fixture
 comment = CommentCreate(
     description="Test Comment",
-    user_id=user1.id,
-    project_id=1 # Ensure this matches the actual project ID
+    author_id=user1.id,
+    project_id=1
 )
 
 new_comment_1 = CommentCreate(
     description="New Test Comment",
-    user_id=user2.id,
-    discussion_id=1 # Ensure this matches the actual discussion ID
+    author_id=user2.id,
+    discussion_id=1
 )
 
 new_comment_2 = CommentCreate(
     description="New Test Comment 2",
-    user_id=user2.id,
-    discussion_id=1 # Ensure this matches the actual discussion ID
+    author_id=user2.id,
+    discussion_id=1
 )
 
 nested_comment = CommentCreate(
     description="Nested Test Comment",
-    user_id=user2.id,
+    author_id=user2.id,
     discussion_id=1,
-    parent_id=1 # Ensure this matches the actual parent comment ID
+    parent_id=1
 )
 
 nested_comment_2 = CommentCreate(
     description="Nested Test Comment 2",
-    user_id=user2.id,
+    author_id=user2.id,
     discussion_id=1,
-    parent_id=1 # Ensure this matches the actual parent comment ID
+    parent_id=1
 )
 
-# Updated comment data fixture
 updated_comment = CommentUpdate(
     description="Updated Comment"
 )

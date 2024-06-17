@@ -2,11 +2,13 @@ from pydantic import BaseModel
 from datetime import datetime
 from typing import List, Optional
 
+from backend.models.user import UserResponse
+
 class CommentCreate(BaseModel):
     description: str
     project_id: Optional[int] = None
     discussion_id: Optional[int] = None
-    user_id: int
+    author_id: int
     parent_id: Optional[int] = None
 
 
@@ -18,7 +20,7 @@ class CommentResponse(BaseModel):
     description: str
     project_id: Optional[int] = None
     discussion_id: Optional[int] = None
-    user_id: int
+    author: UserResponse
     created_at: datetime
     updated_at: datetime
     parent_id: Optional[int] = None

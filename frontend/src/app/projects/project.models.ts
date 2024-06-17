@@ -11,6 +11,8 @@ export interface ProjectResponse {
     id: number;
     name: string;
     description: string;
+    created_at: string;
+    updated_at: string;
     team_members: UserResponse[];
     project_leaders: UserResponse[];
   }

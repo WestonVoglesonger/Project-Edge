@@ -4,6 +4,7 @@ import {
   ViewChild,
   ElementRef,
   AfterViewInit,
+  ChangeDetectorRef,
 } from "@angular/core";
 import {
   FormGroup,
@@ -58,9 +59,17 @@ export class DiscussionFormComponent implements OnInit, AfterViewInit {
     private commentService: CommentService,
     private route: ActivatedRoute,
     private router: Router,
+    private cdr: ChangeDetectorRef,
   ) {
     this.discussionForm = this.fb.group({
-      title: ["", [Validators.required, Validators.minLength(3)]],
+      title: [
+        "",
+        [
+          Validators.required,
+          Validators.minLength(3),
+          Validators.maxLength(50),
+        ],
+      ],
       description: ["", [Validators.required, Validators.minLength(10)]],
     });
 
@@ -110,7 +119,7 @@ export class DiscussionFormComponent implements OnInit, AfterViewInit {
           ...discussion,
         };
 
-        this.isAuthor = discussion.author_id === this.currentUser?.id;
+        this.isAuthor = discussion.author.id === this.currentUser?.id;
         if (!this.isAuthor) {
           this.discussionForm.disable();
         }

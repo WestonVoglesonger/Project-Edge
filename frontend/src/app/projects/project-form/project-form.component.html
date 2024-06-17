@@ -23,6 +23,7 @@
               <mat-error *ngIf="f['name'].touched && f['name'].invalid">
                 <span *ngIf="f['name'].errors?.['required']">Name is required.</span>
                 <span *ngIf="f['name'].errors?.['minlength']">Name must be at least 3 characters long.</span>
+                <span *ngIf="f['name'].errors?.['maxlength']">Name cannot exceed 50 characters.</span>
               </mat-error>
             </mat-form-field>
 
