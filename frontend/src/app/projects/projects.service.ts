@@ -15,15 +15,19 @@ export class ProjectService {
     return this.http.post(this.apiUrl, project);
   }
 
-  updateProject(id: string, project: Project): Observable<any> {
+  updateProject(id: number, project: Project): Observable<any> {
     return this.http.put(`${this.apiUrl}/${id}`, project);
   }
 
-  getProject(id: string): Observable<any> {
+  getProject(id: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/${id}`);
   }
 
   getAllProjects(): Observable<any[]> {
     return this.http.get<any[]>(this.apiUrl);
+  }
+
+  deleteProject(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 }

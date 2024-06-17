@@ -29,6 +29,8 @@ import { ProjectCard } from "./shared/widgets/project-card/project-card";
 import { DiscussionsComponent } from "./discussions/discussions.component";
 import { DiscussionCard } from "./shared/widgets/discussion-card/discussion-card";
 import { DiscussionFormComponent } from "./discussions/discussion-form/discussion-form.component";
+import { CommentCard } from "./shared/widgets/comment-card/comment-card";
+import { CommentFormComponent } from "./comment-form/comment-form.component";
 
 @NgModule({
   declarations: [
@@ -43,6 +45,8 @@ import { DiscussionFormComponent } from "./discussions/discussion-form/discussio
     DiscussionsComponent,
     DiscussionCard,
     DiscussionFormComponent,
+    CommentCard,
+    CommentFormComponent,
     // Add other component declarations here
   ],
   imports: [

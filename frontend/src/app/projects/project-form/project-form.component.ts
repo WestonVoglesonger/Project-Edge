@@ -1,5 +1,5 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, FormArray, AbstractControl } from '@angular/forms';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { FormGroup, FormBuilder, Validators, AbstractControl, FormArray } from '@angular/forms';
 import { ActivatedRoute, Route, Router } from '@angular/router';
 import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { ProjectService } from '../projects.service';
@@ -8,13 +8,15 @@ import { UserService } from 'src/app/shared/users/user.service';
 import { AuthService } from 'src/app/shared/auth.service';
 import { minLengthArray } from 'src/app/shared/min-length-array.validator';
 import { Project } from '../project.models';
+import { CommentService } from 'src/app/shared/comment.service';
+import { CommentResponse, CommentCreate } from 'src/app/shared/comment.models';
 
 @Component({
   selector: 'app-project-form',
   templateUrl: './project-form.component.html',
   styleUrls: ['./project-form.component.css']
 })
-export class ProjectFormComponent implements OnInit, AfterViewInit {
+export class ProjectFormComponent implements OnInit {
   public static Route: Route = {
     path: "projects/:id",
     component: ProjectFormComponent,
@@ -22,11 +24,14 @@ export class ProjectFormComponent implements OnInit, AfterViewInit {
   };
 
   projectForm: FormGroup;
+  commentForm: FormGroup;
   isNewProject: boolean = true;
   filteredMembers: UserResponse[] = [];
   filteredLeaders: UserResponse[] = [];
-  currentUser: UserResponse | null = null;
+  currentUser!: UserResponse;
   isLeader: boolean = false;
+  comments: CommentResponse[] = [];
+  project_id!: number;
 
   @ViewChild('currentUsersInput') currentUsersInput!: ElementRef;
   @ViewChild('ownersInput') ownersInput!: ElementRef;
@@ -40,6 +45,7 @@ export class ProjectFormComponent implements OnInit, AfterViewInit {
     private projectService: ProjectService,
     private userService: UserService,
     private authService: AuthService,
+    private commentService: CommentService,
     private route: ActivatedRoute,
     private router: Router
   ) {
@@ -48,6 +54,10 @@ export class ProjectFormComponent implements OnInit, AfterViewInit {
       description: ['', [Validators.required, Validators.minLength(10)]],
       team_members: this.fb.array([]),
       project_leaders: this.fb.array([], minLengthArray(1))
+    });
+
+    this.commentForm = this.fb.group({
+      description: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(1000)]],
     });
   }
 
@@ -59,7 +69,9 @@ export class ProjectFormComponent implements OnInit, AfterViewInit {
           const id = params.get('id');
           if (id && id !== 'new') {
             this.isNewProject = false;
-            this.loadProject(id);
+            this.project_id = +id;
+            this.loadProject(this.project_id);
+            this.loadComments(this.project_id);
           } else {
             this.addCurrentUserToProjectLeaders();
           }
@@ -69,16 +81,6 @@ export class ProjectFormComponent implements OnInit, AfterViewInit {
         console.error('Error fetching current user', error);
       }
     );
-  }
-
-  ngAfterViewInit(): void {
-    // Ensure input elements are available after view initialization
-    if (this.currentUsersInput) {
-      console.log('currentUsersInput is available');
-    }
-    if (this.ownersInput) {
-      console.log('ownersInput is available');
-    }
   }
 
   addCurrentUserToProjectLeaders(): void {
@@ -95,7 +97,7 @@ export class ProjectFormComponent implements OnInit, AfterViewInit {
     return this.projectForm.get('project_leaders') as FormArray;
   }
 
-  loadProject(id: string): void {
+  loadProject(id: number): void {
     this.projectService.getProject(id).subscribe(
       project => {
         this.projectForm.patchValue({
@@ -117,6 +119,17 @@ export class ProjectFormComponent implements OnInit, AfterViewInit {
       },
       error => {
         console.error('Error loading project', error);
+      }
+    );
+  }
+
+  loadComments(projectId: number): void {
+    this.commentService.getCommentsByProject(projectId).subscribe(
+      (comments: CommentResponse[]) => {
+        this.comments = comments;
+      },
+      (error) => {
+        console.error('Error loading comments', error);
       }
     );
   }
@@ -148,8 +161,7 @@ export class ProjectFormComponent implements OnInit, AfterViewInit {
           }
         );
       } else {
-        const id = this.route.snapshot.paramMap.get('id');
-        this.projectService.updateProject(id!, projectData).subscribe(
+        this.projectService.updateProject(this.project_id, projectData).subscribe(
           response => {
             console.log('Project updated successfully', response);
             this.router.navigate(['/projects']);
@@ -162,18 +174,59 @@ export class ProjectFormComponent implements OnInit, AfterViewInit {
     }
   }
 
+  deleteProject(): void {
+    if (confirm('Are you sure you want to delete this project?')) {
+      this.projectService.deleteProject(this.project_id).subscribe(
+        response => {
+          console.log('Project deleted successfully', response);
+          this.router.navigate(['/projects']);
+        },
+        error => {
+          console.error('Error deleting project', error);
+        }
+      );
+    }
+  }
+
+  saveComment(): void {
+    if (this.commentForm.valid) {
+      const commentCreate: CommentCreate = {
+        description: this.commentForm.value.description,
+        project_id: this.project_id,
+        discussion_id: null,
+        parent_id: null,
+        user_id: this.currentUser?.id!,
+      };
+
+      this.commentService.createComment(commentCreate).subscribe(
+        (response) => {
+          console.log("Comment created successfully", response);
+          this.comments.push(response);
+          this.commentForm.reset();
+        },
+        (error) => {
+          console.error("Error creating comment", error);
+        },
+      );
+    }
+  }
+
+  handleCommentDeleted(commentId: number): void {
+    this.comments = this.comments.filter(comment => comment.id !== commentId);
+  }
+
   searchUsers(event: Event, type: 'users' | 'leaders' = 'users'): void {
     const input = event.target as HTMLInputElement;
     const query = input.value;
-  
+
     if (query.length > 2) {
       this.userService.searchUsers(query).subscribe(users => {
         console.log('Users', users);
         const selectedUsers = type === 'users' ? this.currentUsers.value : this.project_leaders.value;
         const selectedUserEmails = selectedUsers.map((user: UserResponse) => user.email);
-  
+
         const filtered = users.filter(user => !selectedUserEmails.includes(user.email));
-        
+
         if (type === 'users') {
           this.filteredMembers = filtered;
         } else {
@@ -250,5 +303,9 @@ export class ProjectFormComponent implements OnInit, AfterViewInit {
 
   get f(): { [key: string]: AbstractControl } {
     return this.projectForm.controls;
+  }
+
+  get cf(): { [key: string]: AbstractControl } {
+    return this.commentForm.controls;
   }
 }

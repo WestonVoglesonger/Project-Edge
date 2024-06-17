@@ -9,5 +9,13 @@
     <button mat-raised-button color="accent" (click)="viewDiscussionDetails()">
       View Details
     </button>
+    <button
+      *ngIf="isAuthor"
+      mat-icon-button
+      color="warn"
+      (click)="deleteDiscussion()"
+    >
+      <mat-icon>delete</mat-icon>
+    </button>
   </mat-card-actions>
 </mat-card>

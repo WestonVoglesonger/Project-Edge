@@ -7,11 +7,11 @@ from backend.services.exceptions import (
     UserNotFoundException,
 )
 from backend.services.discussion import DiscussionService
-from .discussion_data import updated_discussion
-from .core_data import setup_insert_data_fixture
+from .demo_data.discussion_data import updated_discussion
+from .demo_data.core_data import setup_insert_data_fixture
 from .fixtures import discussion_svc, user_svc
-from .discussion_data import discussion, new_discussion
-from .user_data import user1, user2
+from .demo_data.discussion_data import discussion, new_discussion
+from .demo_data.user_data import user1, user2
 
 
 def test_create_discussion(discussion_svc: DiscussionService):

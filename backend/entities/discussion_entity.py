@@ -12,9 +12,11 @@ class DiscussionEntity(Base):
     title: Mapped[str] = mapped_column(String, nullable=False)
     description: Mapped[str] = mapped_column(String, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
-    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=True)
     author_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'), nullable=False)
     author: Mapped['UserEntity'] = relationship(back_populates='authored_discussions')
+
+    comments = relationship("CommentEntity", back_populates="discussion", cascade="all, delete-orphan")
 
     def to_discussion_response(self):
         return DiscussionResponse(

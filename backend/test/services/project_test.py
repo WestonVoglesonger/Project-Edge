@@ -5,15 +5,15 @@ from backend.entities.project_entity import ProjectEntity
 from backend.services.exceptions import ProjectNotFoundException
 from backend.services.project import ProjectService
 from backend.services.user import UserService
-from .project_data import updated_project
+from .demo_data.project_data import updated_project
 from backend.services.exceptions import UserNotFoundException
 
 
 # Data Setup and Injected Service Fixtures
-from .core_data import setup_insert_data_fixture
+from .demo_data.core_data import setup_insert_data_fixture
 from .fixtures import project_svc, user_svc
-from .project_data import project, new_project, updated_project_2
-from .user_data import user1, user2
+from .demo_data.project_data import project, new_project, updated_project_2
+from .demo_data.user_data import user1, user2
 
 def test_create_project(project_svc: ProjectService):
     created_project = project_svc.create_project(project)

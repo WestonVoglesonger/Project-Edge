@@ -1,73 +1,136 @@
 <app-navigation></app-navigation>
-<div class="discussion-form-container">
-  <form
-    [formGroup]="discussionForm"
-    (ngSubmit)="saveDiscussion()"
-    class="discussion-form"
-  >
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title>{{
-          isNewDiscussion ? "Create New Discussion" : "Update Discussion"
-        }}</mat-card-title>
-      </mat-card-header>
-      <div class="card-content-container">
-        <mat-card-content>
-          <mat-form-field>
-            <mat-label>Title of Discussion</mat-label>
-            <input
-              matInput
-              formControlName="title"
-              [readonly]="!isAuthor && !isNewDiscussion"
-            />
-            <mat-error *ngIf="f['title'].touched && f['title'].invalid">
-              <span *ngIf="f['title'].errors?.['required']"
-                >Title is required.</span
-              >
-              <span *ngIf="f['title'].errors?.['minlength']"
-                >Title must be at least 3 characters long.</span
-              >
-            </mat-error>
-          </mat-form-field>
+<div class="container">
+  <div class="left-column">
+    <form
+      [formGroup]="discussionForm"
+      (ngSubmit)="saveDiscussion()"
+      class="discussion-form"
+    >
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>{{
+            isNewDiscussion ? "Create New Discussion" : "Update Discussion"
+          }}</mat-card-title>
+          <button
+            *ngIf="isAuthor"
+            mat-icon-button
+            color="warn"
+            (click)="deleteDiscussion()"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </mat-card-header>
+        <div class="card-content-container">
+          <mat-card-content>
+            <mat-form-field>
+              <mat-label>Title of Discussion</mat-label>
+              <input
+                matInput
+                formControlName="title"
+                [readonly]="!isAuthor && !isNewDiscussion"
+              />
+              <mat-error *ngIf="f['title'].touched && f['title'].invalid">
+                <span *ngIf="f['title'].errors?.['required']"
+                  >Title is required.</span
+                >
+                <span *ngIf="f['title'].errors?.['minlength']"
+                  >Title must be at least 3 characters long.</span
+                >
+              </mat-error>
+            </mat-form-field>
 
-          <mat-form-field>
-            <mat-label>Description</mat-label>
-            <textarea
-              matInput
-              formControlName="description"
-              [readonly]="!isAuthor && !isNewDiscussion"
-            ></textarea>
-            <mat-error
-              *ngIf="f['description'].touched && f['description'].invalid"
-            >
-              <span *ngIf="f['description'].errors?.['required']"
-                >Description is required.</span
+            <mat-form-field>
+              <mat-label>Description</mat-label>
+              <textarea
+                matInput
+                formControlName="description"
+                [readonly]="!isAuthor && !isNewDiscussion"
+              ></textarea>
+              <mat-error
+                *ngIf="f['description'].touched && f['description'].invalid"
               >
-              <span *ngIf="f['description'].errors?.['minlength']"
-                >Description must be at least 10 characters long.</span
+                <span *ngIf="f['description'].errors?.['required']"
+                  >Description is required.</span
+                >
+                <span *ngIf="f['description'].errors?.['minlength']"
+                  >Description must be at least 10 characters long.</span
+                >
+              </mat-error>
+            </mat-form-field>
+          </mat-card-content>
+        </div>
+        <mat-card-actions *ngIf="isAuthor || isNewDiscussion">
+          <button
+            mat-raised-button
+            color="primary"
+            type="submit"
+            [disabled]="discussionForm.invalid"
+          >
+            {{ isNewDiscussion ? "Create Discussion" : "Update Discussion" }}
+          </button>
+          <button
+            mat-raised-button
+            color="warn"
+            type="button"
+            (click)="cancelChanges()"
+          >
+            Cancel
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </form>
+
+    <form
+      [formGroup]="commentForm"
+      (ngSubmit)="saveComment()"
+      class="comment-form"
+    >
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>Add a Comment</mat-card-title>
+        </mat-card-header>
+        <div class="card-content-container">
+          <mat-card-content>
+            <mat-form-field>
+              <mat-label>Comment</mat-label>
+              <textarea matInput formControlName="description"></textarea>
+              <mat-error
+                *ngIf="cf['description'].touched && cf['description'].invalid"
               >
-            </mat-error>
-          </mat-form-field>
-        </mat-card-content>
+                <span *ngIf="cf['description'].errors?.['required']"
+                  >Comment is required.</span
+                >
+                <span *ngIf="cf['description'].errors?.['maxlength']"
+                  >Comment cannot exceed 1000 characters.</span
+                >
+              </mat-error>
+            </mat-form-field>
+          </mat-card-content>
+        </div>
+        <mat-card-actions>
+          <button
+            mat-raised-button
+            color="primary"
+            type="submit"
+            [disabled]="commentForm.invalid"
+          >
+            Submit
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </form>
+  </div>
+
+  <div class="right-column">
+    <div class="comments-section">
+      <h3>Comments</h3>
+      <div *ngFor="let comment of comments">
+        <app-comment-card
+          [comment]="comment"
+          [currentUser]="currentUser"
+          (commentDeleted)="handleCommentDeleted($event)"
+        ></app-comment-card>
       </div>
-      <mat-card-actions *ngIf="isAuthor || isNewDiscussion">
-        <button
-          mat-raised-button
-          color="primary"
-          type="submit"
-          [disabled]="discussionForm.invalid"
-        >
-          {{ isNewDiscussion ? "Create Discussion" : "Update Discussion" }}
-        </button>
-        <button
-          mat-raised-button
-          color="warn"
-          type="button"
-          (click)="cancelChanges()"
-        >
-          Cancel
-        </button>
-      </mat-card-actions>
-    </mat-card>
-  </form>
+    </div>
+  </div>
 </div>

@@ -1,0 +1,59 @@
+<app-navigation></app-navigation>
+<div class="container">
+  <div class="left-column">
+    <div *ngIf="comment">
+      <app-comment-card
+        [comment]="comment"
+        [isExpanded]="true"
+        [currentUser]="currentUser"
+      ></app-comment-card>
+    </div>
+    <form [formGroup]="replyForm" (ngSubmit)="saveReply()" class="reply-form">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>Add a Reply</mat-card-title>
+        </mat-card-header>
+        <div class="card-content-container">
+          <mat-card-content>
+            <mat-form-field>
+              <mat-label>Reply</mat-label>
+              <textarea matInput formControlName="description"></textarea>
+              <mat-error
+                *ngIf="rf['description'].touched && rf['description'].invalid"
+              >
+                <span *ngIf="rf['description'].errors?.['required']"
+                  >Reply is required.</span
+                >
+                <span *ngIf="rf['description'].errors?.['maxlength']"
+                  >Reply cannot exceed 1000 characters.</span
+                >
+              </mat-error>
+            </mat-form-field>
+          </mat-card-content>
+        </div>
+        <mat-card-actions>
+          <button
+            mat-raised-button
+            color="primary"
+            type="submit"
+            [disabled]="replyForm.invalid"
+          >
+            Submit
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </form>
+  </div>
+
+  <div class="right-column">
+    <div class="comments-section">
+      <h3>Replies</h3>
+      <div *ngFor="let reply of replies">
+        <app-comment-card
+          [comment]="reply"
+          [currentUser]="currentUser"
+        ></app-comment-card>
+      </div>
+    </div>
+  </div>
+</div>
