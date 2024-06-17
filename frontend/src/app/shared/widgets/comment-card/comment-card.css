@@ -8,6 +8,7 @@
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease-in-out;
+  position: relative;
 }
 
 .comment-card:hover {
@@ -34,6 +35,11 @@ mat-card-title {
   font-weight: bold;
   word-break: break-word;
   color: #333;
+}
+
+.comment-time {
+  font-size: 14px;
+  color: #999;
 }
 
 mat-card-content p {

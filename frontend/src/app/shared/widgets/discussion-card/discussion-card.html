@@ -1,14 +1,33 @@
-<mat-card class="discussion-card">
+<mat-card class="discussion-card" (dblclick)="viewDiscussionDetails()">
   <mat-card-header>
+    <div class="header-content">
+      <mat-card-subtitle>
+        {{ discussion.author.first_name }} {{ discussion.author.last_name }}
+      </mat-card-subtitle>
+      <span class="comment-time">{{ mostRecentTime | date: "short" }}</span>
+    </div>
     <mat-card-title>{{ discussion.title }}</mat-card-title>
   </mat-card-header>
   <mat-card-content>
-    <p>{{ discussion.description }}</p>
+    <ng-container *ngIf="!isExpanded">
+      <p>{{ truncatedDescription }}</p>
+      <button
+        *ngIf="isTruncated"
+        mat-button
+        color="primary"
+        (click)="toggleExpand()"
+      >
+        {{ isExpanded ? "Show Less" : "Read More" }}
+      </button>
+    </ng-container>
+    <ng-container *ngIf="isExpanded">
+      <p>{{ discussion.description }}</p>
+      <button mat-button color="primary" (click)="toggleExpand()">
+        {{ isExpanded ? "Show Less" : "Read More" }}
+      </button>
+    </ng-container>
   </mat-card-content>
   <mat-card-actions>
-    <button mat-raised-button color="accent" (click)="viewDiscussionDetails()">
-      View Details
-    </button>
     <button
       *ngIf="isAuthor"
       mat-icon-button

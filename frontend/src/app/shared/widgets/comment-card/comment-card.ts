@@ -29,6 +29,7 @@ export class CommentCard implements OnInit, OnDestroy {
   @Input() currentUser!: UserResponse;
   @Input() isExpanded: boolean = false;
   @Output() commentDeleted = new EventEmitter<number>();
+  @Output() commentUpdated = new EventEmitter<CommentResponse>();
 
   editCommentForm: FormGroup;
   isEditing: boolean = false;
@@ -64,7 +65,7 @@ export class CommentCard implements OnInit, OnDestroy {
   }
 
   get isAuthor(): boolean {
-    return this.comment.user_id === this.currentUser?.id;
+    return this.comment.author.id === this.currentUser?.id;
   }
 
   get truncatedComment(): string {
@@ -90,8 +91,10 @@ export class CommentCard implements OnInit, OnDestroy {
         .subscribe(
           (response) => {
             this.comment.description = response.description;
+            this.comment.updated_at = response.updated_at; // Update the updated_at field
             this.isEditing = false;
             this.isTruncated = this.comment.description.length > 250;
+            this.commentUpdated.emit(this.comment); // Emit the updated comment
           },
           (error) => {
             console.error("Error updating comment", error);
@@ -121,5 +124,11 @@ export class CommentCard implements OnInit, OnDestroy {
   navigateToForm(): void {
     console.log("Navigating to form:", this.comment.id);
     this.router.navigate(["/comments", this.comment.id]);
+  }
+
+  get mostRecentTime(): Date {
+    return new Date(this.comment.updated_at) > new Date(this.comment.created_at)
+      ? new Date(this.comment.updated_at)
+      : new Date(this.comment.created_at);
   }
 }

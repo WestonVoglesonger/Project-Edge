@@ -25,7 +25,7 @@ class DiscussionEntity(Base):
             description=self.description,
             created_at=self.created_at,
             updated_at=self.updated_at,
-            author_id=self.author_id
+            author=self.author.to_user_response()
         )
 
     @staticmethod

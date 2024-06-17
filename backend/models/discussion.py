@@ -20,4 +20,4 @@ class DiscussionResponse(DiscussionIdentity):
     description: str
     created_at: datetime
     updated_at: datetime
-    author_id: int
+    author: UserResponse

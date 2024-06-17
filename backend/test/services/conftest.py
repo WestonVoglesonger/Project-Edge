@@ -1,21 +1,14 @@
-"""Shared pytest fixtures for database-dependent tests."""
-
 import pytest
 from sqlalchemy import create_engine, text, Engine
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import OperationalError, ProgrammingError
 
 from backend.entities.base import Base
-
 from ...database import _engine_str
 from ...env import getenv
 
 POSTGRES_DATABASE = f'{getenv("POSTGRES_DATABASE")}_test'
 POSTGRES_USER = getenv("POSTGRES_USER")
-
-__authors__ = ["Kris Jordan"]
-__copyright__ = ["Copyright 2023"]
-__license__ = "MIT"
 
 def reset_database():
     engine = create_engine(_engine_str(""))
@@ -25,18 +18,14 @@ def reset_database():
             conn.execute(text("ROLLBACK"))  # Get out of transactional mode...
             conn.execute(text(f"DROP DATABASE {POSTGRES_DATABASE}"))
         except ProgrammingError:
-            ...
+            pass
         except OperationalError:
-            print(
-                "Could not drop database because it's being accessed by others (psql open?)"
-            )
+            print("Could not drop database because it's being accessed by others (psql open?)")
             exit(1)
 
         conn.execute(text(f"CREATE DATABASE {POSTGRES_DATABASE}"))
         conn.execute(
-            text(
-                f"GRANT ALL PRIVILEGES ON DATABASE {POSTGRES_DATABASE} TO {POSTGRES_USER}"
-            )
+            text(f"GRANT ALL PRIVILEGES ON DATABASE {POSTGRES_DATABASE} TO {POSTGRES_USER}")
         )
 
 @pytest.fixture(scope="session")
