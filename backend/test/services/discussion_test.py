@@ -18,7 +18,7 @@ def test_create_discussion(discussion_svc: DiscussionService):
     created_discussion = discussion_svc.create_discussion(discussion)
     assert created_discussion.title == discussion.title
     assert created_discussion.description == discussion.description
-    assert created_discussion.author_id == discussion.author_id
+    assert created_discussion.author.id == discussion.author_id
 
 
 def test_create_discussion_user_not_found(discussion_svc: DiscussionService):

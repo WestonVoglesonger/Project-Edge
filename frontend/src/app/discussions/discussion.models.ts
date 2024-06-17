@@ -1,3 +1,5 @@
+import { UserResponse } from "../shared/users/user.models";
+
 export interface Discussion {
   title: string;
   description: string;
@@ -10,5 +12,5 @@ export interface DiscussionResponse {
   description: string;
   created_at: string;
   updated_at: string;
-  author_id: number;
+  author: UserResponse;
 }
