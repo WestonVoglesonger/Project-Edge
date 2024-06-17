@@ -1,3 +1,4 @@
+from datetime import datetime
 from pydantic import BaseModel
 from typing import List, Optional
 
@@ -27,6 +28,8 @@ class ProjectUpdate(BaseModel):
 class ProjectResponse(ProjectIdentity):
     name: str
     description: str
+    created_at: datetime
+    updated_at: datetime
     team_members: List[UserResponse]
     project_leaders: List[UserResponse]
 

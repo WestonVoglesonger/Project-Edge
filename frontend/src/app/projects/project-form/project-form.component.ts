@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, AbstractControl, FormArray } from '@angular/forms';
 import { ActivatedRoute, Route, Router } from '@angular/router';
 import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
@@ -47,7 +47,8 @@ export class ProjectFormComponent implements OnInit {
     private authService: AuthService,
     private commentService: CommentService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef,
   ) {
     this.projectForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3)]],

@@ -1,5 +1,6 @@
+from datetime import datetime, timezone
 from typing import List
-from sqlalchemy import Column, Integer, String, Table, ForeignKey
+from sqlalchemy import Column, DateTime, Integer, String, Table, ForeignKey
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from .base import Base
 from backend.models.project import ProjectCreate, ProjectUpdate, ProjectResponse
@@ -25,6 +26,8 @@ class ProjectEntity(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String, nullable=False)
     description: Mapped[str] = mapped_column(String, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
     team_members: Mapped[List[UserEntity]] = relationship('UserEntity', secondary=association_table_team_members, back_populates='projects_as_member')
     project_leaders: Mapped[List[UserEntity]] = relationship('UserEntity', secondary=association_table_project_leaders, back_populates='projects_as_leader')
 

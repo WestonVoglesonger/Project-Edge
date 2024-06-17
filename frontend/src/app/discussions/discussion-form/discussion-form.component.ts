@@ -4,6 +4,7 @@ import {
   ViewChild,
   ElementRef,
   AfterViewInit,
+  ChangeDetectorRef,
 } from "@angular/core";
 import {
   FormGroup,
@@ -58,6 +59,7 @@ export class DiscussionFormComponent implements OnInit, AfterViewInit {
     private commentService: CommentService,
     private route: ActivatedRoute,
     private router: Router,
+    private cdr: ChangeDetectorRef,
   ) {
     this.discussionForm = this.fb.group({
       title: ["", [Validators.required, Validators.minLength(3)]],

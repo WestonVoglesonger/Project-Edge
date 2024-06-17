@@ -1,5 +1,9 @@
 <mat-card class="discussion-card">
   <mat-card-header>
+    <mat-card-title
+      >{{ currentUser.first_name }} {{ currentUser.last_name }}
+    </mat-card-title>
+    <span class="comment-time">{{ mostRecentTime | date: "short" }}</span>
     <mat-card-title>{{ discussion.title }}</mat-card-title>
   </mat-card-header>
   <mat-card-content>

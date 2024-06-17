@@ -4,8 +4,8 @@ export interface CommentResponse {
   user_id: number;
   project_id: number | null; // Optional because a comment could be on a project or discussion
   discussion_id: number | null; // Optional because a comment could be on a project or discussion
-  createdAt: Date;
-  updatedAt: Date;
+  created_at: Date;
+  updated_at: Date;
 }
 
 export interface CommentCreate {

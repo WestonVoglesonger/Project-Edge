@@ -41,4 +41,11 @@ export class DiscussionCard {
   get isAuthor(): boolean {
     return this.discussion.author_id === this.currentUser?.id;
   }
+
+  get mostRecentTime(): Date {
+    return new Date(this.discussion.updated_at) >
+      new Date(this.discussion.created_at)
+      ? new Date(this.discussion.updated_at)
+      : new Date(this.discussion.created_at);
+  }
 }
