@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from "@angular/core";
+import { Component, EventEmitter, Input, Output, OnInit } from "@angular/core";
 import { Router } from "@angular/router";
 import { ProjectResponse } from "src/app/projects/project.models";
 import { ProjectService } from "src/app/projects/projects.service";
@@ -9,16 +9,23 @@ import { UserResponse } from "../../users/user.models";
   templateUrl: "./project-card.html",
   styleUrls: ["./project-card.css"],
 })
-export class ProjectCard {
+export class ProjectCard implements OnInit {
   @Input() project!: ProjectResponse;
   @Input() currentUser!: UserResponse;
   @Output() viewDetails = new EventEmitter<void>();
   @Output() projectDeleted = new EventEmitter<number>();
 
+  isExpanded: boolean = false;
+  isTruncated: boolean = false;
+
   constructor(
     private router: Router,
     private projectService: ProjectService,
   ) {}
+
+  ngOnInit(): void {
+    this.isTruncated = this.project.description.length > 250;
+  }
 
   viewProjectDetails() {
     this.router.navigate(["/projects", this.project.id]);
@@ -38,7 +45,11 @@ export class ProjectCard {
     }
   }
 
-  isLeader(): boolean {
+  toggleExpand(): void {
+    this.isExpanded = !this.isExpanded;
+  }
+
+  get isLeader(): boolean {
     return this.project.project_leaders.some(
       (leader) => leader.id === this.currentUser.id,
     );
@@ -48,5 +59,11 @@ export class ProjectCard {
     return new Date(this.project.updated_at) > new Date(this.project.created_at)
       ? new Date(this.project.updated_at)
       : new Date(this.project.created_at);
+  }
+
+  get truncatedDescription(): string {
+    return this.isExpanded || this.project.description.length <= 250
+      ? this.project.description
+      : this.project.description.slice(0, 250) + "...";
   }
 }

@@ -51,7 +51,7 @@ export class ProjectFormComponent implements OnInit {
     private cdr: ChangeDetectorRef,
   ) {
     this.projectForm = this.fb.group({
-      name: ['', [Validators.required, Validators.minLength(3)]],
+      name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
       description: ['', [Validators.required, Validators.minLength(10)]],
       team_members: this.fb.array([]),
       project_leaders: this.fb.array([], minLengthArray(1))

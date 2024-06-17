@@ -62,7 +62,14 @@ export class DiscussionFormComponent implements OnInit, AfterViewInit {
     private cdr: ChangeDetectorRef,
   ) {
     this.discussionForm = this.fb.group({
-      title: ["", [Validators.required, Validators.minLength(3)]],
+      title: [
+        "",
+        [
+          Validators.required,
+          Validators.minLength(3),
+          Validators.maxLength(50),
+        ],
+      ],
       description: ["", [Validators.required, Validators.minLength(10)]],
     });
 
