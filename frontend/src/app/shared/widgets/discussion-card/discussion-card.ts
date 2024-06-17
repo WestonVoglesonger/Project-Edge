@@ -39,7 +39,7 @@ export class DiscussionCard {
   }
 
   get isAuthor(): boolean {
-    return this.discussion.author_id === this.currentUser?.id;
+    return this.discussion.author.id === this.currentUser?.id;
   }
 
   get mostRecentTime(): Date {

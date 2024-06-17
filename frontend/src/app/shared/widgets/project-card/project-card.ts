@@ -43,4 +43,10 @@ export class ProjectCard {
       (leader) => leader.id === this.currentUser.id,
     );
   }
+
+  get mostRecentTime(): Date {
+    return new Date(this.project.updated_at) > new Date(this.project.created_at)
+      ? new Date(this.project.updated_at)
+      : new Date(this.project.created_at);
+  }
 }

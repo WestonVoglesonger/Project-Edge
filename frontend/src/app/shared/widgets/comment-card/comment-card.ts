@@ -65,7 +65,7 @@ export class CommentCard implements OnInit, OnDestroy {
   }
 
   get isAuthor(): boolean {
-    return this.comment.user_id === this.currentUser?.id;
+    return this.comment.author.id === this.currentUser?.id;
   }
 
   get truncatedComment(): string {

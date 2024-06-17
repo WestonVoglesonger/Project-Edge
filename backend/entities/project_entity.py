@@ -38,6 +38,8 @@ class ProjectEntity(Base):
             id=self.id,
             name=self.name,
             description=self.description,
+            created_at=self.created_at,
+            updated_at=self.updated_at,
             team_members=[member.to_user_response() for member in self.team_members],
             project_leaders=[leader.to_user_response() for leader in self.project_leaders]
         )

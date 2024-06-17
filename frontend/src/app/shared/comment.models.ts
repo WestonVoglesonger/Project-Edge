@@ -1,7 +1,9 @@
+import { UserResponse } from "./users/user.models";
+
 export interface CommentResponse {
   id: number;
   description: string;
-  user_id: number;
+  author: UserResponse;
   project_id: number | null; // Optional because a comment could be on a project or discussion
   discussion_id: number | null; // Optional because a comment could be on a project or discussion
   created_at: Date;

@@ -112,7 +112,7 @@ export class DiscussionFormComponent implements OnInit, AfterViewInit {
           ...discussion,
         };
 
-        this.isAuthor = discussion.author_id === this.currentUser?.id;
+        this.isAuthor = discussion.author.id === this.currentUser?.id;
         if (!this.isAuthor) {
           this.discussionForm.disable();
         }

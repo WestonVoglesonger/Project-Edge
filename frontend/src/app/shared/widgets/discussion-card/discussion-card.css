@@ -1,50 +1,87 @@
 .discussion-card {
-    flex: 1 1 calc(33% - 20px);
-    max-width: 100%;
-    min-width: 300px;
-    display: flex;
-    flex-direction: column;
+  flex: 1 1 calc(33% - 20px);
+  max-width: 100%;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out;
+  overflow: hidden;
+  margin: 10px;
+}
+
+.discussion-card:hover {
+  transform: scale(1.02);
+  cursor: pointer;
+}
+
+mat-card-header {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 16px;
+  background: linear-gradient(to right, #3f51b5, #5c6bc0);
+  color: #fff;
+}
+
+.header-content {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+mat-card-title {
+  font-size: 20px;
+  font-weight: bold;
+  word-break: break-word;
+  color: #ffffff;
+}
+
+mat-card-subtitle {
+  font-size: 16px;
+  color: #ffffff;
+  margin-top: 8px;
+}
+
+.comment-time {
+  font-size: 14px;
+  color: #ffffff;
+}
+
+mat-card-content {
+  padding: 16px;
+}
+
+mat-card-content p {
+  font-size: 16px;
+  color: #666;
+  word-break: break-word;
+  margin: 16px 0;
+}
+
+mat-card-actions {
+  padding: 16px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+button {
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .discussion-card {
+    flex: 1 1 calc(50% - 20px);
   }
-  
-  mat-card {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
+}
+
+@media (max-width: 480px) {
+  .discussion-card {
+    flex: 1 1 calc(100% - 20px);
   }
-  
-  mat-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  mat-card-title {
-    font-size: 24px;
-    font-weight: bold;
-    word-break: break-word;
-  }
-  
-  .project-description {
-    font-size: 16px;
-    color: #666;
-    word-break: break-word;
-  }
-  
-  mat-card-actions {
-    margin-top: auto;
-    display: flex;
-    justify-content: flex-end;
-  }
-  
-  @media (max-width: 768px) {
-    .discussion-card {
-      flex: 1 1 calc(50% - 20px);
-    }
-  }
-  
-  @media (max-width: 480px) {
-    .discussion-card {
-      flex: 1 1 calc(100% - 20px);
-    }
-  }
-  
+}
