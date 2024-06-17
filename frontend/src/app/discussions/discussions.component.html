@@ -21,6 +21,7 @@
       *ngFor="let discussion of filteredDiscussions"
       [discussion]="discussion"
       [currentUser]="currentUser"
+      (discussionDeleted)="handleDiscussionDeleted($event)"
     ></app-discussion-card>
   </div>
 </div>

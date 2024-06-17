@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { Router } from "@angular/router";
 import { ProjectResponse } from "src/app/projects/project.models";
 import { ProjectService } from "src/app/projects/projects.service";
+import { UserResponse } from "../../users/user.models";
 
 @Component({
   selector: "app-project-card",
@@ -10,7 +11,9 @@ import { ProjectService } from "src/app/projects/projects.service";
 })
 export class ProjectCard {
   @Input() project!: ProjectResponse;
+  @Input() currentUser!: UserResponse;
   @Output() viewDetails = new EventEmitter<void>();
+  @Output() projectDeleted = new EventEmitter<number>();
 
   constructor(
     private router: Router,
@@ -26,11 +29,18 @@ export class ProjectCard {
       this.projectService.deleteProject(this.project.id).subscribe(
         (response) => {
           console.log("Project deleted successfully", response);
+          this.projectDeleted.emit(this.project.id);
         },
         (error) => {
           console.error("Error deleting project", error);
         },
       );
     }
+  }
+
+  isLeader(): boolean {
+    return this.project.project_leaders.some(
+      (leader) => leader.id === this.currentUser.id,
+    );
   }
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { Route, Router } from "@angular/router";
 import { DiscussionResponse } from "./discussion.models";
 import { DiscussionService } from "./discussions.service";
@@ -26,6 +26,7 @@ export class DiscussionsComponent implements OnInit {
     private discussionService: DiscussionService,
     private router: Router,
     private authService: AuthService,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -70,5 +71,15 @@ export class DiscussionsComponent implements OnInit {
           .toLowerCase()
           .includes(this.searchQuery.toLowerCase()),
     );
+  }
+
+  handleDiscussionDeleted(discussionId: number): void {
+    this.discussions = this.discussions.filter(
+      (discussion) => discussion.id !== discussionId,
+    );
+    this.filteredDiscussions = this.filteredDiscussions.filter(
+      (discussion) => discussion.id !== discussionId,
+    );
+    this.cdr.markForCheck(); // Manually trigger change detection
   }
 }
