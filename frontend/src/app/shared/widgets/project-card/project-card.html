@@ -9,5 +9,13 @@
     <button mat-raised-button color="accent" (click)="viewProjectDetails()">
       View Details
     </button>
+    <button
+      *ngIf="isLeader"
+      mat-icon-button
+      color="warn"
+      (click)="deleteProject()"
+    >
+      <mat-icon>delete</mat-icon>
+    </button>
   </mat-card-actions>
 </mat-card>

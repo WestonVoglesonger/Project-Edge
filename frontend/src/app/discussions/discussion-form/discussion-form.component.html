@@ -16,6 +16,7 @@
             mat-icon-button
             color="warn"
             (click)="deleteDiscussion()"
+            class="delete-button"
           >
             <mat-icon>delete</mat-icon>
           </button>
@@ -85,7 +86,7 @@
       (ngSubmit)="saveComment()"
       class="comment-form"
     >
-      <mat-card>
+      <mat-card *ngIf="!isNewDiscussion">
         <mat-card-header>
           <mat-card-title>Add a Comment</mat-card-title>
         </mat-card-header>
@@ -121,7 +122,7 @@
     </form>
   </div>
 
-  <div class="right-column">
+  <div *ngIf="!isNewDiscussion" class="right-column">
     <div class="comments-section">
       <h3>Comments</h3>
       <div *ngFor="let comment of comments">

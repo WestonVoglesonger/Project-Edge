@@ -5,14 +5,15 @@
       <mat-card>
         <mat-card-header>
           <mat-card-title>{{ isNewProject ? 'Create New Project' : 'Update Project' }}</mat-card-title>
-          <button
-      *ngIf="isLeader"
-      mat-icon-button
-      color="warn"
-      (click)="deleteProject()"
-    >
-      <mat-icon>delete</mat-icon>
-    </button>
+        <button
+          *ngIf="isLeader"
+          mat-icon-button
+          color="warn"
+          (click)="deleteProject()"
+          class="delete-button"
+        >
+          <mat-icon>delete</mat-icon>
+        </button>
         </mat-card-header>
         <div class="card-content-container">
           <mat-card-content>
@@ -74,7 +75,7 @@
     </form>
 
     <form [formGroup]="commentForm" (ngSubmit)="saveComment()" class="comment-form">
-      <mat-card>
+      <mat-card *ngIf="!isNewProject">
         <mat-card-header>
           <mat-card-title>Add a Comment</mat-card-title>
         </mat-card-header>
@@ -99,7 +100,8 @@
     </form>
   </div>
 
-  <div class="right-column">
+  
+  <div *ngIf="!isNewProject" class="right-column">
     <div class="comments-section">
       <h3>Comments</h3>
       <div *ngFor="let comment of comments">

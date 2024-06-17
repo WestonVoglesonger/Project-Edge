@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Route, Router } from '@angular/router';
 import { ProjectService } from './projects.service';
 import { ProjectResponse } from './project.models';
+import { AuthService } from '../shared/auth.service';
+import { UserResponse } from '../shared/users/user.models';
 
 @Component({
   selector: 'app-projects',
@@ -18,13 +20,24 @@ export class ProjectsComponent implements OnInit {
   projects: ProjectResponse[] = [];
   filteredProjects: ProjectResponse[] = [];
   searchQuery: string = '';
+  currentUser!: UserResponse;
 
   constructor(
     private projectService: ProjectService,
-    private router: Router
+    private authService: AuthService,
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
+    this.authService.fetchCurrentUser().subscribe(
+      (user: UserResponse) => {
+        this.currentUser = user;
+      },
+      (error: any) => {
+        console.error("Error fetching current user", error);
+      },
+    );
     this.loadProjects();
   }
 
@@ -49,5 +62,11 @@ export class ProjectsComponent implements OnInit {
       project.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
       project.description.toLowerCase().includes(this.searchQuery.toLowerCase())
     );
-  }  
+  }
+
+  handleProjectDeleted(projectId: number): void {
+    this.projects = this.projects.filter(project => project.id !== projectId);
+    this.filteredProjects = this.filteredProjects.filter(project => project.id !== projectId);
+    this.cdr.markForCheck(); // Manually trigger change detection
+  }
 }
