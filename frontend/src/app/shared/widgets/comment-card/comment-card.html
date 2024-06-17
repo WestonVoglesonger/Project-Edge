@@ -1,14 +1,14 @@
 <mat-card class="comment-card" (dblclick)="navigateToForm()">
   <mat-card-content>
-    <ng-container *ngIf="!isEditing">
+    <ng-container *ngIf="!isEditing && !isExpanded">
       <p>{{ truncatedComment }}</p>
       <button
-        *ngIf="isTruncated && !isExpanded"
+        *ngIf="isTruncated"
         mat-button
         color="primary"
-        (click)="navigateToForm()"
+        (click)="toggleExpand()"
       >
-        Show More
+        {{ isExpanded ? "Show Less" : "Read More" }}
       </button>
     </ng-container>
     <div *ngIf="isEditing">
@@ -40,26 +40,29 @@
           >
             Save
           </button>
-          <button
-            mat-raised-button
-            color="warn"
-            type="button"
-            (click)="isEditing = false"
-          >
-            Cancel
-          </button>
         </div>
       </form>
     </div>
+    <ng-container *ngIf="!isEditing && isExpanded">
+      <p>{{ comment.description }}</p>
+    </ng-container>
   </mat-card-content>
   <mat-card-actions>
     <button
-      *ngIf="!isEditing && isAuthor"
+      *ngIf="isAuthor && !isEditing"
       mat-icon-button
       color="primary"
       (click)="enableEditMode()"
     >
       <mat-icon>edit</mat-icon>
+    </button>
+    <button
+      *ngIf="isAuthor"
+      mat-icon-button
+      color="warn"
+      (click)="deleteComment()"
+    >
+      <mat-icon>delete</mat-icon>
     </button>
   </mat-card-actions>
 </mat-card>

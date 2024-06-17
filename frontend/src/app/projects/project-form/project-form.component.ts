@@ -1,5 +1,5 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, FormArray, AbstractControl } from '@angular/forms';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { FormGroup, FormBuilder, Validators, AbstractControl, FormArray } from '@angular/forms';
 import { ActivatedRoute, Route, Router } from '@angular/router';
 import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { ProjectService } from '../projects.service';
@@ -9,7 +9,7 @@ import { AuthService } from 'src/app/shared/auth.service';
 import { minLengthArray } from 'src/app/shared/min-length-array.validator';
 import { Project } from '../project.models';
 import { CommentService } from 'src/app/shared/comment.service';
-import { CommentResponse } from 'src/app/shared/comment.models';
+import { CommentResponse, CommentCreate } from 'src/app/shared/comment.models';
 
 @Component({
   selector: 'app-project-form',
@@ -24,10 +24,11 @@ export class ProjectFormComponent implements OnInit {
   };
 
   projectForm: FormGroup;
+  commentForm: FormGroup;
   isNewProject: boolean = true;
   filteredMembers: UserResponse[] = [];
   filteredLeaders: UserResponse[] = [];
-  currentUser: UserResponse | null = null;
+  currentUser!: UserResponse;
   isLeader: boolean = false;
   comments: CommentResponse[] = [];
   project_id!: number;
@@ -54,6 +55,10 @@ export class ProjectFormComponent implements OnInit {
       team_members: this.fb.array([]),
       project_leaders: this.fb.array([], minLengthArray(1))
     });
+
+    this.commentForm = this.fb.group({
+      description: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(1000)]],
+    });
   }
 
   ngOnInit(): void {
@@ -77,7 +82,6 @@ export class ProjectFormComponent implements OnInit {
       }
     );
   }
-
 
   addCurrentUserToProjectLeaders(): void {
     if (this.currentUser) {
@@ -170,18 +174,59 @@ export class ProjectFormComponent implements OnInit {
     }
   }
 
+  deleteProject(): void {
+    if (confirm('Are you sure you want to delete this project?')) {
+      this.projectService.deleteProject(this.project_id).subscribe(
+        response => {
+          console.log('Project deleted successfully', response);
+          this.router.navigate(['/projects']);
+        },
+        error => {
+          console.error('Error deleting project', error);
+        }
+      );
+    }
+  }
+
+  saveComment(): void {
+    if (this.commentForm.valid) {
+      const commentCreate: CommentCreate = {
+        description: this.commentForm.value.description,
+        project_id: this.project_id,
+        discussion_id: null,
+        parent_id: null,
+        user_id: this.currentUser?.id!,
+      };
+
+      this.commentService.createComment(commentCreate).subscribe(
+        (response) => {
+          console.log("Comment created successfully", response);
+          this.comments.push(response);
+          this.commentForm.reset();
+        },
+        (error) => {
+          console.error("Error creating comment", error);
+        },
+      );
+    }
+  }
+
+  handleCommentDeleted(commentId: number): void {
+    this.comments = this.comments.filter(comment => comment.id !== commentId);
+  }
+
   searchUsers(event: Event, type: 'users' | 'leaders' = 'users'): void {
     const input = event.target as HTMLInputElement;
     const query = input.value;
-  
+
     if (query.length > 2) {
       this.userService.searchUsers(query).subscribe(users => {
         console.log('Users', users);
         const selectedUsers = type === 'users' ? this.currentUsers.value : this.project_leaders.value;
         const selectedUserEmails = selectedUsers.map((user: UserResponse) => user.email);
-  
+
         const filtered = users.filter(user => !selectedUserEmails.includes(user.email));
-        
+
         if (type === 'users') {
           this.filteredMembers = filtered;
         } else {
@@ -258,5 +303,9 @@ export class ProjectFormComponent implements OnInit {
 
   get f(): { [key: string]: AbstractControl } {
     return this.projectForm.controls;
+  }
+
+  get cf(): { [key: string]: AbstractControl } {
+    return this.commentForm.controls;
   }
 }

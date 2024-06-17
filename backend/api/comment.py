@@ -1,3 +1,4 @@
+# backend/api/comments.py
 import logging
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
@@ -42,7 +43,8 @@ def read_comment(comment_id: int, comment_service: CommentService = Depends(get_
 @api.get("", response_model=List[CommentResponse], tags=["Comments"])
 def read_comments(
     project_id: Optional[int] = Query(None, alias="projectId"), 
-    discussion_id: Optional[int] = Query(None, alias="discussionId"), 
+    discussion_id: Optional[int] = Query(None, alias="discussionId"),
+    parent_id: Optional[int] = Query(None, alias="parentId"), 
     comment_service: CommentService = Depends(get_comment_service)
 ):
     try:
@@ -50,8 +52,10 @@ def read_comments(
             return comment_service.get_comments_by_project(project_id=project_id)
         elif discussion_id is not None:
             return comment_service.get_comments_by_discussion(discussion_id=discussion_id)
+        elif project_id is None and discussion_id is None:
+            return comment_service.get_comments_by_parent(parent_id=parent_id)
         else:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="project_id or discussion_id must be provided")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="project_id or discussion_id or parent_id must be provided")
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An unexpected error occurred.")
 

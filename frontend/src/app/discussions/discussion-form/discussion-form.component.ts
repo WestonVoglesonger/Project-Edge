@@ -9,7 +9,6 @@ import {
   FormGroup,
   FormBuilder,
   Validators,
-  FormArray,
   AbstractControl,
 } from "@angular/forms";
 import { ActivatedRoute, Route, Router } from "@angular/router";
@@ -18,7 +17,6 @@ import { DiscussionService } from "../discussions.service";
 import { UserResponse } from "src/app/shared/users/user.models";
 import { UserService } from "src/app/shared/users/user.service";
 import { AuthService } from "src/app/shared/auth.service";
-import { minLengthArray } from "src/app/shared/min-length-array.validator";
 import { Discussion } from "../discussion.models";
 import { CommentService } from "src/app/shared/comment.service";
 import { CommentResponse, CommentCreate } from "src/app/shared/comment.models";
@@ -38,8 +36,6 @@ export class DiscussionFormComponent implements OnInit, AfterViewInit {
   discussionForm: FormGroup;
   commentForm: FormGroup;
   isNewDiscussion: boolean = true;
-  filteredMembers: UserResponse[] = [];
-  filteredLeaders: UserResponse[] = [];
   currentUser!: UserResponse;
   isAuthor: boolean = false;
   comments: CommentResponse[] = [];
@@ -169,12 +165,26 @@ export class DiscussionFormComponent implements OnInit, AfterViewInit {
     }
   }
 
+  deleteDiscussion(): void {
+    if (confirm("Are you sure you want to delete this project?")) {
+      this.discussionService.deleteDiscussion(this.discussion_id).subscribe(
+        (response) => {
+          console.log("Project deleted successfully", response);
+          this.router.navigate(["/projects"]);
+        },
+        (error) => {
+          console.error("Error deleting project", error);
+        },
+      );
+    }
+  }
   saveComment(): void {
     if (this.commentForm.valid) {
       const commentCreate: CommentCreate = {
         description: this.commentForm.value.description,
         project_id: null,
         discussion_id: this.discussion_id,
+        parent_id: null,
         user_id: this.currentUser?.id!,
       };
 
@@ -189,6 +199,24 @@ export class DiscussionFormComponent implements OnInit, AfterViewInit {
         },
       );
     }
+  }
+
+  handleCommentDeleted(commentId: number): void {
+    this.comments = this.comments.filter((comment) => comment.id !== commentId);
+  }
+
+  deleteComment(commentId: number): void {
+    this.commentService.deleteComment(commentId).subscribe(
+      (response) => {
+        console.log("Comment deleted successfully", response);
+        this.comments = this.comments.filter(
+          (comment) => comment.id !== commentId,
+        );
+      },
+      (error) => {
+        console.error("Error deleting comment", error);
+      },
+    );
   }
 
   cancelChanges(): void {

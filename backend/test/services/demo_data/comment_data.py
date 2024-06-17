@@ -18,10 +18,30 @@ comment = CommentCreate(
     project_id=1 # Ensure this matches the actual project ID
 )
 
-new_comment = CommentCreate(
+new_comment_1 = CommentCreate(
     description="New Test Comment",
     user_id=user2.id,
     discussion_id=1 # Ensure this matches the actual discussion ID
+)
+
+new_comment_2 = CommentCreate(
+    description="New Test Comment 2",
+    user_id=user2.id,
+    discussion_id=1 # Ensure this matches the actual discussion ID
+)
+
+nested_comment = CommentCreate(
+    description="Nested Test Comment",
+    user_id=user2.id,
+    discussion_id=1,
+    parent_id=1 # Ensure this matches the actual parent comment ID
+)
+
+nested_comment_2 = CommentCreate(
+    description="Nested Test Comment 2",
+    user_id=user2.id,
+    discussion_id=1,
+    parent_id=1 # Ensure this matches the actual parent comment ID
 )
 
 # Updated comment data fixture
@@ -29,7 +49,7 @@ updated_comment = CommentUpdate(
     description="Updated Comment"
 )
 
-comments = [comment, new_comment]
+comments = [comment, new_comment_2, nested_comment_2]
 
 def insert_fake_data(session: Session):
     user1_entity = session.query(UserEntity).filter_by(email=user1.email).first()

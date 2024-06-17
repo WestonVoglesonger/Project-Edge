@@ -2,6 +2,8 @@ import { Component, OnInit } from "@angular/core";
 import { Route, Router } from "@angular/router";
 import { DiscussionResponse } from "./discussion.models";
 import { DiscussionService } from "./discussions.service";
+import { UserResponse } from "../shared/users/user.models";
+import { AuthService } from "../shared/auth.service";
 
 @Component({
   selector: "app-discussions",
@@ -18,13 +20,23 @@ export class DiscussionsComponent implements OnInit {
   discussions: DiscussionResponse[] = [];
   filteredDiscussions: DiscussionResponse[] = [];
   searchQuery: string = "";
+  currentUser!: UserResponse;
 
   constructor(
     private discussionService: DiscussionService,
     private router: Router,
+    private authService: AuthService,
   ) {}
 
   ngOnInit(): void {
+    this.authService.fetchCurrentUser().subscribe(
+      (user: UserResponse) => {
+        this.currentUser = user;
+      },
+      (error: any) => {
+        console.error("Error fetching current user", error);
+      },
+    );
     this.loadDiscussions();
   }
 

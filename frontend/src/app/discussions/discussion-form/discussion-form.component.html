@@ -11,6 +11,14 @@
           <mat-card-title>{{
             isNewDiscussion ? "Create New Discussion" : "Update Discussion"
           }}</mat-card-title>
+          <button
+            *ngIf="isAuthor"
+            mat-icon-button
+            color="warn"
+            (click)="deleteDiscussion()"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
         </mat-card-header>
         <div class="card-content-container">
           <mat-card-content>
@@ -92,6 +100,9 @@
                 <span *ngIf="cf['description'].errors?.['required']"
                   >Comment is required.</span
                 >
+                <span *ngIf="cf['description'].errors?.['maxlength']"
+                  >Comment cannot exceed 1000 characters.</span
+                >
               </mat-error>
             </mat-form-field>
           </mat-card-content>
@@ -117,6 +128,7 @@
         <app-comment-card
           [comment]="comment"
           [currentUser]="currentUser"
+          (commentDeleted)="handleCommentDeleted($event)"
         ></app-comment-card>
       </div>
     </div>
