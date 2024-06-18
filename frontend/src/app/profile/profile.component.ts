@@ -25,9 +25,7 @@ export class ProfileComponent implements OnInit {
   profileForm: FormGroup;
   currentUser!: UserResponse;
   isEditMode: boolean = false;
-  projects!: ProjectResponse[];
-  discussions!: DiscussionResponse[];
-  comments!: CommentResponse[];
+  posts: any[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -57,42 +55,73 @@ export class ProfileComponent implements OnInit {
         bio: user.bio || "",
         accepted_community_agreement: user.accepted_community_agreement,
       });
+      this.loadPosts();
     });
   }
 
-  loadProjects() {
+  loadPosts() {
     this.projectService.getProjectsByUser(this.currentUser.id!).subscribe({
       next: (projects: ProjectResponse[]) => {
-        this.projects = projects;
+        const projectPosts = projects
+          .filter((project) =>
+            project.project_leaders.some(
+              (leader) => leader.id === this.currentUser.id,
+            ),
+          )
+          .map((project) => ({
+            ...project,
+            type: "project",
+          }));
+        this.posts = [...this.posts, ...projectPosts];
+        this.sortPostsByDate();
       },
       error: (err) => {
         console.error("Error loading projects:", err);
       },
     });
-  }
 
-  loadDiscussions() {
     this.discussionService
       .getDiscussionsByAuthor(this.currentUser.id!)
       .subscribe({
         next: (discussions: DiscussionResponse[]) => {
-          this.discussions = discussions;
+          const discussionPosts = discussions
+            .filter(
+              (discussion) => discussion.author.id === this.currentUser.id,
+            )
+            .map((discussion) => ({
+              ...discussion,
+              type: "discussion",
+            }));
+          this.posts = [...this.posts, ...discussionPosts];
+          this.sortPostsByDate();
         },
         error: (err) => {
           console.error("Error loading discussions:", err);
         },
       });
-  }
 
-  loadComments() {
     this.commentService.getCommentsByAuthor(this.currentUser.id!).subscribe({
       next: (comments: CommentResponse[]) => {
-        this.comments = comments;
+        const commentPosts = comments
+          .filter((comment) => comment.author.id === this.currentUser.id)
+          .map((comment) => ({
+            ...comment,
+            type: "comment",
+          }));
+        this.posts = [...this.posts, ...commentPosts];
+        this.sortPostsByDate();
       },
       error: (err) => {
         console.error("Error loading comments:", err);
       },
     });
+  }
+
+  sortPostsByDate() {
+    this.posts.sort(
+      (a, b) =>
+        new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
+    );
   }
 
   onEdit() {
@@ -133,16 +162,20 @@ export class ProfileComponent implements OnInit {
   }
 
   handleCommentDeleted(commentId: number): void {
-    this.comments = this.comments.filter((comment) => comment.id !== commentId);
+    this.posts = this.posts.filter(
+      (post) => !(post.type === "comment" && post.id === commentId),
+    );
   }
 
   handleProjectDeleted(projectId: number): void {
-    this.projects = this.projects.filter((project) => project.id !== projectId);
+    this.posts = this.posts.filter(
+      (post) => !(post.type === "project" && post.id === projectId),
+    );
   }
 
   handleDiscussionDeleted(discussionId: number): void {
-    this.discussions = this.discussions.filter(
-      (discussion) => discussion.id !== discussionId,
+    this.posts = this.posts.filter(
+      (post) => !(post.type === "discussion" && post.id === discussionId),
     );
   }
 }

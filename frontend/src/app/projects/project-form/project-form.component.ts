@@ -196,7 +196,7 @@ export class ProjectFormComponent implements OnInit {
         project_id: this.project_id,
         discussion_id: null,
         parent_id: null,
-        user_id: this.currentUser?.id!,
+        author_id: this.currentUser?.id!,
       };
 
       this.commentService.createComment(commentCreate).subscribe(

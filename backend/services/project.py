@@ -113,7 +113,7 @@ class ProjectService:
         return [project.to_project_response() for project in projects]
 
     def get_projects_by_user(self, user_id: int) -> List[ProjectResponse]:
-        projects = self.db.query(ProjectEntity).filter(ProjectEntity.team_members.any(UserEntity.id == user_id)).all()
+        projects = self.db.query(ProjectEntity).filter(ProjectEntity.project_leaders.any(UserEntity.id == user_id)).all()
         return [project.to_project_response() for project in projects]
 
     def delete_project(self, project_id: int):

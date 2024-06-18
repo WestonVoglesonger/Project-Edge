@@ -1,4 +1,7 @@
-<mat-card class="comment-card" (dblclick)="navigateToForm()">
+<mat-card
+  [ngClass]="{ 'comment-card-profile': inProfile, 'comment-card': !inProfile }"
+  (dblclick)="navigateToForm()"
+>
   <mat-card-header>
     <mat-card-title
       >{{ comment.author.first_name }} {{ comment.author.last_name }}
@@ -71,4 +74,5 @@
       <mat-icon>delete</mat-icon>
     </button>
   </mat-card-actions>
+  <span *ngIf="inProfile" class="card-label">Comment</span>
 </mat-card>

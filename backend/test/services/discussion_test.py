@@ -43,6 +43,11 @@ def test_get_all_discussions(discussion_svc: DiscussionService):
     # Assert that the correct number of discussions are fetched
     assert len(discussions) == 2
 
+def test_get_discussions_by_user(discussion_svc: DiscussionService):
+    discussions = discussion_svc.get_discussions_by_user(user2.id)
+    assert len(discussions) == 1
+    assert discussions[0].title == new_discussion.title
+    assert discussions[0].description == new_discussion.description
 
 def test_update_discussion(discussion_svc: DiscussionService):
     created_discussion = discussion_svc.create_discussion(discussion)
