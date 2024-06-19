@@ -112,6 +112,10 @@ class ProjectService:
         projects = self.db.query(ProjectEntity).all()
         return [project.to_project_response() for project in projects]
 
+    def get_projects_by_user(self, user_id: int) -> List[ProjectResponse]:
+        projects = self.db.query(ProjectEntity).filter(ProjectEntity.project_leaders.any(UserEntity.id == user_id)).all()
+        return [project.to_project_response() for project in projects]
+
     def delete_project(self, project_id: int):
         project_entity = self.db.query(ProjectEntity).filter_by(id=project_id).first()
         if project_entity is None:

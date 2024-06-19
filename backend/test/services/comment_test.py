@@ -8,6 +8,7 @@ from backend.services.exceptions import CommentNotFoundException
 # Data Setup and Injected Service Fixtures
 from .demo_data.core_data import setup_insert_data_fixture
 from .fixtures import comment_svc
+from .demo_data.user_data import user1, user2
 from .demo_data.comment_data import new_comment_1, new_comment_2, comment, nested_comment, nested_comment_2
 
 
@@ -46,6 +47,14 @@ def test_get_comments_by_parent(comment_svc: CommentService):
     assert comments[0].description == nested_comment_2.description
     assert comments[0].author.id == nested_comment_2.author_id
     assert comments[0].parent_id == nested_comment_2.parent_id
+
+def test_get_comments_by_user(comment_svc: CommentService):
+    comments = comment_svc.get_comments_by_user(user2.id)
+    assert len(comments) == 2
+    assert comments[0].description == new_comment_2.description
+    assert comments[0].author.id == new_comment_2.author_id
+    assert comments[0].discussion_id == new_comment_2.discussion_id
+
 
 def test_update_comment(comment_svc: CommentService):
     created_comment = comment_svc.create_comment(new_comment_1)

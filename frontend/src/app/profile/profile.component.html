@@ -1,49 +1,88 @@
 <app-navigation></app-navigation>
 
-<div class="profile-container" *ngIf="profileForm">
-  <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="profile-form">
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title>Profile</mat-card-title>
-        <button
-          mat-icon-button
-          color="primary"
-          (click)="onEdit()"
-          class="edit-button"
-          type="button"
-        >
-          <span class="material-icons">{{
-            isEditMode ? "close" : "edit"
-          }}</span>
-        </button>
-      </mat-card-header>
-      <div class="card-content-container">
-        <mat-card-content>
-          <mat-form-field>
-            <mat-label>Email</mat-label>
-            <input matInput id="email" formControlName="email" />
-          </mat-form-field>
+<div class="main-container">
+  <div class="profile-container" *ngIf="profileForm">
+    <form
+      [formGroup]="profileForm"
+      (ngSubmit)="onSubmit()"
+      class="profile-form"
+    >
+      <mat-card>
+        <mat-card-header class="profile-card-header">
+          <mat-card-title>Profile</mat-card-title>
+          <button
+            mat-icon-button
+            color="primary"
+            (click)="onEdit()"
+            class="edit-button"
+            type="button"
+          >
+            <span class="material-icons">{{
+              isEditMode ? "close" : "edit"
+            }}</span>
+          </button>
+        </mat-card-header>
+        <div class="card-content-container">
+          <mat-card-content>
+            <mat-form-field>
+              <mat-label>Email</mat-label>
+              <input matInput id="email" formControlName="email" />
+            </mat-form-field>
 
-          <mat-form-field>
-            <mat-label>First Name</mat-label>
-            <input matInput id="first_name" formControlName="first_name" />
-          </mat-form-field>
+            <mat-form-field>
+              <mat-label>First Name</mat-label>
+              <input matInput id="first_name" formControlName="first_name" />
+            </mat-form-field>
 
-          <mat-form-field>
-            <mat-label>Last Name</mat-label>
-            <input matInput id="last_name" formControlName="last_name" />
-          </mat-form-field>
+            <mat-form-field>
+              <mat-label>Last Name</mat-label>
+              <input matInput id="last_name" formControlName="last_name" />
+            </mat-form-field>
 
-          <mat-form-field>
-            <mat-label>Bio</mat-label>
-            <textarea matInput id="bio" formControlName="bio"></textarea>
-          </mat-form-field>
-        </mat-card-content>
-      </div>
+            <mat-form-field>
+              <mat-label>Bio</mat-label>
+              <textarea matInput id="bio" formControlName="bio"></textarea>
+            </mat-form-field>
+          </mat-card-content>
+        </div>
 
-      <mat-card-actions *ngIf="isEditMode">
-        <button mat-raised-button color="primary" type="submit">Save</button>
-      </mat-card-actions>
-    </mat-card>
-  </form>
+        <mat-card-actions *ngIf="isEditMode">
+          <button mat-raised-button color="primary" type="submit">Save</button>
+        </mat-card-actions>
+      </mat-card>
+    </form>
+  </div>
+
+  <div class="side-content">
+    <div class="posts-list">
+      <ng-container *ngFor="let post of posts">
+        <app-discussion-card
+          *ngIf="post.type === 'discussion'"
+          [discussion]="post"
+          [currentUser]="currentUser"
+          [inProfile]="true"
+          (discussionDeleted)="handleDiscussionDeleted($event)"
+          class="card"
+        ></app-discussion-card>
+
+        <app-comment-card
+          *ngIf="post.type === 'comment'"
+          [comment]="post"
+          [currentUser]="currentUser"
+          [inProfile]="true"
+          (commentDeleted)="handleCommentDeleted($event)"
+          class="card"
+        ></app-comment-card>
+
+        <app-project-card
+          *ngIf="post.type === 'project'"
+          [project]="post"
+          [currentUser]="currentUser"
+          [inProfile]="true"
+          (projectDeleted)="handleProjectDeleted($event)"
+          class="card"
+        ></app-project-card>
+      </ng-container>
+    </div>
+  </div>
 </div>

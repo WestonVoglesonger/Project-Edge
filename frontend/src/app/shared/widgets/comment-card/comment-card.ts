@@ -28,6 +28,7 @@ export class CommentCard implements OnInit, OnDestroy {
   @Input() comment!: CommentResponse;
   @Input() currentUser!: UserResponse;
   @Input() isExpanded: boolean = false;
+  @Input() inProfile: boolean = false;
   @Output() commentDeleted = new EventEmitter<number>();
   @Output() commentUpdated = new EventEmitter<CommentResponse>();
 

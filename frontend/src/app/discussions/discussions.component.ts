@@ -44,8 +44,11 @@ export class DiscussionsComponent implements OnInit {
   loadDiscussions(): void {
     this.discussionService.getAllDiscussions().subscribe(
       (discussions: DiscussionResponse[]) => {
-        this.discussions = discussions;
-        this.filteredDiscussions = discussions;
+        this.discussions = discussions.sort(
+          (a, b) =>
+            new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
+        );
+        this.filteredDiscussions = this.discussions;
       },
       (error) => {
         console.error("Error loading discussions", error);

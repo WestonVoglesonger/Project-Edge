@@ -44,14 +44,15 @@ export class ProjectsComponent implements OnInit {
   loadProjects(): void {
     this.projectService.getAllProjects().subscribe(
       (projects: ProjectResponse[]) => {
-        this.projects = projects;
-        this.filteredProjects = projects;
+        this.projects = projects.sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
+        this.filteredProjects = this.projects;
       },
       error => {
         console.error('Error loading projects', error);
       }
     );
   }
+  
 
   createProject(): void {
     this.router.navigate(['/projects/new']);

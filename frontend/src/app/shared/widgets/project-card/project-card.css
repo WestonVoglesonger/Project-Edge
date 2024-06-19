@@ -1,7 +1,8 @@
 .project-card {
   flex: 1 1 calc(33% - 20px);
-  max-width: 100%;
-  min-width: 300px;
+  max-width: 350px;
+  min-width: 350px;
+  min-height: 300px;
   display: flex;
   flex-direction: column;
   background-color: #ffffff;
@@ -9,7 +10,7 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease-in-out;
   overflow: hidden;
-  margin: 10px;
+  position: relative; /* Ensure relative positioning for the label */
 }
 
 .project-card:hover {
@@ -29,7 +30,7 @@ mat-card-header {
   justify-content: space-between;
   align-items: flex-start;
   padding: 16px;
-  background: linear-gradient(to right, #3f51b5, #5c6bc0);
+  background: linear-gradient(to right, #3f98b5, #87a7c2);
   color: #fff;
 }
 
@@ -59,6 +60,7 @@ mat-card-subtitle {
 
 mat-card-content {
   padding: 16px;
+  flex-grow: 1; /* Ensure content takes available space */
 }
 
 mat-card-content p {
@@ -89,4 +91,17 @@ button {
   .project-card {
     flex: 1 1 calc(100% - 20px);
   }
+}
+
+.card-label {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  max-width: 50%;
 }

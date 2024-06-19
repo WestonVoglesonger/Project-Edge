@@ -27,6 +27,10 @@ export class ProjectService {
     return this.http.get<any[]>(this.apiUrl);
   }
 
+  getProjectsByUser(userId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}?userId=${userId}`);
+  }
+
   deleteProject(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
