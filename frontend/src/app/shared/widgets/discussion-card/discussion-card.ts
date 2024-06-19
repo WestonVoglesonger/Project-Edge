@@ -12,6 +12,7 @@ import { UserResponse } from "../../users/user.models";
 export class DiscussionCard implements OnInit {
   @Input() discussion!: DiscussionResponse;
   @Input() currentUser!: UserResponse;
+  @Input() inProfile: boolean = false;
   @Output() viewDetails = new EventEmitter<void>();
   @Output() discussionDeleted = new EventEmitter<number>();
 

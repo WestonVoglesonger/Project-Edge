@@ -194,7 +194,7 @@ export class DiscussionFormComponent implements OnInit, AfterViewInit {
         project_id: null,
         discussion_id: this.discussion_id,
         parent_id: null,
-        user_id: this.currentUser?.id!,
+        author_id: this.currentUser?.id!,
       };
 
       this.commentService.createComment(commentCreate).subscribe(

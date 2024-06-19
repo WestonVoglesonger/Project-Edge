@@ -120,7 +120,7 @@ export class CommentFormComponent implements OnInit {
         project_id: this.project_id || null,
         discussion_id: this.discussion_id || null,
         parent_id: this.comment_id || null,
-        user_id: this.currentUser.id!,
+        author_id: this.currentUser.id!,
       };
       this.commentService.createComment(replyCreate).subscribe(
         (response: CommentResponse) => {

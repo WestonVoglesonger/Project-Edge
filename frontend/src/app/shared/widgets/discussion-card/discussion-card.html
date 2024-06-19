@@ -1,12 +1,9 @@
 <mat-card class="discussion-card" (dblclick)="viewDiscussionDetails()">
   <mat-card-header>
-    <div class="header-content">
-      <mat-card-subtitle>
-        {{ discussion.author.first_name }} {{ discussion.author.last_name }}
-      </mat-card-subtitle>
-      <span class="comment-time">{{ mostRecentTime | date: "short" }}</span>
-    </div>
-    <mat-card-title>{{ discussion.title }}</mat-card-title>
+    <mat-card-title>
+      {{ discussion.author.first_name }} {{ discussion.author.last_name }}
+    </mat-card-title>
+    <span class="comment-time">{{ mostRecentTime | date: "short" }}</span>
   </mat-card-header>
   <mat-card-content>
     <ng-container *ngIf="!isExpanded">
@@ -37,4 +34,5 @@
       <mat-icon>delete</mat-icon>
     </button>
   </mat-card-actions>
+  <span *ngIf="inProfile" class="card-label">Discussion</span>
 </mat-card>

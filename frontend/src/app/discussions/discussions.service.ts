@@ -33,6 +33,12 @@ export class DiscussionService {
     return this.http.get<DiscussionResponse[]>(this.apiUrl);
   }
 
+  getDiscussionsByAuthor(authorId: number): Observable<DiscussionResponse[]> {
+    return this.http.get<DiscussionResponse[]>(
+      `${this.apiUrl}?authorId=${authorId}`,
+    );
+  }
+
   deleteDiscussion(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }

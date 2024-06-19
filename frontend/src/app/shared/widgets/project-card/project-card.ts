@@ -12,6 +12,7 @@ import { UserResponse } from "../../users/user.models";
 export class ProjectCard implements OnInit {
   @Input() project!: ProjectResponse;
   @Input() currentUser!: UserResponse;
+  @Input() inProfile: boolean = false;
   @Output() viewDetails = new EventEmitter<void>();
   @Output() projectDeleted = new EventEmitter<number>();
 

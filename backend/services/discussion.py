@@ -58,6 +58,10 @@ class DiscussionService:
         discussions = self.db.query(DiscussionEntity).all()
         return [discussion.to_discussion_response() for discussion in discussions]
 
+    def get_discussions_by_user(self, author_id: int) -> List[DiscussionResponse]:
+        discussions = self.db.query(DiscussionEntity).filter_by(author_id=author_id).all()
+        return [discussion.to_discussion_response() for discussion in discussions]
+
     def delete_discussion(self, discussion_id: int):
         discussion_entity = self.db.query(DiscussionEntity).filter_by(id=discussion_id).first()
         if discussion_entity is None:

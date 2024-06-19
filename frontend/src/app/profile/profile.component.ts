@@ -4,6 +4,12 @@ import { UserService } from "../shared/users/user.service";
 import { Route } from "@angular/router";
 import { AuthService } from "../shared/auth.service";
 import { UserResponse } from "../shared/users/user.models";
+import { ProjectResponse } from "../projects/project.models";
+import { DiscussionResponse } from "../discussions/discussion.models";
+import { CommentResponse } from "../shared/comment.models";
+import { DiscussionService } from "../discussions/discussions.service";
+import { ProjectService } from "../projects/projects.service";
+import { CommentService } from "../shared/comment.service";
 
 @Component({
   selector: "app-profile",
@@ -17,13 +23,17 @@ export class ProfileComponent implements OnInit {
     title: "Profile Page",
   };
   profileForm: FormGroup;
-  userId: number | undefined;
+  currentUser!: UserResponse;
   isEditMode: boolean = false;
+  posts: any[] = [];
 
   constructor(
     private fb: FormBuilder,
     private userService: UserService,
     private authService: AuthService,
+    private projectService: ProjectService,
+    private discussionService: DiscussionService,
+    private commentService: CommentService,
   ) {
     this.profileForm = this.fb.group({
       first_name: [{ value: "", disabled: true }],
@@ -37,7 +47,7 @@ export class ProfileComponent implements OnInit {
   ngOnInit(): void {
     this.authService.fetchCurrentUser().subscribe((user: UserResponse) => {
       console.log("User:", user);
-      this.userId = user.id;
+      this.currentUser = user;
       this.profileForm.patchValue({
         first_name: user.first_name || "",
         last_name: user.last_name || "",
@@ -45,7 +55,72 @@ export class ProfileComponent implements OnInit {
         bio: user.bio || "",
         accepted_community_agreement: user.accepted_community_agreement,
       });
+      this.loadPosts();
     });
+  }
+
+  loadPosts() {
+    this.projectService.getProjectsByUser(this.currentUser.id!).subscribe({
+      next: (projects: ProjectResponse[]) => {
+        const projectPosts = projects
+          .filter((project) =>
+            project.project_leaders.some(
+              (leader) => leader.id === this.currentUser.id,
+            ),
+          )
+          .map((project) => ({
+            ...project,
+            type: "project",
+          }));
+        this.posts = [...this.posts, ...projectPosts];
+        this.sortPostsByDate();
+      },
+      error: (err) => {
+        console.error("Error loading projects:", err);
+      },
+    });
+
+    this.discussionService
+      .getDiscussionsByAuthor(this.currentUser.id!)
+      .subscribe({
+        next: (discussions: DiscussionResponse[]) => {
+          const discussionPosts = discussions
+            .filter(
+              (discussion) => discussion.author.id === this.currentUser.id,
+            )
+            .map((discussion) => ({
+              ...discussion,
+              type: "discussion",
+            }));
+          this.posts = [...this.posts, ...discussionPosts];
+          this.sortPostsByDate();
+        },
+        error: (err) => {
+          console.error("Error loading discussions:", err);
+        },
+      });
+
+    this.commentService.getCommentsByAuthor(this.currentUser.id!).subscribe({
+      next: (comments: CommentResponse[]) => {
+        console.log("Comments:", comments);
+        const commentPosts = comments.map((comment) => ({
+          ...comment,
+          type: "comment",
+        }));
+        this.posts = [...this.posts, ...commentPosts];
+        this.sortPostsByDate();
+      },
+      error: (err) => {
+        console.error("Error loading comments:", err);
+      },
+    });
+  }
+
+  sortPostsByDate() {
+    this.posts.sort(
+      (a, b) =>
+        new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
+    );
   }
 
   onEdit() {
@@ -59,7 +134,7 @@ export class ProfileComponent implements OnInit {
   }
 
   onSubmit() {
-    if (this.userId) {
+    if (this.currentUser.id!) {
       const profileData = this.profileForm.getRawValue();
       const formData = new FormData();
       formData.append("first_name", profileData.first_name);
@@ -71,15 +146,35 @@ export class ProfileComponent implements OnInit {
         String(profileData.accepted_community_agreement),
       );
 
-      this.userService.updateUserProfile(this.userId, formData).subscribe({
-        next: () => {
-          this.isEditMode = false;
-          this.profileForm.disable();
-        },
-        error: (err) => {
-          console.error("Error updating profile:", err);
-        },
-      });
+      this.userService
+        .updateUserProfile(this.currentUser.id!, formData)
+        .subscribe({
+          next: () => {
+            this.isEditMode = false;
+            this.profileForm.disable();
+          },
+          error: (err) => {
+            console.error("Error updating profile:", err);
+          },
+        });
     }
+  }
+
+  handleCommentDeleted(commentId: number): void {
+    this.posts = this.posts.filter(
+      (post) => !(post.type === "comment" && post.id === commentId),
+    );
+  }
+
+  handleProjectDeleted(projectId: number): void {
+    this.posts = this.posts.filter(
+      (post) => !(post.type === "project" && post.id === projectId),
+    );
+  }
+
+  handleDiscussionDeleted(discussionId: number): void {
+    this.posts = this.posts.filter(
+      (post) => !(post.type === "discussion" && post.id === discussionId),
+    );
   }
 }

@@ -34,6 +34,10 @@ def read_project(project_id: int, project_service: ProjectService = Depends(get_
 def read_projects(project_service: ProjectService = Depends(get_project_service)):
     return project_service.get_all_projects()
 
+@api.get("/{user_id}", response_model=List[ProjectResponse], tags=["Projects"])
+def read_projects_by_user(user_id: int, project_service: ProjectService = Depends(get_project_service)):
+    return project_service.get_projects_by_user(user_id=user_id)
+
 @api.put("/{project_id}", response_model=ProjectResponse, tags=["Projects"])
 def update_project(project_id: int, project_update: ProjectUpdate, project_service: ProjectService = Depends(get_project_service)):
     try:
