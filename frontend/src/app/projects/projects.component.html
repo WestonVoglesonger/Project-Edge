@@ -1,10 +1,14 @@
 <app-navigation></app-navigation>
 <div class="projects-container">
-  <h2>Explore Projects</h2>
-  <input type="text" placeholder="Search projects..." [(ngModel)]="searchQuery" class="search-input" (input)="filterProjects()">
-  <button mat-raised-button color="primary" class="create-project-button" (click)="createProject()">
-    Create New Project
-  </button>
+  <div class="header">
+    <h2>Explore Projects</h2>
+    <button mat-raised-button color="primary" class="create-project-button" (click)="createProject()">
+      Create New Project
+    </button>
+  </div>
+  <div class="search-container">
+    <input type="text" placeholder="Search projects..." [(ngModel)]="searchQuery" class="search-input" (input)="filterProjects()">
+  </div>
   <div class="projects-list">
     <app-project-card *ngFor="let project of filteredProjects" [project]="project" [currentUser]="currentUser" (projectDeleted)="handleProjectDeleted($event)"></app-project-card>
   </div>

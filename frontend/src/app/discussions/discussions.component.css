@@ -1,60 +1,84 @@
+/* Apply the background color to the entire page */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #f9f9f9; /* Change this to the desired background color */
+  font-family: Arial, sans-serif; /* Optional: Change the font family */
+}
+
 .discussions-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
-    box-sizing: border-box;
-    width: 100%;
-  }
-  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 10px;
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 24px;
+  color: #333;
+}
+
+.create-discussion-button {
+  background: linear-gradient(to right, #3f51b5, #5c6bc0);
+  color: white;
+  font-size: 16px;
+}
+
+.search-container {
+  width: 100%;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.search-input {
+  width: 300px;
+  padding: 10px;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  transition: border-color 0.3s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #007bff; 
+}
+
+.discussions-list {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
   .header {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
+    flex-direction: column;
+    align-items: flex-start;
   }
-  
-  .discussions-list {
-    width: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
+
+  .create-discussion-button {
+    margin-top: 10px;
   }
-  
-  .search-container {
-    width: 100%;
-    margin-bottom: 20px;
-    display: flex;
-    justify-content: center;
-  }
-  
+
   .search-input {
-    width: 300px;
-    padding: 10px;
-    border: 2px solid #ccc;
-    border-radius: 5px;
-    font-size: 16px;
+    width: 100%;
   }
-  
-  .search-input:focus {
-    outline: none;
-    border-color: #007bff; 
-  }
-  
-  .search-button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .search-button:hover {
-    background-color: #0056b3;
-  }
-  
+}
