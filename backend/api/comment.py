@@ -69,7 +69,7 @@ def update_comment(comment_id: int, comment_update: CommentUpdate, comment_servi
         logger.error(f"Error updating comment: {e}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An unexpected error occurred.")
 
-@api.get("/{author_id}", response_model=List[CommentResponse], tags=["Comments"])
+@api.get("/user/{author_id}", response_model=List[CommentResponse], tags=["Comments"])
 def read_comments_by_user(author_id: int, comment_service: CommentService = Depends(get_comment_service)):
     try:
         return comment_service.get_comments_by_user(author_id=author_id)

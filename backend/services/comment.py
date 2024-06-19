@@ -1,10 +1,13 @@
 # backend/services/comment.py
+import logging
 from sqlalchemy.orm import Session
 from sqlalchemy.orm.exc import NoResultFound
 from typing import List
 from backend.models.comment import CommentResponse, CommentCreate, CommentUpdate
 from backend.entities.comment_entity import CommentEntity
 from backend.services.exceptions import CommentNotFoundException, UserNotFoundException
+
+logger = logging.getLogger(__name__)
 
 class CommentService:
     def __init__(self, db: Session):
@@ -49,7 +52,9 @@ class CommentService:
         return [comment.to_comment_response() for comment in comments]
 
     def get_comments_by_user(self, author_id: int) -> List[CommentResponse]:
+        print(f"Getting comments for author_id: {author_id}")
         comments = self.db.query(CommentEntity).filter_by(author_id=author_id).all()
+        print(f"Retrieved {len(comments)} comments for author_id: {author_id}")
         return [comment.to_comment_response() for comment in comments]
 
     def delete_comment(self, comment_id: int):

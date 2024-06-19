@@ -102,12 +102,11 @@ export class ProfileComponent implements OnInit {
 
     this.commentService.getCommentsByAuthor(this.currentUser.id!).subscribe({
       next: (comments: CommentResponse[]) => {
-        const commentPosts = comments
-          .filter((comment) => comment.author.id === this.currentUser.id)
-          .map((comment) => ({
-            ...comment,
-            type: "comment",
-          }));
+        console.log("Comments:", comments);
+        const commentPosts = comments.map((comment) => ({
+          ...comment,
+          type: "comment",
+        }));
         this.posts = [...this.posts, ...commentPosts];
         this.sortPostsByDate();
       },
