@@ -34,4 +34,8 @@ export class ProjectService {
   deleteProject(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
+
+  joinProject(projectId: number, userId: number): Observable<any> {
+    return this.http.post(`${this.apiUrl}/${projectId}/join`, { userId });
+  }
 }

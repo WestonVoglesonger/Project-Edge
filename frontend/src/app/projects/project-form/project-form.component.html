@@ -4,7 +4,7 @@
     <form [formGroup]="projectForm" (ngSubmit)="saveProject()" class="project-form">
       <mat-card>
         <mat-card-header>
-          <mat-card-title>{{ isNewProject ? 'Create New Project' : 'Update Project' }}</mat-card-title>
+          <mat-card-title>{{ isNewProject ? 'Create New Project' : isLeader ? 'Update Project' : 'View Project' }}</mat-card-title>
         <button
           *ngIf="isLeader"
           mat-icon-button
@@ -13,6 +13,9 @@
           class="delete-button"
         >
           <mat-icon>delete</mat-icon>
+        </button>
+        <button class="join-button" *ngIf="!isLeader && !isNewProject && !hasJoined" mat-raised-button color="primary" (click)="joinProject()">
+          Join Project
         </button>
         </mat-card-header>
         <div class="card-content-container">

@@ -30,6 +30,7 @@ export class ProjectFormComponent implements OnInit {
   filteredLeaders: UserResponse[] = [];
   currentUser!: UserResponse;
   isLeader: boolean = false;
+  hasJoined: boolean = false;
   comments: CommentResponse[] = [];
   project_id!: number;
 
@@ -116,6 +117,7 @@ export class ProjectFormComponent implements OnInit {
         this.isLeader = project.project_leaders.some((leader: { email: string | undefined; }) => leader.email === this.currentUser?.email);
         if (!this.isLeader) {
           this.projectForm.disable();
+          this.hasJoined = project.team_members.some((member: { email: string | undefined; }) => member.email === this.currentUser?.email);
         }
       },
       error => {
@@ -187,6 +189,19 @@ export class ProjectFormComponent implements OnInit {
         }
       );
     }
+  }
+
+  joinProject(): void {
+    this.projectService.joinProject(this.project_id, this.currentUser.id!).subscribe(
+      response => {
+        console.log('Join request sent successfully', response);
+        this.hasJoined = true;
+        // Optionally, update the UI to reflect the join request
+      },
+      error => {
+        console.error('Error sending join request', error);
+      }
+    );
   }
 
   saveComment(): void {
