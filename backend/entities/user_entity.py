@@ -1,5 +1,5 @@
 from typing import List
-from sqlalchemy import Column, Integer, String, Boolean, Text, ForeignKey, Table
+from sqlalchemy import Column, Integer, String, Boolean, Text, Table, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from .base import Base
 from ..models.user import ProfileForm, User, UserBase, UserResponse
@@ -38,6 +38,7 @@ class UserEntity(Base):
     authored_discussions: Mapped[List['DiscussionEntity']] = relationship('DiscussionEntity', back_populates='author')
 
     comments = relationship("CommentEntity", back_populates="author", cascade="all, delete-orphan")
+    join_requests = relationship('JoinRequestEntity', back_populates='user')
 
     def to_user_response(self):
         return UserResponse(

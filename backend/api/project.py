@@ -7,6 +7,7 @@ from backend.database import db_session
 from backend.models.project import ProjectCreate, ProjectUpdate, ProjectResponse
 from backend.services.exceptions import ProjectNotFoundException
 from backend.services.project import ProjectService
+from backend.models.join_request import JoinRequestResponse
 
 logger = logging.getLogger(__name__)
 
@@ -51,3 +52,7 @@ def delete_project(project_id: int, project_service: ProjectService = Depends(ge
         return project_service.delete_project(project_id=project_id)
     except ProjectNotFoundException as e:
         raise HTTPException(status_code=404, detail=str(e))
+
+@api.post("/{project_id}/join/{user_id}", response_model=JoinRequestResponse, tags=["Projects"])
+def join_project(project_id: int, user_id: int, db: Session = Depends(get_project_service)):
+    return project_service.create_join_request(db, project_id, user_id)

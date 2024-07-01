@@ -124,3 +124,10 @@ class ProjectService:
         self.db.commit()
         return project_entity.to_project_response()
 
+    def create_join_request(db: Session, project_id: int, user_id: int):
+        join_request = from_model(user_id, project_id)
+        db.add(join_request)
+        db.commit()
+        db.refresh(join_request)
+        return join_request.to_join_request_response()
+
