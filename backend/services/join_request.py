@@ -6,7 +6,7 @@ from backend.entities.join_request_entity import JoinRequestEntity
 from backend.entities.user_entity import UserEntity
 from backend.entities.project_entity import ProjectEntity
 from backend.models.join_request import JoinRequestCreate, JoinRequestResponse
-from .exceptions import UserNotFoundException, ProjectNotFoundException, JoinRequestNotFoundException
+from .exceptions import UserNotFoundException, ProjectNotFoundException, JoinRequestNotFoundException, JoinRequestAlreadyMadeException
 
 logger = logging.getLogger(__name__)
 
@@ -23,14 +23,21 @@ class JoinRequestService:
         if project_entity is None:
             raise ProjectNotFoundException(f"Project with id {join_request_data.project_id} not found")
 
-        join_request_entity = JoinRequestEntity.from_model(
-            user_id=join_request_data.user_id,
-            project_id=join_request_data.project_id
-        )
+        # Check if a join request already exists for the user and project
+        existing_request = self.db.query(JoinRequestEntity).filter(
+            JoinRequestEntity.user_id == join_request_data.user_id,
+            JoinRequestEntity.project_id == join_request_data.project_id
+        ).first()
+
+        if existing_request:
+            raise JoinRequestAlreadyMadeException(f"User with id {join_request_data.user_id} already made a join request for project with id {join_request_data.project_id}")
+
+        join_request_entity = JoinRequestEntity.from_model(join_request_data)
         self.db.add(join_request_entity)
         self.db.commit()
         self.db.refresh(join_request_entity)
         return join_request_entity.to_join_request_response()
+
 
     def get_join_request(self, join_request_id: int) -> JoinRequestResponse:
         join_request_entity = self.db.query(JoinRequestEntity).filter(JoinRequestEntity.id == join_request_id).first()

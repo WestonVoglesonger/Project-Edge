@@ -17,12 +17,13 @@ join_request_1 = JoinRequestCreate(
 
 )
 
+
 join_request_2 = JoinRequestCreate(
     user_id=2,
-    project_id=1,
+    project_id=1
 )
 
-join_requests = [join_request_1, join_request_2]
+join_requests = [join_request_1]
 
 def insert_fake_data(session: Session):
     user1_entity = session.query(UserEntity).filter_by(email=user1.email).first()
@@ -34,11 +35,11 @@ def insert_fake_data(session: Session):
 
     entities = []
     for join_request in join_requests:
-        join_request = JoinRequestEntity.from_model(join_request)
-        join_request.user_id = user1_entity.id if join_request.user_id == 1 else user2_entity.id
-        join_request.project_id = project_entity.id
-        session.add(join_request)
-        entities.append(join_request)
+        join_request_entity = JoinRequestEntity.from_model(join_request)
+        join_request_entity.user_id = user1_entity.id if join_request.user_id == 1 else user2_entity.id
+        join_request_entity.project_id = project_entity.id
+        session.add(join_request_entity)
+        entities.append(join_request_entity)
     session.commit()
     reset_table_id_seq(session, JoinRequestEntity, JoinRequestEntity.id, len(join_requests) + 1)
 
