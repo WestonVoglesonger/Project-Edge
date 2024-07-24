@@ -42,9 +42,9 @@ def list_join_requests(join_request_service: JoinRequestService = Depends(get_jo
     except Exception as e:
         raise HTTPException(status_code=422, detail=f"Error processing query: {str(e)}")
 
-@api.delete("/{join_request_id}", response_model=JoinRequestResponse, tags=["JoinRequests"])
-def delete_join_request(join_request_id: int, join_request_service: JoinRequestService = Depends(get_join_request_service)):
+@api.delete("/{current_user_id}/{project_id}", response_model=JoinRequestResponse, tags=["JoinRequests"])
+def delete_join_request(current_user_id: int, project_id: int, join_request_service: JoinRequestService = Depends(get_join_request_service)):
     try:
-        return join_request_service.delete_join_request(join_request_id)
+        return join_request_service.delete_join_request(current_user_id, project_id)
     except JoinRequestNotFoundException as e:
         raise HTTPException(status_code=404, detail=str(e))

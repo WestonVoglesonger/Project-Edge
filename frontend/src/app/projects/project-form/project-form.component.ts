@@ -7,7 +7,7 @@ import { UserResponse } from 'src/app/shared/users/user.models';
 import { UserService } from 'src/app/shared/users/user.service';
 import { AuthService } from 'src/app/shared/auth.service';
 import { minLengthArray } from 'src/app/shared/min-length-array.validator';
-import { Project } from '../project.models';
+import { JoinProjectRequestCreate, Project } from '../project.models';
 import { CommentService } from 'src/app/shared/comment.service';
 import { CommentResponse, CommentCreate } from 'src/app/shared/comment.models';
 
@@ -192,7 +192,12 @@ export class ProjectFormComponent implements OnInit {
   }
 
   joinProject(): void {
-    this.projectService.joinProject(this.project_id, this.currentUser.id!).subscribe(
+    const joinRequest: JoinProjectRequestCreate = {
+      project_id: this.project_id,
+      user_id: this.currentUser.id!,
+    };
+
+    this.projectService.createJoinRequest(joinRequest).subscribe(
       response => {
         console.log('Join request sent successfully', response);
         this.hasJoined = true;
@@ -204,6 +209,21 @@ export class ProjectFormComponent implements OnInit {
     );
   }
 
+  leaveProject(): void {
+    if (confirm('Are you sure you want to leave this project?')) {
+
+      this.projectService.deleteJoinRequest(this.project_id, this.currentUser.id!).subscribe(
+        response => {
+          console.log('Left project successfully', response);
+          this.hasJoined = false;
+          // Optionally, update the UI to reflect the leave request
+        },
+        error => {
+          console.error('Error leaving project', error);
+        }
+      );
+    }
+  }
   saveComment(): void {
     if (this.commentForm.valid) {
       const commentCreate: CommentCreate = {

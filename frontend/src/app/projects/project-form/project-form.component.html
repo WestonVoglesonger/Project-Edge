@@ -14,8 +14,11 @@
         >
           <mat-icon>delete</mat-icon>
         </button>
-        <button class="join-button" *ngIf="!isLeader && !isNewProject && !hasJoined" mat-raised-button color="primary" (click)="joinProject()">
+        <button class="join-leave-button" *ngIf="!isLeader && !isNewProject && !hasJoined" mat-raised-button color="primary" (click)="joinProject()">
           Join Project
+        </button>
+        <button class="join-leave-button" *ngIf="!isLeader && !isNewProject && hasJoined" mat-raised-button color="warn" (click)="leaveProject()">
+          Leave Project
         </button>
         </mat-card-header>
         <div class="card-content-container">

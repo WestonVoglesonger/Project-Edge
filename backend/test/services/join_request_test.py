@@ -46,10 +46,10 @@ def test_list_join_requests(join_request_svc: JoinRequestService):
 
 def test_delete_join_request(join_request_svc: JoinRequestService):
     join_request = join_request_svc.create_join_request(join_request_1)
-    join_request_svc.delete_join_request(join_request.id)
+    join_request_svc.delete_join_request(join_request.user_id, join_request.project_id)
     with pytest.raises(JoinRequestNotFoundException):
         join_request_svc.get_join_request(join_request.id)
 
 def test_delete_join_request_not_found(join_request_svc: JoinRequestService):
     with pytest.raises(JoinRequestNotFoundException):
-        join_request_svc.delete_join_request(999)
+        join_request_svc.delete_join_request(999, 999)

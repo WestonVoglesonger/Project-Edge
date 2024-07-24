@@ -49,10 +49,13 @@ class JoinRequestService:
         join_request_entities = self.db.query(JoinRequestEntity).all()
         return [jr.to_join_request_response() for jr in join_request_entities]
 
-    def delete_join_request(self, join_request_id: int) -> JoinRequestResponse:
-        join_request_entity = self.db.query(JoinRequestEntity).filter(JoinRequestEntity.id == join_request_id).first()
+    def delete_join_request(self, user_id: int, project_id: int) -> JoinRequestResponse:
+        join_request_entity = self.db.query(JoinRequestEntity).filter(
+            JoinRequestEntity.user_id == user_id,
+            JoinRequestEntity.project_id == project_id
+        ).first()
         if join_request_entity is None:
-            raise JoinRequestNotFoundException(f"JoinRequest with id {join_request_id} not found")
+            raise JoinRequestNotFoundException(f"JoinRequest for user {user_id} and project {project_id} not found")
         self.db.delete(join_request_entity)
         self.db.commit()
         return join_request_entity.to_join_request_response()
