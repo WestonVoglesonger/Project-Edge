@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 from sqlalchemy import Column, DateTime, Integer, ForeignKey, String
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 
-from backend.models.join_request import JoinRequestResponse
+from backend.models.join_request import JoinRequestCreate, JoinRequestResponse
 from .base import Base
 
 class JoinRequestEntity(Base):
@@ -27,8 +27,8 @@ class JoinRequestEntity(Base):
         )
 
     @staticmethod
-    def from_model(user_id: int, project_id: int):
+    def from_model(join_request: JoinRequestCreate):
         return JoinRequestEntity(
-            user_id=user_id,
-            project_id=project_id
+            user_id=join_request.user_id,
+            project_id=join_request.project_id
         )

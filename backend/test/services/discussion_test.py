@@ -10,7 +10,7 @@ from backend.services.discussion import DiscussionService
 from .demo_data.discussion_data import updated_discussion
 from .demo_data.core_data import setup_insert_data_fixture
 from .fixtures import discussion_svc, user_svc
-from .demo_data.discussion_data import discussion, new_discussion
+from .demo_data.discussion_data import discussion, new_discussion, discussion_author_not_found, discussion_to_delete
 from .demo_data.user_data import user1, user2
 
 
@@ -22,9 +22,8 @@ def test_create_discussion(discussion_svc: DiscussionService):
 
 
 def test_create_discussion_user_not_found(discussion_svc: DiscussionService):
-    discussion.author_id = 999
     with pytest.raises(UserNotFoundException):
-        discussion_svc.create_discussion(discussion)
+        discussion_svc.create_discussion(discussion_author_not_found)
 
 
 def test_get_discussion(discussion_svc: DiscussionService):
@@ -35,8 +34,6 @@ def test_get_discussion(discussion_svc: DiscussionService):
 
 
 def test_get_all_discussions(discussion_svc: DiscussionService):
-    discussion_svc.create_discussion(new_discussion)
-
     # Fetch all discussions
     discussions = discussion_svc.get_all_discussions()
 
@@ -59,11 +56,11 @@ def test_update_discussion(discussion_svc: DiscussionService):
 
 
 def test_delete_discussion(discussion_svc: DiscussionService):
-    created_discussion = discussion_svc.create_discussion(discussion)
-    discussion_svc.delete_discussion(created_discussion.id)
+    discussion = discussion_svc.create_discussion(discussion_to_delete)
+    discussion_svc.delete_discussion(discussion.id)
 
     with pytest.raises(DiscussionNotFoundException):
-        discussion_svc.get_discussion(created_discussion.id)
+        discussion_svc.get_discussion(discussion.id)
 
 
 def test_get_discussion_not_found(discussion_svc: DiscussionService):

@@ -24,6 +24,18 @@ updated_discussion = DiscussionUpdate(
     description="An updated description for the discussion"
 )
 
+discussion_author_not_found = DiscussionCreate(
+    title="Discussion with non-existent author",
+    description="A discussion with a non-existent author",
+    author_id=999
+)
+
+discussion_to_delete = DiscussionCreate(
+    title="Discussion to delete",
+    description="A discussion to delete",
+    author_id=user1.id
+)
+
 discussions = [discussion, new_discussion]
 
 def insert_fake_data(session: Session):

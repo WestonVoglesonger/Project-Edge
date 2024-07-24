@@ -62,10 +62,15 @@ class DiscussionService:
         discussions = self.db.query(DiscussionEntity).filter_by(author_id=author_id).all()
         return [discussion.to_discussion_response() for discussion in discussions]
 
-    def delete_discussion(self, discussion_id: int):
-        discussion_entity = self.db.query(DiscussionEntity).filter_by(id=discussion_id).first()
-        if discussion_entity is None:
+    def delete_discussion(self, discussion_id: int) -> DiscussionResponse:
+        discussion_entity = self.db.query(DiscussionEntity).filter(DiscussionEntity.id == discussion_id).first()
+        if not discussion_entity:
             raise DiscussionNotFoundException(f"Discussion with id {discussion_id} not found")
+        
+        response = discussion_entity.to_discussion_response()
+        
         self.db.delete(discussion_entity)
         self.db.commit()
-        return discussion_entity.to_discussion_response()
+        
+        return response
+
