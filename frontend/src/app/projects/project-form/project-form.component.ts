@@ -30,6 +30,7 @@ export class ProjectFormComponent implements OnInit {
   filteredLeaders: UserResponse[] = [];
   currentUser!: UserResponse;
   isLeader: boolean = false;
+  isEditing: boolean = false;
   hasJoined: boolean = false;
   comments: CommentResponse[] = [];
   project_id!: number;
@@ -102,6 +103,7 @@ export class ProjectFormComponent implements OnInit {
   loadProject(id: number): void {
     this.projectService.getProject(id).subscribe(
       project => {
+        console.log(project);
         this.projectForm.patchValue({
           name: project.name,
           description: project.description,
@@ -167,6 +169,7 @@ export class ProjectFormComponent implements OnInit {
         this.projectService.updateProject(this.project_id, projectData).subscribe(
           response => {
             console.log('Project updated successfully', response);
+            this.isEditing = false;
             this.router.navigate(['/projects']);
           },
           error => {
@@ -224,6 +227,7 @@ export class ProjectFormComponent implements OnInit {
       );
     }
   }
+  
   saveComment(): void {
     if (this.commentForm.valid) {
       const commentCreate: CommentCreate = {
@@ -335,6 +339,10 @@ export class ProjectFormComponent implements OnInit {
       });
     }
     this.router.navigate(['/projects']);
+  }
+
+  editProject(): void {
+    this.isEditing = true;
   }
 
   get f(): { [key: string]: AbstractControl } {

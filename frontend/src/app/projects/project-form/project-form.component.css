@@ -10,7 +10,8 @@
 }
 
 .left-column,
-.right-column {
+.right-column,
+.project-details {
   flex: 1;
   max-width: 45%;
 }
@@ -100,13 +101,23 @@ button {
   margin-bottom: 15px;
 }
 
+.project-details mat-card-content p {
+  margin: 10px 0;
+}
+
+.project-details ul {
+  padding-left: 20px;
+  list-style: disc;
+}
+
 @media (max-width: 1024px) {
   .container {
     flex-direction: column;
   }
 
   .left-column,
-  .right-column {
+  .right-column,
+  .project-details {
     max-width: 100%;
   }
 }
