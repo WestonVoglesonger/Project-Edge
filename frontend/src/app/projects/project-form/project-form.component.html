@@ -1,12 +1,12 @@
 <app-navigation></app-navigation>
 <div class="container">
   <div class="left-column">
-    <form [formGroup]="projectForm" (ngSubmit)="saveProject()" class="project-form" *ngIf="isLeader && isEditing">
+    <form [formGroup]="projectForm" (ngSubmit)="saveProject()" class="project-form" *ngIf="showEditor">
       <mat-card>
         <mat-card-header>
           <mat-card-title>{{ isNewProject ? 'Create New Project' : 'Update Project' }}</mat-card-title>
           <button
-            *ngIf="isLeader"
+            *ngIf="isLeader && !isNewProject"
             mat-icon-button
             color="warn"
             (click)="deleteProject()"
@@ -114,14 +114,20 @@
     <mat-card>
       <mat-card-header>
         <mat-card-title>Project Details</mat-card-title>
-        <button class="join-leave-button" *ngIf="!hasJoined && !isLeader" mat-raised-button color="primary" (click)="joinProject()">
-          Join Project
+        <button class="join-leave-button" *ngIf="!hasJoined && !isLeader && !hasRequestedToJoin" mat-raised-button color="primary" (click)="createRequest()">
+          Request to Join
+        </button>
+        <button class="join-leave-button" *ngIf="!hasJoined && !isLeader && hasRequestedToJoin" mat-raised-button color="primary" (click)="deleteRequest()">
+          Remove Request
         </button>
         <button class="join-leave-button" *ngIf="hasJoined && !isLeader" mat-raised-button color="warn" (click)="leaveProject()">
           Leave Project
         </button>
         <button class="edit-button" *ngIf="isLeader" mat-raised-button color="primary" (click)="editProject()">
           Edit Project
+        </button>
+        <button *ngIf="isLeader && !isNewProject" mat-raised-button color="primary" (click)="navigateToRequests()">
+          View Join Requests
         </button>
       </mat-card-header>
       <mat-card-content>

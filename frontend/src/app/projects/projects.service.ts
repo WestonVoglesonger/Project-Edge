@@ -1,7 +1,9 @@
+// project.service.ts
+
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { JoinProjectRequestCreate, Project } from './project.models';
+import { JoinProjectRequestCreate, JoinProjectRequestResponse, Project } from './project.models';
 
 @Injectable({
   providedIn: 'root'
@@ -36,11 +38,27 @@ export class ProjectService {
     return this.http.delete<void>(`${this.projectsApiUrl}/${id}`);
   }
 
-  createJoinRequest(joinProjectRequest: JoinProjectRequestCreate): Observable<any> {
-    return this.http.post(this.requestsApiUrl, joinProjectRequest);
+  createJoinRequest(joinProjectRequest: JoinProjectRequestCreate): Observable<JoinProjectRequestResponse> {
+    return this.http.post<JoinProjectRequestResponse>(this.requestsApiUrl, joinProjectRequest);
   }
 
   deleteJoinRequest(project_id: number, current_user_id: number): Observable<void> {
     return this.http.delete<void>(`${this.requestsApiUrl}/${current_user_id}/${project_id}`);
+  }
+
+  getJoinRequestsByProject(projectId: number): Observable<JoinProjectRequestResponse[]> {
+    return this.http.get<JoinProjectRequestResponse[]>(`${this.requestsApiUrl}/${projectId}/all`);
+  }
+
+  getPendingJoinRequestsByProject(projectId: number): Observable<JoinProjectRequestResponse[]> {
+    return this.http.get<JoinProjectRequestResponse[]>(`${this.requestsApiUrl}/${projectId}/pending`);
+  }
+
+  approveJoinRequest(requestId: number): Observable<void> {
+    return this.http.put<void>(`${this.requestsApiUrl}/${requestId}/approve`, {});
+  }
+
+  rejectJoinRequest(requestId: number): Observable<void> {
+    return this.http.put<void>(`${this.requestsApiUrl}/${requestId}/reject`, {});
   }
 }

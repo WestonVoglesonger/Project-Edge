@@ -8,6 +8,7 @@ import { ProjectFormComponent } from "./projects/project-form/project-form.compo
 import { DiscussionsComponent } from "./discussions/discussions.component";
 import { DiscussionFormComponent } from "./discussions/discussion-form/discussion-form.component";
 import { CommentFormComponent } from "./comment-form/comment-form.component";
+import { ProjectRequestsComponent } from "./projects/project-requests/project-requests.component";
 
 const routes: Routes = [
   HomeComponent.Route,
@@ -18,6 +19,7 @@ const routes: Routes = [
   DiscussionsComponent.Route,
   DiscussionFormComponent.Route,
   CommentFormComponent.Route,
+  ProjectRequestsComponent.Route,
 ];
 
 @NgModule({

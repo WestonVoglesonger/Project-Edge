@@ -12,7 +12,7 @@ class JoinRequestEntity(Base):
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'), nullable=False)
     project_id: Mapped[int] = mapped_column(Integer, ForeignKey('projects.id'), nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
-    status: Mapped[str] = mapped_column(String, default="pending", nullable=False)
+    status: Mapped[int] = mapped_column(Integer, default=0, nullable=False) # 0: pending, 1: accepted, 2: rejected
 
     user = relationship('UserEntity', back_populates='join_requests')
     project = relationship('ProjectEntity', back_populates='join_requests')

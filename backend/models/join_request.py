@@ -10,4 +10,4 @@ class JoinRequestResponse(BaseModel):
     user_id: int
     project_id: int
     created_at: datetime
-    status: str
+    status: int

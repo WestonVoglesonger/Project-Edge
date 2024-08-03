@@ -1,6 +1,7 @@
 from datetime import datetime
 from pydantic import BaseModel
 from typing import List, Optional
+from backend.models.join_request import JoinRequestResponse
 
 from backend.models.user import UserResponse
 
@@ -32,4 +33,5 @@ class ProjectResponse(ProjectIdentity):
     updated_at: datetime
     team_members: List[UserResponse]
     project_leaders: List[UserResponse]
+    join_requests: List[JoinRequestResponse]
 

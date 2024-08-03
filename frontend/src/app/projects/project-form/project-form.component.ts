@@ -32,8 +32,10 @@ export class ProjectFormComponent implements OnInit {
   isLeader: boolean = false;
   isEditing: boolean = false;
   hasJoined: boolean = false;
+  hasRequestedToJoin: boolean = false;  // New property
   comments: CommentResponse[] = [];
   project_id!: number;
+  showEditor: boolean = false;
 
   @ViewChild('currentUsersInput') currentUsersInput!: ElementRef;
   @ViewChild('ownersInput') ownersInput!: ElementRef;
@@ -76,14 +78,22 @@ export class ProjectFormComponent implements OnInit {
             this.loadProject(this.project_id);
             this.loadComments(this.project_id);
           } else {
+            this.isNewProject = true;
+            this.isEditing = true;  // Ensure isEditing is true for new projects
+            this.isLeader = true;   // Ensure isLeader is true for new projects
             this.addCurrentUserToProjectLeaders();
           }
+          this.updateShowEditor();
         });
       },
       error => {
         console.error('Error fetching current user', error);
       }
     );
+  }
+
+  private updateShowEditor(): void {
+    this.showEditor = this.isNewProject || (this.isLeader && this.isEditing);
   }
 
   addCurrentUserToProjectLeaders(): void {
@@ -120,6 +130,7 @@ export class ProjectFormComponent implements OnInit {
         if (!this.isLeader) {
           this.projectForm.disable();
           this.hasJoined = project.team_members.some((member: { email: string | undefined; }) => member.email === this.currentUser?.email);
+          this.hasRequestedToJoin = project.join_requests.some((request: { user_id: number }) => request.user_id === this.currentUser.id);
         }
       },
       error => {
@@ -194,7 +205,7 @@ export class ProjectFormComponent implements OnInit {
     }
   }
 
-  joinProject(): void {
+  createRequest(): void {
     const joinRequest: JoinProjectRequestCreate = {
       project_id: this.project_id,
       user_id: this.currentUser.id!,
@@ -203,7 +214,7 @@ export class ProjectFormComponent implements OnInit {
     this.projectService.createJoinRequest(joinRequest).subscribe(
       response => {
         console.log('Join request sent successfully', response);
-        this.hasJoined = true;
+        this.hasRequestedToJoin = true;
         // Optionally, update the UI to reflect the join request
       },
       error => {
@@ -212,13 +223,27 @@ export class ProjectFormComponent implements OnInit {
     );
   }
 
+  deleteRequest(): void {
+    if (confirm('Are you sure you want to delete this join request?')) {
+      this.projectService.deleteJoinRequest(this.project_id, this.currentUser.id!).subscribe(
+        response => {
+          console.log('Join request deleted successfully', response);
+          this.hasRequestedToJoin = false;
+          // Optionally, update the UI to reflect the join request deletion
+        },
+        error => {
+          console.error('Error deleting join request', error);
+        }
+      );
+    }
+  }
   leaveProject(): void {
     if (confirm('Are you sure you want to leave this project?')) {
-
       this.projectService.deleteJoinRequest(this.project_id, this.currentUser.id!).subscribe(
         response => {
           console.log('Left project successfully', response);
           this.hasJoined = false;
+          this.hasRequestedToJoin = false;
           // Optionally, update the UI to reflect the leave request
         },
         error => {
@@ -351,5 +376,9 @@ export class ProjectFormComponent implements OnInit {
 
   get cf(): { [key: string]: AbstractControl } {
     return this.commentForm.controls;
+  }
+
+  navigateToRequests(): void {
+    this.router.navigate([`/projects/requests/${this.project_id}`]);
   }
 }

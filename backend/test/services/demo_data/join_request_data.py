@@ -20,7 +20,7 @@ join_request_1 = JoinRequestCreate(
 
 join_request_2 = JoinRequestCreate(
     user_id=2,
-    project_id=1
+    project_id=2
 )
 
 join_requests = [join_request_1]

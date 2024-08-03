@@ -45,7 +45,28 @@ class JoinRequestService:
             raise JoinRequestNotFoundException(f"JoinRequest with id {join_request_id} not found")
         return join_request_entity.to_join_request_response()
 
-    def list_join_requests(self) -> List[JoinRequestResponse]:
+    def get_join_request_by_project(self, project_id: int) -> List[JoinRequestResponse]:
+        project_entity = self.db.query(ProjectEntity).filter(ProjectEntity.id == project_id).first()
+        if project_entity is None:
+            raise ProjectNotFoundException(f"Project with id {project_id} not found")
+        join_request_entities = self.db.query(JoinRequestEntity).filter(JoinRequestEntity.project_id == project_id).all()
+        if not join_request_entities:
+            return []
+        return [entity.to_join_request_response() for entity in join_request_entities]
+
+    def get_pending_join_requests_by_project(self, project_id: int) -> List[JoinRequestResponse]:
+        project_entity = self.db.query(ProjectEntity).filter(ProjectEntity.id == project_id).first()
+        if project_entity is None:
+            raise ProjectNotFoundException(f"Project with id {project_id} not found")
+        join_request_entities = self.db.query(JoinRequestEntity).filter(
+            JoinRequestEntity.project_id == project_id,
+            JoinRequestEntity.status == 0
+        ).all()
+        if not join_request_entities:
+            return []
+        return [entity.to_join_request_response() for entity in join_request_entities]
+
+    def get_join_requests(self) -> List[JoinRequestResponse]:
         join_request_entities = self.db.query(JoinRequestEntity).all()
         return [jr.to_join_request_response() for jr in join_request_entities]
 
@@ -57,5 +78,28 @@ class JoinRequestService:
         if join_request_entity is None:
             raise JoinRequestNotFoundException(f"JoinRequest for user {user_id} and project {project_id} not found")
         self.db.delete(join_request_entity)
+        self.db.commit()
+        return join_request_entity.to_join_request_response()
+
+    def approve_join_request(self, join_request_id: int) -> JoinRequestResponse:
+        join_request_entity = self.db.query(JoinRequestEntity).filter(JoinRequestEntity.id == join_request_id).first()
+        if join_request_entity is None:
+            raise JoinRequestNotFoundException(f"JoinRequest with id {join_request_id} not found")
+        join_request_entity.status = 1
+
+        project_entity = self.db.query(ProjectEntity).filter(ProjectEntity.id == project_id).first()
+        
+        if project_entity is None:
+            raise ProjectNotFoundException(f"Project with id {project_id} not found")
+        project_entity.team_members.append(join_request_entity.user)
+
+        self.db.commit()
+        return join_request_entity.to_join_request_response()
+
+    def reject_join_request(self, join_request_id: int) -> JoinRequestResponse:
+        join_request_entity = self.db.query(JoinRequestEntity).filter(JoinRequestEntity.id == join_request_id).first()
+        if join_request_entity is None:
+            raise JoinRequestNotFoundException(f"JoinRequest with id {join_request_id} not found")
+        join_request_entity.status = 2
         self.db.commit()
         return join_request_entity.to_join_request_response()
