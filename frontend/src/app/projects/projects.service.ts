@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { JoinProjectRequestCreate, JoinProjectRequestResponse, Project } from './project.models';
+import { JoinProjectRequestCreate, JoinProjectRequestResponse, Project, ProjectResponse } from './project.models';
 
 @Injectable({
   providedIn: 'root'
@@ -34,6 +34,10 @@ export class ProjectService {
 
   deleteProject(id: number): Observable<void> {
     return this.http.delete<void>(`${this.projectsApiUrl}/${id}`);
+  }
+
+  leaveProject(project_id: number): Observable<ProjectResponse> {
+    return this.http.delete<ProjectResponse>(`${this.projectsApiUrl}/${project_id}/leave`);
   }
 
   createJoinRequest(joinProjectRequest: JoinProjectRequestCreate): Observable<JoinProjectRequestResponse> {

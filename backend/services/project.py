@@ -121,5 +121,18 @@ class ProjectService:
         self.db.commit()
         return project_entity.to_project_response()
 
+    def leave_project(self, project_id: int, current_user_id: int) -> ProjectResponse:
+        project_entity = self.db.query(ProjectEntity).filter_by(id=project_id).first()
+        if project_entity is None:
+            raise ProjectNotFoundException(f"Project with id {project_id} not found")
+        
+        # Check if the current user is one of the team members
+        if current_user_id not in [member.id for member in project_entity.team_members]:
+            raise UnauthorizedException("You are not a member of this project")
+        
+        project_entity.team_members = [member for member in project_entity.team_members if member.id != current_user_id]
+        self.db.commit()
+        return project_entity.to_project_response()
+
     def _get_user_entities_by_emails(self, users: List[UserResponse]) -> List[UserEntity]:
         return [self.db.query(UserEntity).filter(UserEntity.email == user.email).first() for user in users]

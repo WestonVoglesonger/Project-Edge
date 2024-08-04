@@ -237,14 +237,23 @@ export class ProjectFormComponent implements OnInit {
       );
     }
   }
+  
   leaveProject(): void {
     if (confirm('Are you sure you want to leave this project?')) {
-      this.projectService.deleteJoinRequest(this.project_id, this.currentUser.id!).subscribe(
+      this.projectService.leaveProject(this.project_id).subscribe(
         response => {
           console.log('Left project successfully', response);
           this.hasJoined = false;
           this.hasRequestedToJoin = false;
-          // Optionally, update the UI to reflect the leave request
+  
+          // Remove the current user from the currentUsers FormArray
+          const index = this.currentUsers.controls.findIndex(control => control.value.id === this.currentUser.id);
+          if (index !== -1) {
+            this.currentUsers.removeAt(index);
+          }
+          
+          // Optionally, you can also update the UI or any other relevant state here.
+          this.cdr.detectChanges();
         },
         error => {
           console.error('Error leaving project', error);
@@ -252,6 +261,7 @@ export class ProjectFormComponent implements OnInit {
       );
     }
   }
+  
   
   saveComment(): void {
     if (this.commentForm.valid) {

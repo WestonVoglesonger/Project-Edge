@@ -52,7 +52,7 @@ export class CommentCard implements OnInit, OnDestroy {
   ngOnInit(): void {
     const userSub = this.authService.fetchCurrentUser().subscribe((user) => {
       this.currentUser = user;
-      this.isTruncated = this.comment.description.length > 250;
+      this.isTruncated = this.comment?.description?.length > 250 || false;
     });
     this.subscriptions.push(userSub);
   }
@@ -66,24 +66,26 @@ export class CommentCard implements OnInit, OnDestroy {
   }
 
   get isAuthor(): boolean {
-    return this.comment.author.id === this.currentUser?.id;
+    return this.comment?.author?.id === this.currentUser?.id;
   }
 
   get truncatedComment(): string {
-    return this.isExpanded || this.comment.description.length <= 250
-      ? this.comment.description
+    return this.isExpanded ||
+      !this.comment?.description ||
+      this.comment.description.length <= 250
+      ? this.comment?.description || ""
       : this.comment.description.slice(0, 250) + "...";
   }
 
   enableEditMode(): void {
     this.isEditing = true;
     this.editCommentForm.patchValue({
-      description: this.comment.description,
+      description: this.comment?.description,
     });
   }
 
   saveComment(): void {
-    if (this.editCommentForm.valid) {
+    if (this.editCommentForm.valid && this.comment) {
       const commentUpdate: CommentUpdate = {
         description: this.editCommentForm.value.description,
       };
@@ -123,13 +125,30 @@ export class CommentCard implements OnInit, OnDestroy {
   }
 
   navigateToForm(): void {
-    console.log("Navigating to form:", this.comment.id);
-    this.router.navigate(["/comments", this.comment.id]);
+    console.log("Navigating to form:", this.comment?.id);
+    this.router.navigate(["/comments", this.comment?.id]);
   }
 
   get mostRecentTime(): Date {
-    return new Date(this.comment.updated_at) > new Date(this.comment.created_at)
-      ? new Date(this.comment.updated_at)
-      : new Date(this.comment.created_at);
+    return new Date(this.comment?.updated_at) >
+      new Date(this.comment?.created_at)
+      ? new Date(this.comment?.updated_at)
+      : new Date(this.comment?.created_at);
+  }
+
+  handleReplyDeleted(replyId: number): void {
+    if (this.comment?.replies) {
+      this.comment.replies = this.comment.replies.filter(
+        (reply) => reply.id !== replyId,
+      );
+      this.commentDeleted.emit(replyId);
+    }
+  }
+
+  cancelEdit(): void {
+    this.isEditing = false;
+    this.editCommentForm.patchValue({
+      description: this.comment?.description,
+    });
   }
 }

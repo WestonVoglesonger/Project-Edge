@@ -87,7 +87,7 @@ class JoinRequestService:
             raise JoinRequestNotFoundException(f"JoinRequest with id {join_request_id} not found")
         join_request_entity.status = 1
 
-        project_entity = self.db.query(ProjectEntity).filter(ProjectEntity.id == project_id).first()
+        project_entity = self.db.query(ProjectEntity).filter(ProjectEntity.id == join_request_entity.project.id).first()
         
         if project_entity is None:
             raise ProjectNotFoundException(f"Project with id {project_id} not found")

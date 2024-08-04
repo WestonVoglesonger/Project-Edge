@@ -80,3 +80,16 @@ def delete_project(
         raise HTTPException(status_code=404, detail=str(e))
     except UnauthorizedException as e:
         raise HTTPException(status_code=403, detail=str(e))
+
+@api.delete("/{project_id}/leave", response_model=ProjectResponse, tags=["Projects"])
+def leave_project(
+    project_id: int,
+    project_service: ProjectService = Depends(get_project_service),
+    current_user: UserResponse = Depends(get_current_user)
+):
+    try:
+        return project_service.leave_project(project_id=project_id, current_user_id=current_user.id)
+    except ProjectNotFoundException as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except UnauthorizedException as e:
+        raise HTTPException(status_code=403, detail=str(e))
