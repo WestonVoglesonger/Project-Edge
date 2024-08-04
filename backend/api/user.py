@@ -30,7 +30,7 @@ def create_user(user: UserBase, user_service: UserService = Depends(get_user_ser
         raise HTTPException(status_code=400, detail=str(e))
 
 @api.get("/search", response_model=List[UserResponse], tags=["Users"])
-def search_users(name: str = Query(...), user_service: UserService = Depends(get_user_service)):
+def search_users(name: str = Query(...), user_service: UserService = Depends(get_user_service), current_user: UserResponse = Depends(get_current_user)):
     """Retrieve users by name."""
     try:
         users = user_service.search_users_by_name(name)
@@ -39,7 +39,7 @@ def search_users(name: str = Query(...), user_service: UserService = Depends(get
         raise HTTPException(status_code=422, detail=f"Error processing query: {str(e)}")
 
 @api.get("/{user_id}", response_model=UserResponse, tags=["Users"])
-def read_user(user_id: int, user_service: UserService = Depends(get_user_service)):
+def read_user(user_id: int, user_service: UserService = Depends(get_user_service), current_user: UserResponse = Depends(get_current_user)):
     """Retrieve a user by their user ID."""
     try:
         return user_service.get_user(user_id=user_id)

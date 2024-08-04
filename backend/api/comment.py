@@ -1,4 +1,3 @@
-# backend/api/comments.py
 import logging
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
@@ -8,6 +7,8 @@ from backend.database import db_session
 from backend.models.comment import CommentCreate, CommentUpdate, CommentResponse
 from backend.services.comment import CommentService
 from backend.services.exceptions import CommentNotFoundException, UserNotFoundException
+from backend.services.auth import get_current_user
+from backend.models.user import UserResponse
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +22,7 @@ def get_comment_service(db: Session = Depends(db_session)) -> CommentService:
     return CommentService(db)
 
 @api.post("", response_model=CommentResponse, tags=["Comments"], status_code=status.HTTP_201_CREATED)
-def create_comment(comment: CommentCreate, comment_service: CommentService = Depends(get_comment_service)):
+def create_comment(comment: CommentCreate, comment_service: CommentService = Depends(get_comment_service), current_user: UserResponse = Depends(get_current_user)):
     try:
         return comment_service.create_comment(comment)
     except UserNotFoundException as e:
@@ -31,7 +32,7 @@ def create_comment(comment: CommentCreate, comment_service: CommentService = Dep
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An unexpected error occurred.")
 
 @api.get("/{comment_id}", response_model=CommentResponse, tags=["Comments"])
-def read_comment(comment_id: int, comment_service: CommentService = Depends(get_comment_service)):
+def read_comment(comment_id: int, comment_service: CommentService = Depends(get_comment_service), current_user: UserResponse = Depends(get_current_user)):
     try:
         return comment_service.get_comment(comment_id=comment_id)
     except CommentNotFoundException as e:
@@ -45,7 +46,8 @@ def read_comments(
     project_id: Optional[int] = Query(None, alias="projectId"), 
     discussion_id: Optional[int] = Query(None, alias="discussionId"),
     parent_id: Optional[int] = Query(None, alias="parentId"), 
-    comment_service: CommentService = Depends(get_comment_service)
+    comment_service: CommentService = Depends(get_comment_service),
+    current_user: UserResponse = Depends(get_current_user)
 ):
     try:
         if project_id is not None:
@@ -60,7 +62,7 @@ def read_comments(
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An unexpected error occurred.")
 
 @api.put("/{comment_id}", response_model=CommentResponse, tags=["Comments"])
-def update_comment(comment_id: int, comment_update: CommentUpdate, comment_service: CommentService = Depends(get_comment_service)):
+def update_comment(comment_id: int, comment_update: CommentUpdate, comment_service: CommentService = Depends(get_comment_service), current_user: UserResponse = Depends(get_current_user)):
     try:
         return comment_service.update_comment(comment_id=comment_id, comment_update=comment_update)
     except CommentNotFoundException as e:
@@ -70,7 +72,7 @@ def update_comment(comment_id: int, comment_update: CommentUpdate, comment_servi
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An unexpected error occurred.")
 
 @api.get("/user/{author_id}", response_model=List[CommentResponse], tags=["Comments"])
-def read_comments_by_user(author_id: int, comment_service: CommentService = Depends(get_comment_service)):
+def read_comments_by_user(author_id: int, comment_service: CommentService = Depends(get_comment_service), current_user: UserResponse = Depends(get_current_user)):
     try:
         return comment_service.get_comments_by_user(author_id=author_id)
     except Exception as e:
@@ -78,7 +80,7 @@ def read_comments_by_user(author_id: int, comment_service: CommentService = Depe
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An unexpected error occurred.")
 
 @api.delete("/{comment_id}", response_model=CommentResponse, tags=["Comments"])
-def delete_comment(comment_id: int, comment_service: CommentService = Depends(get_comment_service)):
+def delete_comment(comment_id: int, comment_service: CommentService = Depends(get_comment_service), current_user: UserResponse = Depends(get_current_user)):
     try:
         return comment_service.delete_comment(comment_id=comment_id)
     except CommentNotFoundException as e:

@@ -75,7 +75,7 @@ def delete_project(
     current_user: UserResponse = Depends(get_current_user)
 ):
     try:
-        return project_service.delete_project(project_id=project_id, user_id=current_user.id)
+        return project_service.delete_project(project_id=project_id, current_user_id=current_user.id)
     except ProjectNotFoundException as e:
         raise HTTPException(status_code=404, detail=str(e))
     except UnauthorizedException as e:
