@@ -83,14 +83,4 @@
     </button>
   </mat-card-actions>
   <span *ngIf="inProfile" class="card-label">Comment</span>
-
-  <div class="replies" *ngIf="comment?.replies && comment.replies.length">
-    <app-comment-card
-      *ngFor="let reply of comment.replies"
-      [comment]="reply"
-      [currentUser]="currentUser"
-      [isExpanded]="false"
-      (commentDeleted)="handleReplyDeleted($event)"
-    ></app-comment-card>
-  </div>
 </mat-card>

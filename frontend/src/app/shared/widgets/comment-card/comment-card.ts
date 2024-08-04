@@ -35,7 +35,7 @@ export class CommentCard implements OnInit, OnDestroy {
   editCommentForm: FormGroup;
   isEditing: boolean = false;
   isTruncated: boolean = false;
-
+  showRepliesCount: number = 3; // Number of replies to show initially
   private subscriptions: Subscription[] = [];
 
   constructor(

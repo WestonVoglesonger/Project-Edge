@@ -16,6 +16,7 @@ import { MatCardModule } from "@angular/material/card";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { MatAutocompleteModule } from "@angular/material/autocomplete";
+import { MatExpansionModule } from "@angular/material/expansion";
 
 // Components
 import { AppComponent } from "./app.component";
@@ -71,6 +72,7 @@ import { AuthService } from "./shared/auth.service";
     MatFormFieldModule,
     MatInputModule,
     MatAutocompleteModule,
+    MatExpansionModule,
     // Add other module imports as necessary
   ],
   providers: [

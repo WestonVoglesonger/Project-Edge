@@ -132,6 +132,7 @@ export class ProjectFormComponent implements OnInit {
           this.hasJoined = project.team_members.some((member: { email: string | undefined; }) => member.email === this.currentUser?.email);
           this.hasRequestedToJoin = project.join_requests.some((request: { user_id: number }) => request.user_id === this.currentUser.id);
         }
+        this.updateShowEditor(); // Ensure showEditor is updated after loading the project
       },
       error => {
         console.error('Error loading project', error);
@@ -181,6 +182,7 @@ export class ProjectFormComponent implements OnInit {
           response => {
             console.log('Project updated successfully', response);
             this.isEditing = false;
+            this.updateShowEditor();
             this.router.navigate(['/projects']);
           },
           error => {
@@ -373,11 +375,13 @@ export class ProjectFormComponent implements OnInit {
         this.project_leaders.push(this.fb.control(user));
       });
     }
-    this.router.navigate(['/projects']);
+    this.isEditing = false;
+    this.updateShowEditor();
   }
 
   editProject(): void {
     this.isEditing = true;
+    this.updateShowEditor();
   }
 
   get f(): { [key: string]: AbstractControl } {

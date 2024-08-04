@@ -19,7 +19,7 @@
           <mat-card-content>
             <mat-form-field>
               <mat-label>Name of Project</mat-label>
-              <input matInput formControlName="name" [readonly]="!isNewProject" />
+              <input matInput formControlName="name" />
               <mat-error *ngIf="f['name'].touched && f['name'].invalid">
                 <span *ngIf="f['name'].errors?.['required']">Name is required.</span>
                 <span *ngIf="f['name'].errors?.['minlength']">Name must be at least 3 characters long.</span>
@@ -29,7 +29,7 @@
 
             <mat-form-field>
               <mat-label>Description</mat-label>
-              <textarea matInput formControlName="description" [readonly]="!isNewProject"></textarea>
+              <textarea matInput formControlName="description"></textarea>
               <mat-error *ngIf="f['description'].touched && f['description'].invalid">
                 <span *ngIf="f['description'].errors?.['required']">Description is required.</span>
                 <span *ngIf="f['description'].errors?.['minlength']">Description must be at least 10 characters long.</span>
@@ -114,23 +114,16 @@
     <mat-card>
       <mat-card-header>
         <mat-card-title>Project Details</mat-card-title>
-        <button class="join-leave-button" *ngIf="!hasJoined && !isLeader && !hasRequestedToJoin" mat-raised-button color="primary" (click)="createRequest()">
-          Request to Join
-        </button>
-        <button class="join-leave-button" *ngIf="!hasJoined && !isLeader && hasRequestedToJoin" mat-raised-button color="primary" (click)="deleteRequest()">
-          Remove Request
-        </button>
-        <button class="join-leave-button" *ngIf="hasJoined && !isLeader" mat-raised-button color="warn" (click)="leaveProject()">
-          Leave Project
-        </button>
-        <button class="edit-button" *ngIf="isLeader" mat-raised-button color="primary" (click)="editProject()">
-          Edit Project
-        </button>
-        <button *ngIf="isLeader && !isNewProject" mat-raised-button color="primary" (click)="navigateToRequests()">
-          View Join Requests
-        </button>
+        <div class="header-buttons">
+          <button mat-icon-button color="primary" class="edit-button" (click)="editProject()">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button *ngIf="isLeader && !isNewProject" mat-icon-button color="primary" (click)="navigateToRequests()">
+            <mat-icon>person</mat-icon>
+          </button>
+        </div>
       </mat-card-header>
-      <mat-card-content>
+      <mat-card-content class="project-info">
         <p><strong>Name:</strong> {{ projectForm.value.name }}</p>
         <p><strong>Description:</strong> {{ projectForm.value.description }}</p>
         <p><strong>Team Members:</strong></p>
