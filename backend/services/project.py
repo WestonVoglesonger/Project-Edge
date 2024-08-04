@@ -19,7 +19,6 @@ class ProjectService:
         project_leaders = self._get_user_entities_by_emails(project_data.project_leaders)
 
         new_project_entity = ProjectEntity.from_model(project_data, team_members, project_leaders)
-        new_project_entity.owner_id = current_user_id  # Set the owner of the project
         self.db.add(new_project_entity)
         self.db.commit()
         self.db.refresh(new_project_entity)  # Refresh to get the ID

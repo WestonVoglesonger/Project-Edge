@@ -1,7 +1,7 @@
 import { NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { HttpClientModule } from "@angular/common/http";
+import { HTTP_INTERCEPTORS, HttpClientModule } from "@angular/common/http";
 import { AppRoutingModule } from "./app-routing.module";
 import { ReactiveFormsModule } from "@angular/forms";
 import { FormsModule } from "@angular/forms";
@@ -31,7 +31,9 @@ import { DiscussionCard } from "./shared/widgets/discussion-card/discussion-card
 import { DiscussionFormComponent } from "./discussions/discussion-form/discussion-form.component";
 import { CommentCard } from "./shared/widgets/comment-card/comment-card";
 import { CommentFormComponent } from "./comment-form/comment-form.component";
-import { ProjectRequestsComponent } from './projects/project-requests/project-requests.component';
+import { ProjectRequestsComponent } from "./projects/project-requests/project-requests.component";
+import { AuthInterceptor } from "./shared/auth-interceptor.service";
+import { AuthService } from "./shared/auth.service";
 
 @NgModule({
   declarations: [
@@ -71,7 +73,14 @@ import { ProjectRequestsComponent } from './projects/project-requests/project-re
     MatAutocompleteModule,
     // Add other module imports as necessary
   ],
-  providers: [],
+  providers: [
+    AuthService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true,
+    },
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

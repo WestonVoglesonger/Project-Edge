@@ -1,5 +1,3 @@
-// project.service.ts
-
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -31,7 +29,7 @@ export class ProjectService {
   }
 
   getProjectsByUser(userId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.projectsApiUrl}?userId=${userId}`);
+    return this.http.get<any[]>(`${this.projectsApiUrl}/user/${userId}`);
   }
 
   deleteProject(id: number): Observable<void> {
