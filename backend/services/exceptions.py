@@ -52,3 +52,9 @@ class JoinRequestAlreadyMadeException(Exception):
     def __init__(self, message: str):
         self.message = message
         super().__init__(self.message)
+
+class UnauthorizedException(Exception):
+    """Exception raised when a user is not authorized to perform an action."""
+    def __init__(self, message: str):
+        self.message = message
+        super().__init__(self.message)

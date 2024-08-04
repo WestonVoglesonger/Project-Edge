@@ -28,7 +28,6 @@ REFRESH_TOKEN_EXPIRE_DAYS = 7  # 7 days
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 logger = logging.getLogger(__name__)
 
-
 # Define oauth2_scheme once and reuse it
 from fastapi.security import OAuth2PasswordBearer
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -57,18 +56,34 @@ def get_current_user(
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         email: str = payload.get("sub")
         if email is None:
-            raise CredentialsException()
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Could not validate credentials",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
         expiration = payload.get("exp")
         if expiration and datetime.fromtimestamp(expiration, tz=timezone.utc) < datetime.now(tz=timezone.utc):
-            raise CredentialsException()
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Token has expired",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
         print(f"Decoded JWT payload: {payload}")  # Log the payload
     except JWTError as e:
         print(f"JWTError: {e}")
-        raise CredentialsException()
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     
     user = db.query(UserEntity).filter(UserEntity.email == email).first()
     if user is None:
-        raise CredentialsException()
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User not found",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     print(f"Queried User: {user}")  # Log the user query result
     return user.to_user_response()
 
@@ -82,7 +97,7 @@ def create_access_token(data: Dict[str, str], expires_delta: Optional[timedelta]
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
-def create_refresh_token(data: Dict[str, str], expires_delta: Optional[timedelta] = None):
+def create_refresh_token(data: Dict[str, str], expires_delta: Optional[timedelta] = None) -> str:
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.now(timezone.utc) + expires_delta
@@ -92,12 +107,12 @@ def create_refresh_token(data: Dict[str, str], expires_delta: Optional[timedelta
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
-def verify_refresh_token(token: str):
+def verify_refresh_token(token: str) -> Optional[Dict[str, str]]:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return payload
     except JWTError:
         return None
 
-def get_user_by_email(db: Session, email: str):
-    return db.query(User).filter(User.email == email).first()
+def get_user_by_email(db: Session, email: str) -> Optional[User]:
+    return db.query(UserEntity).filter(UserEntity.email == email).first()

@@ -9,6 +9,7 @@ from backend.database import db_session
 from backend.services.user import UserService
 from ..models.user import ProfileForm, UserBase, UserResponse
 from ..services.exceptions import UserNotFoundException, EmailAlreadyRegisteredException
+from ..services.auth import get_current_user
 
 logger = logging.getLogger(__name__)
 
@@ -53,7 +54,8 @@ async def update_user(
     bio: Optional[str] = Form(None),
     email: str = Form(...),
     accepted_community_agreement: bool = Form(...),
-    user_service: UserService = Depends(get_user_service)
+    user_service: UserService = Depends(get_user_service),
+    current_user: UserResponse = Depends(get_current_user)
 ):
     try:
         user_update_data = {
@@ -75,7 +77,7 @@ async def update_user(
         raise HTTPException(status_code=400, detail=str(e))
 
 @api.delete("/{user_id}", response_model=UserResponse, tags=["Users"])
-def delete_user(user_id: int, user_service: UserService = Depends(get_user_service)):
+def delete_user(user_id: int, user_service: UserService = Depends(get_user_service), current_user: UserResponse = Depends(get_current_user)):
     """Delete a user from the system."""
     try:
         return user_service.delete_user(user_id=user_id)
