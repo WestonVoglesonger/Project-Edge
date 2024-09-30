@@ -1,9 +1,7 @@
 import os
-from typing import Any
 import pytest
 from sqlalchemy.orm import Session
-from fastapi import HTTPException, status
-from jose import jwt, JWTError, ExpiredSignatureError
+from jose import jwt
 from datetime import timedelta
 from backend.entities.user_entity import UserEntity
 from backend.services.auth import (

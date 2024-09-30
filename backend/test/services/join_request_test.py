@@ -7,6 +7,7 @@ from backend.services.join_request import JoinRequestService
 from .demo_data.core_data import setup_insert_data_fixture
 from .fixtures import join_request_svc
 from .demo_data.join_request_data import join_request_1, join_request_2
+from .demo_data.project_data import project
 
 
 def test_create_join_request(join_request_svc: JoinRequestService):
@@ -55,11 +56,10 @@ def test_get_pending_join_requests_by_project_not_found(join_request_svc: JoinRe
         join_request_svc.get_pending_join_requests_by_project(999)
 
 def test_approve_join_request(join_request_svc: JoinRequestService):
-    join_request = join_request_svc.create_join_request(join_request_2)
+    join_request = join_request_svc.create_join_request(join_request_1)
     join_request_svc.approve_join_request(join_request.id)
     retrieved_join_request = join_request_svc.get_join_request(join_request.id)
 
-    project = join_request_svc.db.query(ProjectEntity).filter(ProjectEntity.id == join_request.project_id).first()
     assert retrieved_join_request.status == 1
     assert project.team_members[0].id == join_request.user_id
 

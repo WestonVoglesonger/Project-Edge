@@ -20,10 +20,10 @@ join_request_1 = JoinRequestCreate(
 
 join_request_2 = JoinRequestCreate(
     user_id=2,
-    project_id=2
+    project_id=1
 )
 
-join_requests = [join_request_1]
+join_requests = []
 
 def insert_fake_data(session: Session):
     user1_entity = session.query(UserEntity).filter_by(email=user1.email).first()

@@ -26,7 +26,7 @@ def create_project(
     project_service: ProjectService = Depends(get_project_service),
     current_user: UserResponse = Depends(get_current_user)
 ):
-    return project_service.create_project(project, current_user.id)
+    return project_service.create_project(project)
 
 @api.get("/{project_id}", response_model=ProjectResponse, tags=["Projects"])
 def read_project(
@@ -62,7 +62,7 @@ def update_project(
     current_user: UserResponse = Depends(get_current_user)
 ):
     try:
-        return project_service.update_project(project_id=project_id, project_update=project_update, user_id=current_user.id)
+        return project_service.update_project(project_id=project_id, project_update=project_update, current_user_id=current_user.id)
     except ProjectNotFoundException as e:
         raise HTTPException(status_code=404, detail=str(e))
     except UnauthorizedException as e:

@@ -80,18 +80,22 @@ class JoinRequestService:
         self.db.delete(join_request_entity)
         self.db.commit()
         return join_request_entity.to_join_request_response()
-
+    
     def approve_join_request(self, join_request_id: int) -> JoinRequestResponse:
         join_request_entity = self.db.query(JoinRequestEntity).filter(JoinRequestEntity.id == join_request_id).first()
         if join_request_entity is None:
             raise JoinRequestNotFoundException(f"JoinRequest with id {join_request_id} not found")
-        join_request_entity.status = 1
 
-        project_entity = self.db.query(ProjectEntity).filter(ProjectEntity.id == join_request_entity.project.id).first()
-        
+        # Check if the project and user exist
+        project_entity = self.db.query(ProjectEntity).filter(ProjectEntity.id == join_request_entity.project_id).first()
         if project_entity is None:
-            raise ProjectNotFoundException(f"Project with id {project_id} not found")
-        project_entity.team_members.append(join_request_entity.user)
+            raise ProjectNotFoundException(f"Project with id {join_request_entity.project_id} not found")
+
+        # Check if user is already a team member
+        if join_request_entity.user not in project_entity.team_members:
+            project_entity.team_members.append(join_request_entity.user)
+        
+        join_request_entity.status = 1
 
         self.db.commit()
         return join_request_entity.to_join_request_response()

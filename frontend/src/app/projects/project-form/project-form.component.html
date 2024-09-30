@@ -49,7 +49,7 @@
               </div>
             </mat-form-field>
             
-            <mat-form-field>
+            <mat-form-field *ngIf="isNewProject">
               <mat-label>Project Leaders</mat-label>
               <input matInput #ownersInput (input)="searchUsers($event, 'leaders')" [matAutocomplete]="autoOwners" />
               <mat-autocomplete #autoOwners="matAutocomplete" (optionSelected)="addUser($event.option.value, 'leaders', ownersInput)">
@@ -115,12 +115,23 @@
       <mat-card-header>
         <mat-card-title>Project Details</mat-card-title>
         <div class="header-buttons">
-          <button mat-icon-button color="primary" class="edit-button" (click)="editProject()">
+          <button *ngIf="isLeader" mat-icon-button color="primary" class="edit-button" (click)="editProject()">
             <mat-icon>edit</mat-icon>
           </button>
-          <button *ngIf="isLeader && !isNewProject" mat-icon-button color="primary" (click)="navigateToRequests()">
+          <button *ngIf="isLeader" mat-icon-button color="primary" (click)="navigateToRequests()">
             <mat-icon>person</mat-icon>
           </button>
+          <div *ngIf="!isLeader">
+          <button *ngIf="!hasJoined && !hasRequestedToJoin " mat-raised-button color="primary" (click)="createRequest()">
+            Request to Join
+          </button>
+          <button *ngIf="hasRequestedToJoin && !hasJoined" mat-raised-button color="warn" (click)="deleteRequest()">
+            Cancel Request
+          </button>
+          <button *ngIf="hasJoined" mat-raised-button color="warn" (click)="leaveProject()">
+            Leave Project
+            </button>
+          </div>
         </div>
       </mat-card-header>
       <mat-card-content class="project-info">

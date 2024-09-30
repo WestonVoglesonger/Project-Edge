@@ -53,3 +53,6 @@ class User(UserBase):
             bio=self.bio,
             profile_picture=self.profile_picture
         )
+    
+class UserIDs(BaseModel):
+    ids: List[int]

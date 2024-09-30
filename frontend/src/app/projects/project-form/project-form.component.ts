@@ -32,7 +32,7 @@ export class ProjectFormComponent implements OnInit {
   isLeader: boolean = false;
   isEditing: boolean = false;
   hasJoined: boolean = false;
-  hasRequestedToJoin: boolean = false;  // New property
+  hasRequestedToJoin: boolean = false;
   comments: CommentResponse[] = [];
   project_id!: number;
   showEditor: boolean = false;
@@ -264,7 +264,6 @@ export class ProjectFormComponent implements OnInit {
     }
   }
   
-  
   saveComment(): void {
     if (this.commentForm.valid) {
       const commentCreate: CommentCreate = {
@@ -326,8 +325,8 @@ export class ProjectFormComponent implements OnInit {
     if (type === 'users') {
       this.currentUsers.push(this.fb.control(user));
       this.currentUsersInputTrigger.closePanel();
-    } else {
-      this.project_leaders.push(this.fb.control(user));
+    } else if (this.isNewProject && type === 'leaders') {
+      this.project_leaders.push(this.fb.control(this.currentUser));
       this.ownersInputTrigger.closePanel();
     }
     input.value = ''; // Clear the input field

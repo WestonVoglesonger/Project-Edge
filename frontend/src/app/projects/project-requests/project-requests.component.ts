@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { ActivatedRoute, Route } from '@angular/router';
 import { JoinProjectRequestResponse } from '../project.models';
 import { ProjectService } from '../projects.service';
+import { ProfileForm, UserResponse } from 'src/app/shared/users/user.models';
+import { UserService } from 'src/app/shared/users/user.service';
 
 @Component({
   selector: 'app-project-requests',
@@ -16,12 +18,13 @@ export class ProjectRequestsComponent {
   };
 
   joinRequests: JoinProjectRequestResponse[] = [];
+  userProfiles: { [key: number]: UserResponse } = {};
   projectId!: number;
 
-  constructor(private projectService: ProjectService, private route: ActivatedRoute) {}
+  constructor(private projectService: ProjectService, private userService: UserService, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
-    this.route.paramMap.subscribe((params: { get: (arg0: string) => any; }) => {
+    this.route.paramMap.subscribe(params => {
       this.projectId = +params.get('id')!;
       this.loadPendingJoinRequests(this.projectId);
     });
@@ -29,13 +32,27 @@ export class ProjectRequestsComponent {
 
   loadPendingJoinRequests(projectId: number): void {
     this.projectService.getPendingJoinRequestsByProject(projectId).subscribe(
-      
-      (      requests: JoinProjectRequestResponse[]) => {
+      (requests: JoinProjectRequestResponse[]) => {
         this.joinRequests = requests;
-        console.log(this.joinRequests);
+        const userIds = requests.map(request => request.user_id);
+        this.loadUserProfiles(userIds);
       },
-      (      error: any) => {
+      (error: any) => {
         console.error('Error loading join requests', error);
+      }
+    );
+  }
+
+  loadUserProfiles(userIds: number[]): void {
+    this.userService.getUsersByIds(userIds).subscribe(
+      (users: UserResponse[]) => {
+        users.forEach(user => {
+          this.userProfiles[user.id!] = user;
+        });
+        console.log(this.userProfiles);
+      },
+      (error: any) => {
+        console.error('Error loading user profiles', error);
       }
     );
   }
@@ -45,7 +62,7 @@ export class ProjectRequestsComponent {
       () => {
         this.joinRequests = this.joinRequests.filter(request => request.id !== requestId);
       },
-      (      error: any) => {
+      (error: any) => {
         console.error('Error approving join request', error);
       }
     );
@@ -56,9 +73,14 @@ export class ProjectRequestsComponent {
       () => {
         this.joinRequests = this.joinRequests.filter(request => request.id !== requestId);
       },
-      (      error: any) => {
+      (error: any) => {
         console.error('Error rejecting join request', error);
       }
     );
+  }
+
+  getUserName(userId: number): string {
+    const user = this.userProfiles[userId];
+    return user ? `${user.first_name} ${user.last_name}` : 'Unknown User';
   }
 }

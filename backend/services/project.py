@@ -14,7 +14,7 @@ class ProjectService:
     def __init__(self, db: Session):
         self.db = db
 
-    def create_project(self, project_data: ProjectCreate, current_user_id: int) -> ProjectResponse:
+    def create_project(self, project_data: ProjectCreate) -> ProjectResponse:
         team_members = self._get_user_entities_by_emails(project_data.team_members)
         project_leaders = self._get_user_entities_by_emails(project_data.project_leaders)
 
@@ -25,7 +25,7 @@ class ProjectService:
 
         return new_project_entity.to_project_response()
 
-    def update_project(self, project_id: int, project_update: ProjectUpdate, user_id: int) -> ProjectResponse:
+    def update_project(self, project_id: int, project_update: ProjectUpdate, current_user_id: int) -> ProjectResponse:
         logger.info(f"Starting update for project with id {project_id}")
 
         try:
@@ -34,6 +34,11 @@ class ProjectService:
         except NoResultFound:
             logger.error(f"Project with id {project_id} not found")
             raise ProjectNotFoundException(f"Project with id {project_id} not found")
+
+        # Check if the current user is a project leader
+        if current_user_id not in [leader.id for leader in project_entity.project_leaders]:
+            logger.error(f"User with id {current_user_id} is not authorized to update project with id {project_id}")
+            raise UnauthorizedException(f"User with id {current_user_id} is not authorized to update project with id {project_id}")
 
         update_data = project_update.model_dump(exclude_unset=True)
 
@@ -80,6 +85,11 @@ class ProjectService:
         for user in users_to_add:
             project_entity.project_leaders.append(user)
 
+        # Ensure project leaders are not empty
+        if not project_entity.project_leaders:
+            logger.error(f"Cannot update project with id {project_id} because it would leave the project without leaders")
+            raise ValueError("Project must have at least one leader")
+
         # Update other fields
         for field, value in update_data.items():
             if field not in ["team_members", "project_leaders"]:
@@ -92,7 +102,6 @@ class ProjectService:
         logger.info(f"Project with id {project_id} refreshed from the database")
 
         return project_entity.to_project_response()
-
 
     def get_project(self, project_id: int) -> ProjectResponse:
         project = self.db.query(ProjectEntity).filter_by(id=project_id).first()

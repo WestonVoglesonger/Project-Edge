@@ -47,6 +47,8 @@ def authenticate_user(db: Session, username: str, password: str) -> Optional[Use
         return None
     return user
 
+from backend.services.exceptions import CredentialsException  # Ensure this import is present
+
 def get_current_user(
     token: str = Depends(oauth2_scheme),
     db: Session = Depends(db_session)
@@ -56,36 +58,22 @@ def get_current_user(
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         email: str = payload.get("sub")
         if email is None:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Could not validate credentials",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
+            raise CredentialsException()
         expiration = payload.get("exp")
         if expiration and datetime.fromtimestamp(expiration, tz=timezone.utc) < datetime.now(tz=timezone.utc):
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Token has expired",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
+            raise CredentialsException()
         print(f"Decoded JWT payload: {payload}")  # Log the payload
     except JWTError as e:
         print(f"JWTError: {e}")
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Could not validate credentials",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        raise CredentialsException()
     
     user = db.query(UserEntity).filter(UserEntity.email == email).first()
     if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="User not found",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        raise CredentialsException()
     print(f"Queried User: {user}")  # Log the user query result
     return user.to_user_response()
+
+
 
 def create_access_token(data: Dict[str, str], expires_delta: Optional[timedelta] = None) -> str:
     to_encode = data.copy()
