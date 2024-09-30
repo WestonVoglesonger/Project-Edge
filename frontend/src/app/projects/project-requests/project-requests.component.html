@@ -1,0 +1,17 @@
+<app-navigation></app-navigation>
+<div class="container">
+  <div class="left-column">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Join Requests</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div *ngFor="let request of joinRequests" class="request-card">
+          <p>{{ getUserName(request.user_id) }}</p>
+          <button mat-raised-button color="primary" (click)="approveRequest(request.id)">Approve</button>
+          <button mat-raised-button color="warn" (click)="rejectRequest(request.id)">Reject</button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

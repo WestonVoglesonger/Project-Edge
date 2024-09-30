@@ -28,7 +28,6 @@ REFRESH_TOKEN_EXPIRE_DAYS = 7  # 7 days
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 logger = logging.getLogger(__name__)
 
-
 # Define oauth2_scheme once and reuse it
 from fastapi.security import OAuth2PasswordBearer
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -47,6 +46,8 @@ def authenticate_user(db: Session, username: str, password: str) -> Optional[Use
     if not verify_password(password, user.password):
         return None
     return user
+
+from backend.services.exceptions import CredentialsException  # Ensure this import is present
 
 def get_current_user(
     token: str = Depends(oauth2_scheme),
@@ -72,6 +73,8 @@ def get_current_user(
     print(f"Queried User: {user}")  # Log the user query result
     return user.to_user_response()
 
+
+
 def create_access_token(data: Dict[str, str], expires_delta: Optional[timedelta] = None) -> str:
     to_encode = data.copy()
     if expires_delta:
@@ -82,7 +85,7 @@ def create_access_token(data: Dict[str, str], expires_delta: Optional[timedelta]
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
-def create_refresh_token(data: Dict[str, str], expires_delta: Optional[timedelta] = None):
+def create_refresh_token(data: Dict[str, str], expires_delta: Optional[timedelta] = None) -> str:
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.now(timezone.utc) + expires_delta
@@ -92,12 +95,12 @@ def create_refresh_token(data: Dict[str, str], expires_delta: Optional[timedelta
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
-def verify_refresh_token(token: str):
+def verify_refresh_token(token: str) -> Optional[Dict[str, str]]:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return payload
     except JWTError:
         return None
 
-def get_user_by_email(db: Session, email: str):
-    return db.query(User).filter(User.email == email).first()
+def get_user_by_email(db: Session, email: str) -> Optional[User]:
+    return db.query(UserEntity).filter(UserEntity.email == email).first()

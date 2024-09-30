@@ -7,7 +7,7 @@ import { UserResponse } from 'src/app/shared/users/user.models';
 import { UserService } from 'src/app/shared/users/user.service';
 import { AuthService } from 'src/app/shared/auth.service';
 import { minLengthArray } from 'src/app/shared/min-length-array.validator';
-import { Project } from '../project.models';
+import { JoinProjectRequestCreate, Project } from '../project.models';
 import { CommentService } from 'src/app/shared/comment.service';
 import { CommentResponse, CommentCreate } from 'src/app/shared/comment.models';
 
@@ -30,8 +30,12 @@ export class ProjectFormComponent implements OnInit {
   filteredLeaders: UserResponse[] = [];
   currentUser!: UserResponse;
   isLeader: boolean = false;
+  isEditing: boolean = false;
+  hasJoined: boolean = false;
+  hasRequestedToJoin: boolean = false;
   comments: CommentResponse[] = [];
   project_id!: number;
+  showEditor: boolean = false;
 
   @ViewChild('currentUsersInput') currentUsersInput!: ElementRef;
   @ViewChild('ownersInput') ownersInput!: ElementRef;
@@ -74,14 +78,22 @@ export class ProjectFormComponent implements OnInit {
             this.loadProject(this.project_id);
             this.loadComments(this.project_id);
           } else {
+            this.isNewProject = true;
+            this.isEditing = true;  // Ensure isEditing is true for new projects
+            this.isLeader = true;   // Ensure isLeader is true for new projects
             this.addCurrentUserToProjectLeaders();
           }
+          this.updateShowEditor();
         });
       },
       error => {
         console.error('Error fetching current user', error);
       }
     );
+  }
+
+  private updateShowEditor(): void {
+    this.showEditor = this.isNewProject || (this.isLeader && this.isEditing);
   }
 
   addCurrentUserToProjectLeaders(): void {
@@ -101,6 +113,7 @@ export class ProjectFormComponent implements OnInit {
   loadProject(id: number): void {
     this.projectService.getProject(id).subscribe(
       project => {
+        console.log(project);
         this.projectForm.patchValue({
           name: project.name,
           description: project.description,
@@ -116,7 +129,10 @@ export class ProjectFormComponent implements OnInit {
         this.isLeader = project.project_leaders.some((leader: { email: string | undefined; }) => leader.email === this.currentUser?.email);
         if (!this.isLeader) {
           this.projectForm.disable();
+          this.hasJoined = project.team_members.some((member: { email: string | undefined; }) => member.email === this.currentUser?.email);
+          this.hasRequestedToJoin = project.join_requests.some((request: { user_id: number }) => request.user_id === this.currentUser.id);
         }
+        this.updateShowEditor(); // Ensure showEditor is updated after loading the project
       },
       error => {
         console.error('Error loading project', error);
@@ -165,6 +181,8 @@ export class ProjectFormComponent implements OnInit {
         this.projectService.updateProject(this.project_id, projectData).subscribe(
           response => {
             console.log('Project updated successfully', response);
+            this.isEditing = false;
+            this.updateShowEditor();
             this.router.navigate(['/projects']);
           },
           error => {
@@ -189,6 +207,63 @@ export class ProjectFormComponent implements OnInit {
     }
   }
 
+  createRequest(): void {
+    const joinRequest: JoinProjectRequestCreate = {
+      project_id: this.project_id,
+      user_id: this.currentUser.id!,
+    };
+
+    this.projectService.createJoinRequest(joinRequest).subscribe(
+      response => {
+        console.log('Join request sent successfully', response);
+        this.hasRequestedToJoin = true;
+        // Optionally, update the UI to reflect the join request
+      },
+      error => {
+        console.error('Error sending join request', error);
+      }
+    );
+  }
+
+  deleteRequest(): void {
+    if (confirm('Are you sure you want to delete this join request?')) {
+      this.projectService.deleteJoinRequest(this.project_id, this.currentUser.id!).subscribe(
+        response => {
+          console.log('Join request deleted successfully', response);
+          this.hasRequestedToJoin = false;
+          // Optionally, update the UI to reflect the join request deletion
+        },
+        error => {
+          console.error('Error deleting join request', error);
+        }
+      );
+    }
+  }
+  
+  leaveProject(): void {
+    if (confirm('Are you sure you want to leave this project?')) {
+      this.projectService.leaveProject(this.project_id).subscribe(
+        response => {
+          console.log('Left project successfully', response);
+          this.hasJoined = false;
+          this.hasRequestedToJoin = false;
+  
+          // Remove the current user from the currentUsers FormArray
+          const index = this.currentUsers.controls.findIndex(control => control.value.id === this.currentUser.id);
+          if (index !== -1) {
+            this.currentUsers.removeAt(index);
+          }
+          
+          // Optionally, you can also update the UI or any other relevant state here.
+          this.cdr.detectChanges();
+        },
+        error => {
+          console.error('Error leaving project', error);
+        }
+      );
+    }
+  }
+  
   saveComment(): void {
     if (this.commentForm.valid) {
       const commentCreate: CommentCreate = {
@@ -250,8 +325,8 @@ export class ProjectFormComponent implements OnInit {
     if (type === 'users') {
       this.currentUsers.push(this.fb.control(user));
       this.currentUsersInputTrigger.closePanel();
-    } else {
-      this.project_leaders.push(this.fb.control(user));
+    } else if (this.isNewProject && type === 'leaders') {
+      this.project_leaders.push(this.fb.control(this.currentUser));
       this.ownersInputTrigger.closePanel();
     }
     input.value = ''; // Clear the input field
@@ -299,7 +374,13 @@ export class ProjectFormComponent implements OnInit {
         this.project_leaders.push(this.fb.control(user));
       });
     }
-    this.router.navigate(['/projects']);
+    this.isEditing = false;
+    this.updateShowEditor();
+  }
+
+  editProject(): void {
+    this.isEditing = true;
+    this.updateShowEditor();
   }
 
   get f(): { [key: string]: AbstractControl } {
@@ -308,5 +389,9 @@ export class ProjectFormComponent implements OnInit {
 
   get cf(): { [key: string]: AbstractControl } {
     return this.commentForm.controls;
+  }
+
+  navigateToRequests(): void {
+    this.router.navigate([`/projects/requests/${this.project_id}`]);
   }
 }

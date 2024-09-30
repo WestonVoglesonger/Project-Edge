@@ -10,7 +10,8 @@
 }
 
 .left-column,
-.right-column {
+.right-column,
+.project-details {
   flex: 1;
   max-width: 45%;
 }
@@ -43,6 +44,9 @@ mat-card {
   padding-right: 50px;
   background: linear-gradient(to right, #3f51b5, #5c6bc0);
   color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .mat-card-title {
@@ -100,13 +104,31 @@ button {
   margin-bottom: 15px;
 }
 
+.project-details mat-card-content {
+  margin-top: 20px; /* Adjust the margin to add space between the header and content */
+}
+
+.project-details ul {
+  padding-left: 20px;
+  list-style: disc;
+}
+
+.header-buttons {
+  display: flex;
+  gap: 8px;
+  position: absolute;
+  top: 8px;
+  right: 16px;
+}
+
 @media (max-width: 1024px) {
   .container {
     flex-direction: column;
   }
 
   .left-column,
-  .right-column {
+  .right-column,
+  .project-details {
     max-width: 100%;
   }
 }
@@ -139,4 +161,14 @@ button {
   position: absolute;
   top: 8px;
   right: 8px;
+}
+
+.join-leave-button {
+  position: absolute;
+  top: 4px;
+  right: 16px;
+}
+
+.project-info {
+  margin-top: 40px; /* Add space to push the project information lower */
 }

@@ -17,8 +17,8 @@ project = ProjectCreate(
 new_project = ProjectCreate(
     name="New Test Project",
     description="A new test project",
-    team_members=[user1.to_user_response()],
-    project_leaders=[]
+    team_members=[],
+    project_leaders=[user1.to_user_response()]
 )
 
 # Updated project data fixture

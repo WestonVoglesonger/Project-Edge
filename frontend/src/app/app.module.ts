@@ -1,7 +1,7 @@
 import { NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { HttpClientModule } from "@angular/common/http";
+import { HTTP_INTERCEPTORS, HttpClientModule } from "@angular/common/http";
 import { AppRoutingModule } from "./app-routing.module";
 import { ReactiveFormsModule } from "@angular/forms";
 import { FormsModule } from "@angular/forms";
@@ -16,6 +16,7 @@ import { MatCardModule } from "@angular/material/card";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { MatAutocompleteModule } from "@angular/material/autocomplete";
+import { MatExpansionModule } from "@angular/material/expansion";
 
 // Components
 import { AppComponent } from "./app.component";
@@ -31,6 +32,9 @@ import { DiscussionCard } from "./shared/widgets/discussion-card/discussion-card
 import { DiscussionFormComponent } from "./discussions/discussion-form/discussion-form.component";
 import { CommentCard } from "./shared/widgets/comment-card/comment-card";
 import { CommentFormComponent } from "./comment-form/comment-form.component";
+import { ProjectRequestsComponent } from "./projects/project-requests/project-requests.component";
+import { AuthInterceptor } from "./shared/auth-interceptor.service";
+import { AuthService } from "./shared/auth.service";
 
 @NgModule({
   declarations: [
@@ -47,6 +51,7 @@ import { CommentFormComponent } from "./comment-form/comment-form.component";
     DiscussionFormComponent,
     CommentCard,
     CommentFormComponent,
+    ProjectRequestsComponent,
     // Add other component declarations here
   ],
   imports: [
@@ -67,9 +72,17 @@ import { CommentFormComponent } from "./comment-form/comment-form.component";
     MatFormFieldModule,
     MatInputModule,
     MatAutocompleteModule,
+    MatExpansionModule,
     // Add other module imports as necessary
   ],
-  providers: [],
+  providers: [
+    AuthService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true,
+    },
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

@@ -1,7 +1,7 @@
 from datetime import timedelta
 import logging
 from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from typing import Dict
 
@@ -27,6 +27,7 @@ openapi_tags = {
 
 logger = logging.getLogger(__name__)
 
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/token")
 
 @api.post("/token", response_model=Token)
 def login_for_access_token(

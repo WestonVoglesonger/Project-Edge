@@ -2,9 +2,9 @@
   [ngClass]="{ 'comment-card-profile': inProfile, 'comment-card': !inProfile }"
   (dblclick)="navigateToForm()"
 >
-  <mat-card-header>
-    <mat-card-title
-      >{{ comment.author.first_name }} {{ comment.author.last_name }}
+  <mat-card-header *ngIf="comment?.author">
+    <mat-card-title>
+      {{ comment.author.first_name }} {{ comment.author.last_name }}
     </mat-card-title>
     <span class="comment-time">{{ mostRecentTime | date: "short" }}</span>
   </mat-card-header>
@@ -48,6 +48,14 @@
             [disabled]="editCommentForm.invalid"
           >
             Save
+          </button>
+          <button
+            mat-raised-button
+            color="warn"
+            type="button"
+            (click)="cancelEdit()"
+          >
+            Cancel
           </button>
         </div>
       </form>

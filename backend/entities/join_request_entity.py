@@ -1,0 +1,34 @@
+from datetime import datetime, timezone
+from sqlalchemy import Column, DateTime, Integer, ForeignKey, String
+from sqlalchemy.orm import relationship, Mapped, mapped_column
+
+from backend.models.join_request import JoinRequestCreate, JoinRequestResponse
+from .base import Base
+
+class JoinRequestEntity(Base):
+    __tablename__ = 'join_requests'
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'), nullable=False)
+    project_id: Mapped[int] = mapped_column(Integer, ForeignKey('projects.id'), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    status: Mapped[int] = mapped_column(Integer, default=0, nullable=False) # 0: pending, 1: accepted, 2: rejected
+
+    user = relationship('UserEntity', back_populates='join_requests')
+    project = relationship('ProjectEntity', back_populates='join_requests')
+
+    def to_join_request_response(self):
+        return JoinRequestResponse(
+            id=self.id,
+            user_id=self.user_id,
+            project_id=self.project_id,
+            created_at=self.created_at,
+            status=self.status
+        )
+
+    @staticmethod
+    def from_model(join_request: JoinRequestCreate):
+        return JoinRequestEntity(
+            user_id=join_request.user_id,
+            project_id=join_request.project_id
+        )

@@ -57,10 +57,14 @@ class CommentService:
         print(f"Retrieved {len(comments)} comments for author_id: {author_id}")
         return [comment.to_comment_response() for comment in comments]
 
-    def delete_comment(self, comment_id: int):
-        comment_entity = self.db.query(CommentEntity).filter_by(id=comment_id).first()
-        if comment_entity is None:
+    def delete_comment(self, comment_id: int) -> CommentResponse:
+        comment_entity = self.db.query(CommentEntity).filter(CommentEntity.id == comment_id).first()
+        if not comment_entity:
             raise CommentNotFoundException(f"Comment with id {comment_id} not found")
+        
+        response = comment_entity.to_comment_response()
+        
         self.db.delete(comment_entity)
         self.db.commit()
-        return comment_entity.to_comment_response()
+        
+        return response

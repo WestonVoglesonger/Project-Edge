@@ -4,7 +4,6 @@ from sqlalchemy import Column, DateTime, Integer, String, Table, ForeignKey
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from .base import Base
 from backend.models.project import ProjectCreate, ProjectUpdate, ProjectResponse
-from backend.entities.user_entity import UserEntity
 
 association_table_team_members = Table(
     'association_team_members', Base.metadata,
@@ -28,10 +27,11 @@ class ProjectEntity(Base):
     description: Mapped[str] = mapped_column(String, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
-    team_members: Mapped[List[UserEntity]] = relationship('UserEntity', secondary=association_table_team_members, back_populates='projects_as_member')
-    project_leaders: Mapped[List[UserEntity]] = relationship('UserEntity', secondary=association_table_project_leaders, back_populates='projects_as_leader')
+    team_members: Mapped[List['UserEntity']] = relationship('UserEntity', secondary=association_table_team_members, back_populates='projects_as_member')
+    project_leaders: Mapped[List['UserEntity']] = relationship('UserEntity', secondary=association_table_project_leaders, back_populates='projects_as_leader')
 
     comments = relationship("CommentEntity", back_populates="project", cascade="all, delete-orphan")
+    join_requests = relationship('JoinRequestEntity', back_populates='project', cascade="all, delete-orphan")
 
     def to_project_response(self):
         return ProjectResponse(
@@ -41,11 +41,12 @@ class ProjectEntity(Base):
             created_at=self.created_at,
             updated_at=self.updated_at,
             team_members=[member.to_user_response() for member in self.team_members],
-            project_leaders=[leader.to_user_response() for leader in self.project_leaders]
+            project_leaders=[leader.to_user_response() for leader in self.project_leaders],
+            join_requests=[jr.to_join_request_response() for jr in self.join_requests]
         )
 
     @staticmethod
-    def from_model(project: ProjectCreate, team_members: List[UserEntity], project_leaders: List[UserEntity]):
+    def from_model(project: ProjectCreate, team_members: List['UserEntity'], project_leaders: List['UserEntity']):
         return ProjectEntity(
             name=project.name,
             description=project.description,

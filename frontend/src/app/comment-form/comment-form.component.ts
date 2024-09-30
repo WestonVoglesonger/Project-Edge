@@ -1,10 +1,4 @@
-import {
-  Component,
-  Input,
-  OnInit,
-  OnDestroy,
-  ChangeDetectorRef,
-} from "@angular/core";
+import { Component, Input, OnInit, ChangeDetectorRef } from "@angular/core";
 import {
   FormBuilder,
   FormGroup,
@@ -20,7 +14,6 @@ import {
 import { AuthService } from "../shared/auth.service";
 import { CommentService } from "../shared/comment.service";
 import { UserResponse } from "../shared/users/user.models";
-import { Subscription } from "rxjs";
 
 @Component({
   selector: "app-comment-form",
@@ -34,15 +27,12 @@ export class CommentFormComponent implements OnInit {
     title: "Comment Form Page",
   };
 
-  @Input() discussion_id?: number;
-  @Input() project_id?: number;
-  @Input() comment_id?: number;
+  @Input() comment?: CommentResponse;
 
   replyForm: FormGroup;
   isEditMode: boolean = false;
   errorMessage: string = "";
   currentUser!: UserResponse;
-  comment!: CommentResponse;
   replies: CommentResponse[] = [];
 
   constructor(
@@ -73,9 +63,12 @@ export class CommentFormComponent implements OnInit {
           (params) => {
             const id = params.get("id");
             if (id) {
-              this.comment_id = +id;
+              if (!this.comment) {
+                this.comment = {} as CommentResponse; // Initialize comment if it's undefined
+              }
+              this.comment.id = +id;
               this.isEditMode = true;
-              this.loadComment(this.comment_id);
+              this.loadComment(this.comment.id);
             }
           },
           (error: any) => {
@@ -114,12 +107,12 @@ export class CommentFormComponent implements OnInit {
   }
 
   saveReply(): void {
-    if (this.replyForm.valid) {
+    if (this.replyForm.valid && this.currentUser && this.comment) {
       const replyCreate: CommentCreate = {
         description: this.replyForm.value.description,
-        project_id: this.project_id || null,
-        discussion_id: this.discussion_id || null,
-        parent_id: this.comment_id || null,
+        project_id: this.comment?.project_id || null,
+        discussion_id: this.comment?.discussion_id || null,
+        parent_id: this.comment?.id || null,
         author_id: this.currentUser.id!,
       };
       this.commentService.createComment(replyCreate).subscribe(
@@ -136,18 +129,6 @@ export class CommentFormComponent implements OnInit {
     }
   }
 
-  cancelChanges(): void {
-    if (this.isEditMode && this.comment) {
-      this.replyForm.patchValue({
-        description: this.comment.description,
-      });
-      this.isEditMode = false;
-    } else {
-      this.replyForm.reset();
-      this.router.navigate(["/discussions"]);
-    }
-  }
-
   handleError(error: any): void {
     if (error.status === 422 && error.error && error.error.detail) {
       this.errorMessage =
@@ -161,5 +142,20 @@ export class CommentFormComponent implements OnInit {
 
   get rf(): { [key: string]: AbstractControl } {
     return this.replyForm.controls;
+  }
+
+  handleReplyDeleted(commentId: number): void {
+    this.replies = this.replies.filter((reply) => reply.id !== commentId);
+  }
+
+  handleCommentDeleted(commentId: number): void {
+    console.log("Comment deleted", commentId);
+    if (this.comment?.parent_id) {
+      this.router.navigate(["/comments/" + this.comment?.parent_id]);
+    } else if (this.comment?.discussion_id) {
+      this.router.navigate(["/discussions/" + this.comment?.discussion_id]);
+    } else {
+      this.router.navigate(["/projects/" + this.comment?.project_id]);
+    }
   }
 }

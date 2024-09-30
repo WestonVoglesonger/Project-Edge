@@ -2,12 +2,11 @@ import pytest
 from sqlalchemy.orm import Session
 
 from backend.entities.project_entity import ProjectEntity
-from backend.services.exceptions import ProjectNotFoundException
+from backend.services.exceptions import ProjectNotFoundException, UnauthorizedException
 from backend.services.project import ProjectService
 from backend.services.user import UserService
 from .demo_data.project_data import updated_project
 from backend.services.exceptions import UserNotFoundException
-
 
 # Data Setup and Injected Service Fixtures
 from .demo_data.core_data import setup_insert_data_fixture
@@ -22,7 +21,7 @@ def test_create_project(project_svc: ProjectService):
     assert created_project.team_members[0].email == project.team_members[0].email
     assert created_project.project_leaders[0].email == project.project_leaders[0].email
 
-def test_create_project_no_project_leaders(project_svc: ProjectService):
+def test_create_project_no_team_members(project_svc: ProjectService):
     created_project = project_svc.create_project(new_project)
     assert created_project.project_leaders == new_project.project_leaders
 
@@ -33,13 +32,11 @@ def test_get_project(project_svc: ProjectService):
     assert fetched_project.description == created_project.description
 
 def test_get_all_projects(project_svc: ProjectService):
-    project_svc.create_project(new_project)
-
     # Fetch all projects
     projects = project_svc.get_all_projects()
 
     # Assert that the correct number of projects are fetched
-    assert len(projects) == 2
+    assert len(projects) == 1
 
 def test_get_projects_by_user(project_svc: ProjectService):
     projects = project_svc.get_projects_by_user(user2.id)
@@ -49,18 +46,34 @@ def test_get_projects_by_user(project_svc: ProjectService):
 
 def test_update_project(project_svc: ProjectService):
     created_project = project_svc.create_project(project)
-    updated_project_data = project_svc.update_project(created_project.id, updated_project)
+    updated_project_data = project_svc.update_project(created_project.id, updated_project, current_user_id=2)
     assert updated_project_data.name == updated_project.name
     assert updated_project_data.description == updated_project.description
 
 def test_update_project_remove_project_leaders(project_svc: ProjectService):
     created_project = project_svc.create_project(project)
-    updated_project_data = project_svc.update_project(created_project.id, updated_project_2)
-    assert updated_project_data.project_leaders == updated_project_2.project_leaders
+    with pytest.raises(ValueError):
+        project_svc.update_project(created_project.id, updated_project_2, current_user_id=2)
+
+# def test_update_project_not_found(project_svc: ProjectService):
+    
+#     with pytest.raises(ProjectNotFoundException):
+#         project_svc.update_project(999, updated_project, current_user_id=1) 
+# Test is not loading for some reason
+
+def test_update_project_user_not_authorized(project_svc: ProjectService):
+    created_project = project_svc.create_project(project)
+    with pytest.raises(UnauthorizedException):
+        project_svc.update_project(created_project.id, updated_project, current_user_id=1)
+
+def test_update_project_user_not_found(project_svc: ProjectService):
+    created_project = project_svc.create_project(project)
+    with pytest.raises(UnauthorizedException):
+        project_svc.update_project(created_project.id, updated_project, current_user_id=999)
 
 def test_delete_project(project_svc: ProjectService):    
     created_project = project_svc.create_project(project)
-    project_svc.delete_project(created_project.id)
+    project_svc.delete_project(created_project.id, current_user_id=2)
     
     with pytest.raises(ProjectNotFoundException):
         project_svc.get_project(created_project.id)
@@ -71,12 +84,11 @@ def test_get_project_not_found(project_svc: ProjectService):
 
 def test_update_project_not_found(project_svc: ProjectService):
     with pytest.raises(ProjectNotFoundException):
-        project_svc.update_project(999, updated_project)
+        project_svc.update_project(999, updated_project, current_user_id=1)
 
-    
 def test_delete_project_not_found(project_svc: ProjectService):
     with pytest.raises(ProjectNotFoundException):
-        project_svc.delete_project(999)
+        project_svc.delete_project(999, current_user_id=1)
 
 def test_search_users_by_partial_name(user_svc: UserService):
     users = user_svc.search_users_by_name("Sal")

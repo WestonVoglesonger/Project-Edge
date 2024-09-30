@@ -1,25 +1,25 @@
 <app-navigation></app-navigation>
 <div class="container">
   <div class="left-column">
-    <form [formGroup]="projectForm" (ngSubmit)="saveProject()" class="project-form">
+    <form [formGroup]="projectForm" (ngSubmit)="saveProject()" class="project-form" *ngIf="showEditor">
       <mat-card>
         <mat-card-header>
           <mat-card-title>{{ isNewProject ? 'Create New Project' : 'Update Project' }}</mat-card-title>
-        <button
-          *ngIf="isLeader"
-          mat-icon-button
-          color="warn"
-          (click)="deleteProject()"
-          class="delete-button"
-        >
-          <mat-icon>delete</mat-icon>
-        </button>
+          <button
+            *ngIf="isLeader && !isNewProject"
+            mat-icon-button
+            color="warn"
+            (click)="deleteProject()"
+            class="delete-button"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
         </mat-card-header>
         <div class="card-content-container">
           <mat-card-content>
             <mat-form-field>
               <mat-label>Name of Project</mat-label>
-              <input matInput formControlName="name" [readonly]="!isLeader && !isNewProject" />
+              <input matInput formControlName="name" />
               <mat-error *ngIf="f['name'].touched && f['name'].invalid">
                 <span *ngIf="f['name'].errors?.['required']">Name is required.</span>
                 <span *ngIf="f['name'].errors?.['minlength']">Name must be at least 3 characters long.</span>
@@ -29,7 +29,7 @@
 
             <mat-form-field>
               <mat-label>Description</mat-label>
-              <textarea matInput formControlName="description" [readonly]="!isLeader && !isNewProject"></textarea>
+              <textarea matInput formControlName="description"></textarea>
               <mat-error *ngIf="f['description'].touched && f['description'].invalid">
                 <span *ngIf="f['description'].errors?.['required']">Description is required.</span>
                 <span *ngIf="f['description'].errors?.['minlength']">Description must be at least 10 characters long.</span>
@@ -38,7 +38,7 @@
 
             <mat-form-field>
               <mat-label>Team Members</mat-label>
-              <input matInput #currentUsersInput (input)="searchUsers($event, 'users')" [matAutocomplete]="autoUsers" [readonly]="!isLeader && !isNewProject" />
+              <input matInput #currentUsersInput (input)="searchUsers($event, 'users')" [matAutocomplete]="autoUsers" />
               <mat-autocomplete #autoUsers="matAutocomplete" (optionSelected)="addUser($event.option.value, 'users', currentUsersInput)">
                 <mat-option *ngFor="let user of filteredMembers" [value]="user">{{ user.email }}</mat-option>
               </mat-autocomplete>
@@ -49,9 +49,9 @@
               </div>
             </mat-form-field>
             
-            <mat-form-field>
+            <mat-form-field *ngIf="isNewProject">
               <mat-label>Project Leaders</mat-label>
-              <input matInput #ownersInput (input)="searchUsers($event, 'leaders')" [matAutocomplete]="autoOwners" [readonly]="!isLeader && !isNewProject" />
+              <input matInput #ownersInput (input)="searchUsers($event, 'leaders')" [matAutocomplete]="autoOwners" />
               <mat-autocomplete #autoOwners="matAutocomplete" (optionSelected)="addUser($event.option.value, 'leaders', ownersInput)">
                 <mat-option *ngFor="let user of filteredLeaders" [value]="user">{{ user.email }}</mat-option>
               </mat-autocomplete>
@@ -66,7 +66,7 @@
             </mat-form-field>          
           </mat-card-content>
         </div>
-        <mat-card-actions *ngIf="isLeader || isNewProject">
+        <mat-card-actions>
           <button mat-raised-button color="primary" type="submit" [disabled]="projectForm.invalid">
             {{ isNewProject ? 'Create Project' : 'Update Project' }}
           </button>
@@ -75,8 +75,8 @@
       </mat-card>
     </form>
 
-    <form [formGroup]="commentForm" (ngSubmit)="saveComment()" class="comment-form">
-      <mat-card *ngIf="!isNewProject">
+    <form [formGroup]="commentForm" (ngSubmit)="saveComment()" class="comment-form" *ngIf="!isNewProject">
+      <mat-card>
         <mat-card-header>
           <mat-card-title>Add a Comment</mat-card-title>
         </mat-card-header>
@@ -101,13 +101,51 @@
     </form>
   </div>
 
-  
-  <div *ngIf="!isNewProject" class="right-column">
+  <div class="right-column" *ngIf="!isNewProject">
     <div class="comments-section">
       <h3>Comments</h3>
       <div *ngFor="let comment of comments">
         <app-comment-card [comment]="comment" [currentUser]="currentUser" (commentDeleted)="handleCommentDeleted($event)"></app-comment-card>
       </div>
     </div>
+  </div>
+
+  <div *ngIf="(!isLeader || (isLeader && !isEditing)) && !isNewProject" class="project-details">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Project Details</mat-card-title>
+        <div class="header-buttons">
+          <button *ngIf="isLeader" mat-icon-button color="primary" class="edit-button" (click)="editProject()">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button *ngIf="isLeader" mat-icon-button color="primary" (click)="navigateToRequests()">
+            <mat-icon>person</mat-icon>
+          </button>
+          <div *ngIf="!isLeader">
+          <button *ngIf="!hasJoined && !hasRequestedToJoin " mat-raised-button color="primary" (click)="createRequest()">
+            Request to Join
+          </button>
+          <button *ngIf="hasRequestedToJoin && !hasJoined" mat-raised-button color="warn" (click)="deleteRequest()">
+            Cancel Request
+          </button>
+          <button *ngIf="hasJoined" mat-raised-button color="warn" (click)="leaveProject()">
+            Leave Project
+            </button>
+          </div>
+        </div>
+      </mat-card-header>
+      <mat-card-content class="project-info">
+        <p><strong>Name:</strong> {{ projectForm.value.name }}</p>
+        <p><strong>Description:</strong> {{ projectForm.value.description }}</p>
+        <p><strong>Team Members:</strong></p>
+        <ul>
+          <li *ngFor="let user of currentUsers.controls">{{ user.value?.email }}</li>
+        </ul>
+        <p><strong>Project Leaders:</strong></p>
+        <ul>
+          <li *ngFor="let leader of project_leaders.controls">{{ leader.value?.email }}</li>
+        </ul>
+      </mat-card-content>
+    </mat-card>
   </div>
 </div>

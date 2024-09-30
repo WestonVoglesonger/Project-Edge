@@ -5,7 +5,7 @@ import {
   HttpParams,
 } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { Observable, throwError } from "rxjs";
+import { Observable, of, throwError } from "rxjs";
 import { catchError } from "rxjs/operators";
 import { ProfileForm, UserResponse } from "./user.models";
 
@@ -29,6 +29,17 @@ export class UserService {
     return this.http
       .get<ProfileForm>(`${this.apiUrl}/${userId}`, { headers })
       .pipe(catchError(this.handleError));
+  }
+
+  getUsersByIds(userIds: number[]): Observable<UserResponse[]> {
+    if (!userIds.length) {
+      console.log("No user IDs provided, returning empty array");
+      return of([]); // Return an empty observable if userIds is empty
+    }
+    console.log(`Requesting users with IDs: ${userIds}`);
+    return this.http.post<UserResponse[]>(`${this.apiUrl}/getByIds`, {
+      ids: userIds,
+    });
   }
 
   updateUserProfile(

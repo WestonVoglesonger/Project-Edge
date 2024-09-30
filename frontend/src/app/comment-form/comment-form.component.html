@@ -6,6 +6,7 @@
         [comment]="comment"
         [isExpanded]="true"
         [currentUser]="currentUser"
+        (commentDeleted)="handleCommentDeleted($event)"
       ></app-comment-card>
     </div>
     <form [formGroup]="replyForm" (ngSubmit)="saveReply()" class="reply-form">
@@ -52,6 +53,7 @@
         <app-comment-card
           [comment]="reply"
           [currentUser]="currentUser"
+          (commentDeleted)="handleReplyDeleted($event)"
         ></app-comment-card>
       </div>
     </div>

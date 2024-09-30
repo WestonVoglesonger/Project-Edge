@@ -3,24 +3,16 @@ import logging
 from fastapi import FastAPI
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.security import OAuth2PasswordBearer
 from starlette.responses import FileResponse
-from starlette.middleware.trustedhost import TrustedHostMiddleware
-from backend.api import comment, discussion, project, static_files
-from backend.api import user, auth
+from backend.api import comment, discussion, project, static_files, join_request, user, auth
 from backend.logging_config import configure_logging
 
-__authors__ = ["Weston Voglesonger"]
-__copyright__ = "Copyright 2023"
-__license__ = "MIT"
-
+# Configuration and Metadata
 description = """
 Welcome to the Project Edge RESTful Application Programming Interface.
 """
 
-# Configure logging
-configure_logging()
-
-# Metadata to improve the usefulness of OpenAPI Docs /docs API Explorer
 app = FastAPI(
     title="Edge Carolina API",
     version="0.0.1",
@@ -31,21 +23,41 @@ app = FastAPI(
         project.openapi_tags,
         discussion.openapi_tags,
         comment.openapi_tags,
+        join_request.openapi_tags,
     ],
+    openapi={
+        "components": {
+            "securitySchemes": {
+                "OAuth2PasswordBearer": {
+                    "type": "oauth2",
+                    "flows": {
+                        "password": {
+                            "tokenUrl": "/api/auth/token",
+                            "scopes": {
+                                "read": "Read access",
+                                "write": "Write access"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "security": [
+            {
+                "OAuth2PasswordBearer": ["read", "write"]
+            }
+        ]
+    }
 )
 
 # Use GZip middleware for compressing HTML responses over the network
 app.add_middleware(GZipMiddleware)
 
-# Plugging in each of the router APIs
-feature_apis = [
-    user,
-    auth,
-    project,
-    discussion,
-    comment,
-]
+# Configure logging
+configure_logging()
 
+# Include all routers
+feature_apis = [user, auth, project, discussion, comment, join_request]
 for feature_api in feature_apis:
     app.include_router(feature_api.api)
 
@@ -59,10 +71,3 @@ async def serve_spa(full_path: str):
     if index_path.exists():
         return FileResponse(index_path)
     return {"detail": "Not Found"}
-
-# Example route to test logging
-@app.get("/test-logging")
-async def test_logging():
-    logger = logging.getLogger(__name__)
-    logger.info("This is an info log message")
-    return {"message": "Check the logs for an info message"}

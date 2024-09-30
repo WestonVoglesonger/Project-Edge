@@ -40,3 +40,21 @@ class CommentNotFoundException(Exception):
     def __init__(self, message: str):
         self.message = message
         super().__init__(self.message)
+
+class JoinRequestNotFoundException(Exception):
+    """Exception raised when a join request is not found."""
+    def __init__(self, message: str):
+        self.message = message
+        super().__init__(self.message)
+
+class JoinRequestAlreadyMadeException(Exception):
+    """Exception raised when a join request is already made."""
+    def __init__(self, message: str):
+        self.message = message
+        super().__init__(self.message)
+
+class UnauthorizedException(Exception):
+    """Exception raised when a user is not authorized to perform an action."""
+    def __init__(self, message: str):
+        self.message = message
+        super().__init__(self.message)

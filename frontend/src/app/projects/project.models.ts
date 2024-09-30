@@ -16,3 +16,16 @@ export interface ProjectResponse {
     team_members: UserResponse[];
     project_leaders: UserResponse[];
   }
+
+export interface JoinProjectRequestCreate {
+    user_id: number;
+    project_id: number;
+  }
+
+export interface JoinProjectRequestResponse {
+    id: number;
+    user_id: number;
+    project_id: number;
+    created_at: string;
+    status: number;
+  }

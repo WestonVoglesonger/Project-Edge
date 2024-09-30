@@ -33,6 +33,12 @@ class UserService:
             raise UserNotFoundException(f"User with email {email} not found")
         return user_entity.to_user()
     
+    def get_users_by_ids(self, user_ids: List[int]) -> List[UserResponse]:
+        users = self.db.query(UserEntity).filter(UserEntity.id.in_(user_ids)).all()
+        if len(users) != len(user_ids):
+            raise UserNotFoundException("One or more users not found")
+        return [user.to_user_response() for user in users]
+    
     def search_users_by_name(self, name: str) -> List[UserResponse]:
         name_parts = name.split()
         if len(name_parts) == 1:
