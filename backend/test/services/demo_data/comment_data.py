@@ -10,6 +10,9 @@ from .user_data import user1, user2
 from .project_data import project
 from .discussion_data import discussion
 
+if not user1.id or not user2.id:
+    raise ValueError("User IDs must be present for test data")
+
 comment = CommentCreate(
     description="Test Comment",
     author_id=user1.id,
