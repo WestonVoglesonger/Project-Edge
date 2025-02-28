@@ -55,7 +55,7 @@ def get_users_by_ids(user_ids: UserIDs, user_service: UserService = Depends(get_
     try:
         users = user_service.get_users_by_ids(user_ids.ids)
         if not users:
-            raise UserNotFoundException("No users found with the given IDs")
+            raise HTTPException(status_code=404, detail="No users found with the given IDs")
         return users
     except UserNotFoundException as e:
         logger.error(f"UserNotFoundException: {str(e)}")

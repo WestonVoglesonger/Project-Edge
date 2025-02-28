@@ -5,7 +5,7 @@ from fastapi import Depends, HTTPException, status
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
-from typing import Dict, Optional
+from typing import Dict, Optional, Union, cast
 
 from backend.database import db_session
 from backend.entities.user_entity import UserEntity
@@ -56,7 +56,7 @@ def get_current_user(
     try:
         print(f"Received token: {token}")  # Log received token
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email: str = payload.get("sub")
+        email = payload.get("sub")  # Remove type annotation
         if email is None:
             raise CredentialsException()
         expiration = payload.get("exp")
@@ -73,25 +73,23 @@ def get_current_user(
     print(f"Queried User: {user}")  # Log the user query result
     return user.to_user_response()
 
-
-
 def create_access_token(data: Dict[str, str], expires_delta: Optional[timedelta] = None) -> str:
-    to_encode = data.copy()
+    to_encode = cast(Dict[str, Union[str, int]], data.copy())
     if expires_delta:
         expire = datetime.now(timezone.utc) + expires_delta
     else:
         expire = datetime.now(timezone.utc) + timedelta(minutes=15)
-    to_encode.update({"exp": expire})
+    to_encode.update({"exp": int(expire.timestamp())})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
 def create_refresh_token(data: Dict[str, str], expires_delta: Optional[timedelta] = None) -> str:
-    to_encode = data.copy()
+    to_encode = cast(Dict[str, Union[str, int]], data.copy())
     if expires_delta:
         expire = datetime.now(timezone.utc) + expires_delta
     else:
         expire = datetime.now(timezone.utc) + timedelta(days=7)
-    to_encode.update({"exp": expire})
+    to_encode.update({"exp": int(expire.timestamp())})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 

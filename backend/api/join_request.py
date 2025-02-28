@@ -24,8 +24,9 @@ def get_join_request_service(db: Session = Depends(db_session)) -> JoinRequestSe
 @api.post("", response_model=JoinRequestResponse, tags=["JoinRequests"])
 def create_join_request(join_request: JoinRequestCreate, join_request_service: JoinRequestService = Depends(get_join_request_service), current_user: UserResponse = Depends(get_current_user)):
     try:
-        join_request.user_id = current_user.id
-        return join_request_service.create_join_request(join_request)
+        join_request_dict = join_request.model_dump()
+        join_request_dict["user_id"] = current_user.id
+        return join_request_service.create_join_request(JoinRequestCreate(**join_request_dict))
     except UserNotFoundException as e:
         raise HTTPException(status_code=404, detail=str(e))
     except ProjectNotFoundException as e:

@@ -62,6 +62,8 @@ def update_project(
     current_user: UserResponse = Depends(get_current_user)
 ):
     try:
+        if not current_user or not current_user.id:
+            raise HTTPException(status_code=401, detail="Authentication required")
         return project_service.update_project(project_id=project_id, project_update=project_update, current_user_id=current_user.id)
     except ProjectNotFoundException as e:
         raise HTTPException(status_code=404, detail=str(e))
@@ -75,6 +77,8 @@ def delete_project(
     current_user: UserResponse = Depends(get_current_user)
 ):
     try:
+        if not current_user or not current_user.id:
+            raise HTTPException(status_code=401, detail="Authentication required")
         return project_service.delete_project(project_id=project_id, current_user_id=current_user.id)
     except ProjectNotFoundException as e:
         raise HTTPException(status_code=404, detail=str(e))
@@ -88,6 +92,8 @@ def leave_project(
     current_user: UserResponse = Depends(get_current_user)
 ):
     try:
+        if not current_user or not current_user.id:
+            raise HTTPException(status_code=401, detail="Authentication required")
         return project_service.leave_project(project_id=project_id, current_user_id=current_user.id)
     except ProjectNotFoundException as e:
         raise HTTPException(status_code=404, detail=str(e))
