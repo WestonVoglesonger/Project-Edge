@@ -1,73 +1,240 @@
 @use '@angular/material' as mat;
 @include mat.core();
 
+// Import our common styles
+@import './app/shared/styles/common.scss';
+
 /* Global CSS Styles */
+
+:root {
+  --primary-color: #3f51b5;
+  --primary-light: #757de8;
+  --primary-dark: #002984;
+  --accent-color: #ff4081;
+  --accent-light: #ff79b0;
+  --accent-dark: #c60055;
+  --text-on-primary: #ffffff;
+  --text-on-accent: #000000;
+  --background-light: #f5f7fa;
+  --background-dark: #121212;
+  --card-light: #ffffff;
+  --card-dark: #1e1e1e;
+  --text-light: #333333;
+  --text-dark: #e0e0e0;
+  --border-radius: 8px;
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --shadow-light: 0 2px 10px rgba(0, 0, 0, 0.1);
+  --shadow-dark: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --transition-speed: 0.3s;
+}
 
 html,
 body {
-    height: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto', 'Helvetica Neue', sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  transition: background-color var(--transition-speed) ease;
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Set box-sizing for all elements */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-    margin: 0;
-    font-family: Roboto, "Helvetica Neue", sans-serif;
+  background-color: var(--background-light);
+  color: var(--text-light);
+  position: relative;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* App root element styles */
+app-root {
+  display: block;
+  min-height: 100vh;
+  position: relative;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* Common Elements Styling */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-md);
+  box-sizing: border-box;
 }
 
 .mat-mdc-card {
-    max-width: 640px;
-    margin: 1em;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-light);
+  margin: var(--spacing-md);
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mat-mdc-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
 }
 
 .mdc-notched-outline__notch {
-    border-left: 1px solid rgba(0, 0, 0, 0);
-    border-right: none !important;
+  border-left: 1px solid rgba(0, 0, 0, 0);
+  border-right: none !important;
 }
 
 .mdc-card__actions {
-    min-height: 0px !important;
+  min-height: 0px !important;
+  padding: var(--spacing-sm) var(--spacing-md);
 }
 
 .mdc-text-field__input::-webkit-calendar-picker-indicator {
-    display: block !important;
+  display: block !important;
+}
+
+button.mat-mdc-raised-button, 
+button.mat-mdc-button, 
+button.mat-mdc-outlined-button {
+  border-radius: var(--border-radius);
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  padding: 0 var(--spacing-lg);
+  height: 40px;
+  transition: all var(--transition-speed) ease;
+}
+
+button.mat-mdc-raised-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Material Theme Definitions */
+$primary-palette: (
+  50: #e8eaf6,
+  100: #c5cae9,
+  200: #9fa8da,
+  300: #7986cb,
+  400: #5c6bc0,
+  500: #3f51b5,
+  600: #3949ab,
+  700: #303f9f,
+  800: #283593,
+  900: #1a237e,
+  contrast: (
+    50: rgba(0, 0, 0, 0.87),
+    100: rgba(0, 0, 0, 0.87),
+    200: rgba(0, 0, 0, 0.87),
+    300: #ffffff,
+    400: #ffffff,
+    500: #ffffff,
+    600: #ffffff,
+    700: #ffffff,
+    800: #ffffff,
+    900: #ffffff,
+  )
+);
+
+$accent-palette: (
+  50: #fce4ec,
+  100: #f8bbd0,
+  200: #f48fb1,
+  300: #f06292,
+  400: #ec407a,
+  500: #e91e63,
+  600: #d81b60,
+  700: #c2185b,
+  800: #ad1457,
+  900: #880e4f,
+  A100: #ff80ab,
+  A200: #ff4081,
+  A400: #f50057,
+  A700: #c51162,
+  contrast: (
+    50: rgba(0, 0, 0, 0.87),
+    100: rgba(0, 0, 0, 0.87),
+    200: rgba(0, 0, 0, 0.87),
+    300: rgba(0, 0, 0, 0.87),
+    400: rgba(0, 0, 0, 0.87),
+    500: #ffffff,
+    600: #ffffff,
+    700: #ffffff,
+    800: #ffffff,
+    900: #ffffff,
+    A100: rgba(0, 0, 0, 0.87),
+    A200: #ffffff,
+    A400: #ffffff,
+    A700: #ffffff,
+  )
+);
+
+// Definition of LIGHT Theme
+$light-theme: mat.define-light-theme((
+  color: (
+    primary: mat.define-palette($primary-palette),
+    accent: mat.define-palette($accent-palette),
+  ),
+  typography: mat.define-typography-config(),
+  density: 0,
+));
+
+// Definition of DARK Theme
+$dark-theme: mat.define-dark-theme((
+  color: (
+    primary: mat.define-palette($primary-palette),
+    accent: mat.define-palette($accent-palette),
+  ),
+  typography: mat.define-typography-config(),
+  density: 0,
+));
+
+// Apply the light theme by default
+@include mat.all-component-themes($light-theme);
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+  @include mat.all-component-colors($dark-theme);
+  
+  body {
+    background-color: var(--background-dark);
+    color: var(--text-dark);
+  }
+  
+  .mat-mdc-card {
+    background-color: var(--card-dark);
+    box-shadow: var(--shadow-dark);
+  }
+  
+  .mdc-text-field__input::-webkit-calendar-picker-indicator {
     filter: invert(1);
+  }
 }
 
-.mat-icon,
-.mat-icon svg {
-    color: white;
-    fill: white;
-}
-
-@media (prefers-color-scheme: light) {
-
-    .mat-icon,
-    .mat-icon svg {
-        color: black;
-        fill: black;
-    }
-}
-
-/* Global Material Website Themes */
-
-// Definition of DARK Theme - Follows Material's Dark Color Palette
-$dark-theme: mat.define-dark-theme((color: (primary: mat.define-palette(mat.$pink-palette, 700, 500, 900),
-                accent: mat.define-palette(mat.$blue-grey-palette, A200, A100, A400),
-            ),
-            // Only need to include `typography` and `density` in the default dark theme.
-            typography: mat.define-typography-config(),
-            density: 0,
-        ));
-
-// Definition of LIGHT Theme - Follows Material's Light Color Palette
-$light-theme: mat.define-light-theme((color: (primary: mat.define-palette(mat.$indigo-palette),
-                accent: mat.define-palette(mat.$pink-palette),
-            ),
-        ));
-
-// Apply the dark theme by default
-@include mat.all-component-themes($dark-theme);
-
-// Apply the light theme only when the user prefers light themes.
-@media (prefers-color-scheme: light) {
-    @include mat.all-component-colors($light-theme);
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+  html {
+    font-size: 14px;
+  }
+  
+  .container {
+    padding: 0 var(--spacing-sm);
+  }
+  
+  .mat-mdc-card {
+    margin: var(--spacing-sm);
+  }
 }
