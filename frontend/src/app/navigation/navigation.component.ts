@@ -8,9 +8,28 @@ import { AuthService } from "../shared/auth.service";
   styleUrls: ["./navigation.component.css"],
 })
 export class NavigationComponent {
-  constructor(public authService: AuthService) {}
+  mobileMenuOpen = false;
 
-  logout() {
+  constructor(
+    public authService: AuthService,
+    private router: Router,
+  ) {}
+
+  logout(): void {
     this.authService.logout();
+    this.router.navigate([""]);
+  }
+
+  toggleMobileMenu(): void {
+    this.mobileMenuOpen = !this.mobileMenuOpen;
+  }
+
+  closeMobileMenu(): void {
+    this.mobileMenuOpen = false;
+  }
+
+  logoutAndCloseMenu(): void {
+    this.logout();
+    this.closeMobileMenu();
   }
 }

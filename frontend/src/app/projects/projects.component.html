@@ -2,14 +2,60 @@
 <div class="projects-container">
   <div class="header">
     <h2>Explore Projects</h2>
-    <button mat-raised-button color="primary" class="create-project-button" (click)="createProject()">
+    <button
+      mat-raised-button
+      color="primary"
+      class="create-project-button"
+      (click)="createProject()"
+    >
+      <mat-icon>add</mat-icon>
       Create New Project
     </button>
   </div>
   <div class="search-container">
-    <input type="text" placeholder="Search projects..." [(ngModel)]="searchQuery" class="search-input" (input)="filterProjects()">
+    <div class="search-wrapper">
+      <mat-icon class="search-icon">search</mat-icon>
+      <input
+        type="text"
+        placeholder="Search projects..."
+        [(ngModel)]="searchQuery"
+        class="search-input"
+        (input)="filterProjects()"
+      />
+      <button
+        *ngIf="searchQuery"
+        mat-icon-button
+        class="clear-search"
+        (click)="clearSearch()"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
   </div>
-  <div class="projects-list">
-    <app-project-card *ngFor="let project of filteredProjects" [project]="project" [currentUser]="currentUser" (projectDeleted)="handleProjectDeleted($event)"></app-project-card>
+
+  <!-- Loading Indicator -->
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-progress-spinner color="primary" mode="indeterminate" diameter="50">
+    </mat-progress-spinner>
+    <p>Loading projects...</p>
+  </div>
+
+  <!-- No Results Message - Only show when not loading and there are no projects -->
+  <div *ngIf="!isLoading && filteredProjects.length === 0" class="no-results">
+    <mat-icon>sentiment_dissatisfied</mat-icon>
+    <p>No projects found matching your search.</p>
+    <button mat-stroked-button color="primary" (click)="clearSearch()">
+      Clear Search
+    </button>
+  </div>
+
+  <!-- Projects List - Only show when not loading -->
+  <div *ngIf="!isLoading" class="projects-list">
+    <app-project-card
+      *ngFor="let project of filteredProjects"
+      [project]="project"
+      [currentUser]="currentUser"
+      (projectDeleted)="handleProjectDeleted($event)"
+    ></app-project-card>
   </div>
 </div>

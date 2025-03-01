@@ -1,6 +1,7 @@
 <app-navigation></app-navigation>
 
 <div class="main-container">
+  <!-- Profile Information Section -->
   <div class="profile-container" *ngIf="profileForm">
     <form
       [formGroup]="profileForm"
@@ -9,80 +10,176 @@
     >
       <mat-card>
         <mat-card-header class="profile-card-header">
-          <mat-card-title>Profile</mat-card-title>
+          <mat-card-title>Profile Information</mat-card-title>
           <button
             mat-icon-button
             color="primary"
             (click)="onEdit()"
             class="edit-button"
             type="button"
+            aria-label="Toggle edit mode"
           >
-            <span class="material-icons">{{
-              isEditMode ? "close" : "edit"
-            }}</span>
+            <mat-icon>{{ isEditMode ? "close" : "edit" }}</mat-icon>
           </button>
         </mat-card-header>
-        <div class="card-content-container">
-          <mat-card-content>
-            <mat-form-field>
-              <mat-label>Email</mat-label>
-              <input matInput id="email" formControlName="email" />
-            </mat-form-field>
 
-            <mat-form-field>
-              <mat-label>First Name</mat-label>
-              <input matInput id="first_name" formControlName="first_name" />
-            </mat-form-field>
+        <mat-card-content class="card-content-container">
+          <mat-form-field appearance="outline">
+            <mat-label>Email</mat-label>
+            <input matInput id="email" formControlName="email" readonly />
+            <mat-icon matSuffix>email</mat-icon>
+          </mat-form-field>
 
-            <mat-form-field>
-              <mat-label>Last Name</mat-label>
-              <input matInput id="last_name" formControlName="last_name" />
-            </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>First Name</mat-label>
+            <input
+              matInput
+              id="first_name"
+              formControlName="first_name"
+              [readonly]="!isEditMode"
+            />
+            <mat-icon matSuffix>person</mat-icon>
+          </mat-form-field>
 
-            <mat-form-field>
-              <mat-label>Bio</mat-label>
-              <textarea matInput id="bio" formControlName="bio"></textarea>
-            </mat-form-field>
-          </mat-card-content>
-        </div>
+          <mat-form-field appearance="outline">
+            <mat-label>Last Name</mat-label>
+            <input
+              matInput
+              id="last_name"
+              formControlName="last_name"
+              [readonly]="!isEditMode"
+            />
+            <mat-icon matSuffix>person</mat-icon>
+          </mat-form-field>
 
-        <mat-card-actions *ngIf="isEditMode">
+          <mat-form-field appearance="outline">
+            <mat-label>Bio</mat-label>
+            <textarea
+              matInput
+              id="bio"
+              formControlName="bio"
+              [readonly]="!isEditMode"
+              rows="3"
+            ></textarea>
+            <mat-icon matSuffix>description</mat-icon>
+          </mat-form-field>
+        </mat-card-content>
+
+        <mat-card-actions *ngIf="isEditMode" class="profile-actions">
+          <button mat-stroked-button type="button" (click)="onEdit()">
+            Cancel
+          </button>
           <button mat-raised-button color="primary" type="submit">Save</button>
         </mat-card-actions>
       </mat-card>
     </form>
   </div>
 
+  <!-- Activity and Projects Section -->
   <div class="side-content">
-    <div class="posts-list">
-      <ng-container *ngFor="let post of posts">
-        <app-discussion-card
-          *ngIf="post.type === 'discussion'"
-          [discussion]="post"
-          [currentUser]="currentUser"
-          [inProfile]="true"
-          (discussionDeleted)="handleDiscussionDeleted($event)"
-          class="card"
-        ></app-discussion-card>
+    <!-- Activity Card -->
+    <mat-card class="activity-card">
+      <mat-card-header class="activity-card-header">
+        <mat-card-title>My Activity</mat-card-title>
+      </mat-card-header>
 
-        <app-comment-card
-          *ngIf="post.type === 'comment'"
-          [comment]="post"
-          [currentUser]="currentUser"
-          [inProfile]="true"
-          (commentDeleted)="handleCommentDeleted($event)"
-          class="card"
-        ></app-comment-card>
+      <mat-card-content>
+        <!-- Loading indicator -->
+        <div *ngIf="isLoading" class="loading-container">
+          <mat-progress-spinner
+            color="primary"
+            mode="indeterminate"
+            diameter="32"
+          ></mat-progress-spinner>
+          <p>Loading activity...</p>
+        </div>
 
-        <app-project-card
-          *ngIf="post.type === 'project'"
-          [project]="post"
-          [currentUser]="currentUser"
-          [inProfile]="true"
-          (projectDeleted)="handleProjectDeleted($event)"
-          class="card"
-        ></app-project-card>
-      </ng-container>
-    </div>
+        <!-- No activity message -->
+        <div
+          *ngIf="!isLoading && (!posts || posts.length === 0)"
+          class="no-activity"
+        >
+          <p>No recent activity to display.</p>
+        </div>
+
+        <!-- Activity cards container with scroll -->
+        <div *ngIf="!isLoading && posts && posts.length > 0" class="posts-list">
+          <ng-container *ngFor="let post of posts">
+            <app-discussion-card
+              *ngIf="post.type === 'discussion'"
+              [discussion]="post"
+              [currentUser]="currentUser"
+              [inProfile]="true"
+              (discussionDeleted)="handleDiscussionDeleted($event)"
+            ></app-discussion-card>
+
+            <app-comment-card
+              *ngIf="post.type === 'comment'"
+              [comment]="post"
+              [currentUser]="currentUser"
+              [inProfile]="true"
+              (commentDeleted)="handleCommentDeleted($event)"
+            ></app-comment-card>
+
+            <app-project-card
+              *ngIf="post.type === 'project'"
+              [project]="post"
+              [currentUser]="currentUser"
+              [inProfile]="true"
+              (projectDeleted)="handleProjectDeleted($event)"
+            ></app-project-card>
+          </ng-container>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Projects Summary Card -->
+    <mat-card
+      class="projects-card"
+      *ngIf="userProjects && userProjects.length > 0"
+    >
+      <mat-card-header class="projects-card-header">
+        <mat-card-title>Recent Projects</mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="project-summary">
+          <p>
+            <strong>{{ userProjects.length }}</strong>
+            {{ userProjects.length === 1 ? "project" : "projects" }}
+          </p>
+          <button
+            mat-stroked-button
+            color="primary"
+            (click)="createNewProject()"
+          >
+            <mat-icon>add</mat-icon> New Project
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- No Projects Card -->
+    <mat-card
+      class="projects-card"
+      *ngIf="!isLoading && (!userProjects || userProjects.length === 0)"
+    >
+      <mat-card-header class="projects-card-header">
+        <mat-card-title>Projects</mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="no-projects">
+          <p>No projects yet.</p>
+          <button
+            mat-stroked-button
+            color="primary"
+            (click)="createNewProject()"
+          >
+            <mat-icon>add</mat-icon> Create Project
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
   </div>
 </div>

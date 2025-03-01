@@ -17,6 +17,7 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { MatAutocompleteModule } from "@angular/material/autocomplete";
 import { MatExpansionModule } from "@angular/material/expansion";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 
 // Components
 import { AppComponent } from "./app.component";
@@ -36,6 +37,9 @@ import { ProjectRequestsComponent } from "./projects/project-requests/project-re
 import { AuthInterceptor } from "./shared/auth-interceptor.service";
 import { AuthService } from "./shared/auth.service";
 
+// Pipes
+import { TruncatePipe } from "./shared/pipes/truncate.pipe";
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -52,6 +56,7 @@ import { AuthService } from "./shared/auth.service";
     CommentCard,
     CommentFormComponent,
     ProjectRequestsComponent,
+    TruncatePipe,
     // Add other component declarations here
   ],
   imports: [
@@ -73,6 +78,7 @@ import { AuthService } from "./shared/auth.service";
     MatInputModule,
     MatAutocompleteModule,
     MatExpansionModule,
+    MatProgressSpinnerModule,
     // Add other module imports as necessary
   ],
   providers: [

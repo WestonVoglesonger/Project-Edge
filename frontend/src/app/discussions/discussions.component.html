@@ -8,19 +8,52 @@
       class="create-discussion-button"
       (click)="createDiscussion()"
     >
+      <mat-icon>add</mat-icon>
       Create New Discussion
     </button>
   </div>
   <div class="search-container">
-    <input
-      type="text"
-      placeholder="Search discussions..."
-      [(ngModel)]="searchQuery"
-      class="search-input"
-      (input)="filterDiscussions()"
-    />
+    <div class="search-wrapper">
+      <mat-icon class="search-icon">search</mat-icon>
+      <input
+        type="text"
+        placeholder="Search discussions..."
+        [(ngModel)]="searchQuery"
+        class="search-input"
+        (input)="filterDiscussions()"
+      />
+      <button
+        *ngIf="searchQuery"
+        mat-icon-button
+        class="clear-search"
+        (click)="clearSearch()"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
   </div>
-  <div class="discussions-list">
+
+  <!-- Loading Indicator -->
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-progress-spinner color="primary" mode="indeterminate" diameter="50">
+    </mat-progress-spinner>
+    <p>Loading discussions...</p>
+  </div>
+
+  <!-- No Results Message - Only show when not loading and there are no discussions -->
+  <div
+    *ngIf="!isLoading && filteredDiscussions.length === 0"
+    class="no-results"
+  >
+    <mat-icon>sentiment_dissatisfied</mat-icon>
+    <p>No discussions found matching your search.</p>
+    <button mat-stroked-button color="primary" (click)="clearSearch()">
+      Clear Search
+    </button>
+  </div>
+
+  <!-- Discussions List - Only show when not loading -->
+  <div *ngIf="!isLoading" class="discussions-list">
     <app-discussion-card
       *ngFor="let discussion of filteredDiscussions"
       [discussion]="discussion"

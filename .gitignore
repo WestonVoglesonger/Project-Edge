@@ -141,6 +141,9 @@ _NCrunch_*
 .*crunch*.local.xml
 nCrunchTemp_*
 
+# Frontend Dependencies
+package-lock.json
+
 # MightyMoose
 *.mm.*
 AutoTest.Net/
