@@ -3,7 +3,7 @@
 import os
 import dotenv
 
-__authors__ = ["Kris Jordan"]
+__authors__ = ["Weston Voglesonger"]
 __copyright__ = "Copyright 2023"
 __license__ = "MIT"
 

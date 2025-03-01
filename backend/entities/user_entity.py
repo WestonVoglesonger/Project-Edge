@@ -7,40 +7,57 @@ from .base import Base
 from ..models.user import ProfileForm, User, UserBase, UserResponse
 
 association_table_team_members = Table(
-    'association_team_members', Base.metadata,
-    Column('project_id', ForeignKey('projects.id'), primary_key=True),
-    Column('user_id', ForeignKey('users.id'), primary_key=True),
-    extend_existing=True
+    "association_team_members",
+    Base.metadata,
+    Column("project_id", ForeignKey("projects.id"), primary_key=True),
+    Column("user_id", ForeignKey("users.id"), primary_key=True),
+    extend_existing=True,
 )
 
 association_table_project_leaders = Table(
-    'association_project_leaders', Base.metadata,
-    Column('project_id', ForeignKey('projects.id'), primary_key=True),
-    Column('user_id', ForeignKey('users.id'), primary_key=True),
-    extend_existing=True
+    "association_project_leaders",
+    Base.metadata,
+    Column("project_id", ForeignKey("projects.id"), primary_key=True),
+    Column("user_id", ForeignKey("users.id"), primary_key=True),
+    extend_existing=True,
 )
 
-class UserEntity(Base):
-    __tablename__ = 'users'
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True, autoincrement=True)
+class UserEntity(Base):
+    __tablename__ = "users"
+
+    id: Mapped[int] = mapped_column(
+        Integer, primary_key=True, index=True, autoincrement=True
+    )
     first_name: Mapped[str] = mapped_column(String, nullable=True)
     last_name: Mapped[str] = mapped_column(String, nullable=True)
     email: Mapped[str] = mapped_column(String, unique=True, nullable=False)
     hashed_password: Mapped[str] = mapped_column(String, nullable=False)
-    accepted_community_agreement: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    accepted_community_agreement: Mapped[bool] = mapped_column(
+        Boolean, default=False, nullable=False
+    )
     bio: Mapped[Text] = mapped_column(Text, nullable=True)
     profile_picture: Mapped[str] = mapped_column(String, nullable=True)
 
-    projects_as_member: Mapped[List['ProjectEntity']] = relationship(
-        'ProjectEntity', secondary=association_table_team_members, back_populates='team_members')
-    projects_as_leader: Mapped[List['ProjectEntity']] = relationship(
-        'ProjectEntity', secondary=association_table_project_leaders, back_populates='project_leaders')
-    
-    authored_discussions: Mapped[List['DiscussionEntity']] = relationship('DiscussionEntity', back_populates='author')
+    projects_as_member: Mapped[List["ProjectEntity"]] = relationship(
+        "ProjectEntity",
+        secondary=association_table_team_members,
+        back_populates="team_members",
+    )
+    projects_as_leader: Mapped[List["ProjectEntity"]] = relationship(
+        "ProjectEntity",
+        secondary=association_table_project_leaders,
+        back_populates="project_leaders",
+    )
 
-    comments = relationship('CommentEntity', back_populates="author", cascade="all, delete-orphan")
-    join_requests = relationship(JoinRequestEntity, back_populates='user')
+    authored_discussions: Mapped[List["DiscussionEntity"]] = relationship(
+        "DiscussionEntity", back_populates="author"
+    )
+
+    comments = relationship(
+        "CommentEntity", back_populates="author", cascade="all, delete-orphan"
+    )
+    join_requests = relationship(JoinRequestEntity, back_populates="user")
 
     def to_user_response(self):
         return UserResponse(
@@ -49,7 +66,7 @@ class UserEntity(Base):
             last_name=self.last_name,
             email=self.email,
             accepted_community_agreement=self.accepted_community_agreement,
-            bio=self.bio,
+            bio=str(self.bio) if self.bio is not None else None,
             profile_picture=self.profile_picture,
         )
 
@@ -61,7 +78,7 @@ class UserEntity(Base):
             email=self.email,
             password=self.hashed_password,
             accepted_community_agreement=self.accepted_community_agreement,
-            bio=self.bio,
+            bio=str(self.bio) if self.bio is not None else None,
             profile_picture=self.profile_picture,
         )
 

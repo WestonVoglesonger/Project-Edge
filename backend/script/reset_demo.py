@@ -2,12 +2,18 @@ import sys
 import subprocess
 from sqlalchemy.orm import Session
 from backend.entities.base import Base
-from backend.test.services.demo_data import join_request_data, user_data, discussion_data, project_data, comment_data
+from backend.test.services.demo_data import (
+    join_request_data,
+    user_data,
+    discussion_data,
+    project_data,
+    comment_data,
+)
 from ..database import engine
 from ..env import getenv
 from ..entities.user_entity import UserEntity  # Ensure all your entities are imported
 
-__authors__ = ["Kris Jordan", "Ajay Gandecha"]
+__authors__ = ["Weston Voglesonger", "Ajay Gandecha"]
 __copyright__ = "Copyright 2023"
 __license__ = "MIT"
 
@@ -34,5 +40,5 @@ with Session(engine) as session:
     discussion_data.insert_fake_data(session)
     join_request_data.insert_fake_data(session)
     comment_data.insert_fake_data(session)
-    
+
     session.commit()
