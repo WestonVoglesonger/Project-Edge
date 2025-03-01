@@ -19,7 +19,7 @@ from ..env import getenv
 from .. import entities
 
 
-__authors__ = ["Kris Jordan", "Ajay Gandecha"]
+__authors__ = ["Weston Voglesonger", "Ajay Gandecha"]
 __copyright__ = "Copyright 2023"
 __license__ = "MIT"
 

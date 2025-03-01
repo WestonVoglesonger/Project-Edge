@@ -6,7 +6,7 @@ To use this script, from project root PWD, in a terminal:
 python3 -i backend/script/repl.py
 """
 
-__authors__ = ["Kris Jordan"]
+__authors__ = ["Weston Voglesonger"]
 __copyright__ = "Copyright 2023"
 __license__ = "MIT"
 

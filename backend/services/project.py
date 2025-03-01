@@ -1,5 +1,5 @@
 import logging
-from typing import List, Dict
+from typing import List
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import NoResultFound
 from backend.entities.project_entity import ProjectEntity
@@ -10,35 +10,54 @@ from backend.models.user import UserResponse
 
 logger = logging.getLogger(__name__)
 
+
 class ProjectService:
     def __init__(self, db: Session):
         self.db = db
 
     def create_project(self, project_data: ProjectCreate) -> ProjectResponse:
-        team_members = self._get_user_entities_by_emails(project_data.team_members)
-        project_leaders = self._get_user_entities_by_emails(project_data.project_leaders)
+        team_members = self._get_user_entities_by_emails(
+            project_data.team_members or []
+        )
+        project_leaders = self._get_user_entities_by_emails(
+            project_data.project_leaders or []
+        )
 
-        new_project_entity = ProjectEntity.from_model(project_data, team_members, project_leaders)
+        new_project_entity = ProjectEntity.from_model(
+            project_data, team_members, project_leaders
+        )
         self.db.add(new_project_entity)
         self.db.commit()
         self.db.refresh(new_project_entity)  # Refresh to get the ID
 
         return new_project_entity.to_project_response()
 
-    def update_project(self, project_id: int, project_update: ProjectUpdate, current_user_id: int) -> ProjectResponse:
+    def update_project(
+        self, project_id: int, project_update: ProjectUpdate, current_user_id: int
+    ) -> ProjectResponse:
         logger.info(f"Starting update for project with id {project_id}")
 
         try:
-            project_entity = self.db.query(ProjectEntity).filter(ProjectEntity.id == project_id).one()
+            project_entity = (
+                self.db.query(ProjectEntity)
+                .filter(ProjectEntity.id == project_id)
+                .one()
+            )
             logger.info(f"Found project with id {project_id}")
         except NoResultFound:
             logger.error(f"Project with id {project_id} not found")
-            raise ProjectNotFoundException(f"Project with id {project_id} not found")
+            raise ProjectNotFoundException(project_id)
 
         # Check if the current user is a project leader
-        if current_user_id not in [leader.id for leader in project_entity.project_leaders]:
-            logger.error(f"User with id {current_user_id} is not authorized to update project with id {project_id}")
-            raise UnauthorizedException(f"User with id {current_user_id} is not authorized to update project with id {project_id}")
+        if current_user_id not in [
+            leader.id for leader in project_entity.project_leaders
+        ]:
+            logger.error(
+                f"User with id {current_user_id} is not authorized to update project with id {project_id}"
+            )
+            raise UnauthorizedException(
+                f"User with id {current_user_id} is not authorized to update project with id {project_id}"
+            )
 
         update_data = project_update.model_dump(exclude_unset=True)
 
@@ -87,7 +106,9 @@ class ProjectService:
 
         # Ensure project leaders are not empty
         if not project_entity.project_leaders:
-            logger.error(f"Cannot update project with id {project_id} because it would leave the project without leaders")
+            logger.error(
+                f"Cannot update project with id {project_id} because it would leave the project without leaders"
+            )
             raise ValueError("Project must have at least one leader")
 
         # Update other fields
@@ -96,7 +117,9 @@ class ProjectService:
                 setattr(project_entity, field, value)
 
         self.db.commit()
-        logger.info(f"Project with id {project_id} successfully updated in the database")
+        logger.info(
+            f"Project with id {project_id} successfully updated in the database"
+        )
 
         self.db.refresh(project_entity)
         logger.info(f"Project with id {project_id} refreshed from the database")
@@ -106,26 +129,34 @@ class ProjectService:
     def get_project(self, project_id: int) -> ProjectResponse:
         project = self.db.query(ProjectEntity).filter_by(id=project_id).first()
         if not project:
-            raise ProjectNotFoundException(f"Project with id {project_id} not found.")
+            raise ProjectNotFoundException(project_id)
         return project.to_project_response()
-    
+
     def get_all_projects(self) -> List[ProjectResponse]:
         projects = self.db.query(ProjectEntity).all()
         return [project.to_project_response() for project in projects]
 
     def get_projects_by_user(self, user_id: int) -> List[ProjectResponse]:
-        projects = self.db.query(ProjectEntity).filter(ProjectEntity.project_leaders.any(UserEntity.id == user_id)).all()
+        projects = (
+            self.db.query(ProjectEntity)
+            .filter(ProjectEntity.project_leaders.any(UserEntity.id == user_id))
+            .all()
+        )
         return [project.to_project_response() for project in projects]
 
     def delete_project(self, project_id: int, current_user_id: int) -> ProjectResponse:
         project_entity = self.db.query(ProjectEntity).filter_by(id=project_id).first()
         if project_entity is None:
-            raise ProjectNotFoundException(f"Project with id {project_id} not found")
-        
+            raise ProjectNotFoundException(project_id)
+
         # Check if the current user is one of the project leaders
-        if current_user_id not in [leader.id for leader in project_entity.project_leaders]:
-            raise UnauthorizedException("You do not have permission to delete this project")
-        
+        if current_user_id not in [
+            leader.id for leader in project_entity.project_leaders
+        ]:
+            raise UnauthorizedException(
+                "You do not have permission to delete this project"
+            )
+
         self.db.delete(project_entity)
         self.db.commit()
         return project_entity.to_project_response()
@@ -133,15 +164,24 @@ class ProjectService:
     def leave_project(self, project_id: int, current_user_id: int) -> ProjectResponse:
         project_entity = self.db.query(ProjectEntity).filter_by(id=project_id).first()
         if project_entity is None:
-            raise ProjectNotFoundException(f"Project with id {project_id} not found")
-        
+            raise ProjectNotFoundException(project_id)
+
         # Check if the current user is one of the team members
         if current_user_id not in [member.id for member in project_entity.team_members]:
             raise UnauthorizedException("You are not a member of this project")
-        
-        project_entity.team_members = [member for member in project_entity.team_members if member.id != current_user_id]
+
+        project_entity.team_members = [
+            member
+            for member in project_entity.team_members
+            if member.id != current_user_id
+        ]
         self.db.commit()
         return project_entity.to_project_response()
 
-    def _get_user_entities_by_emails(self, users: List[UserResponse]) -> List[UserEntity]:
-        return [self.db.query(UserEntity).filter(UserEntity.email == user.email).first() for user in users]
+    def _get_user_entities_by_emails(
+        self, users: List[UserResponse]
+    ) -> List[UserEntity]:
+        return [
+            self.db.query(UserEntity).filter(UserEntity.email == user.email).first()
+            for user in users
+        ]

@@ -2,7 +2,7 @@ import sqlalchemy
 import sys
 from ..env import getenv
 
-__authors__ = ["Kris Jordan"]
+__authors__ = ["Weston Voglesonger"]
 __copyright__ = "Copyright 2023"
 __license__ = "MIT"
 
@@ -11,6 +11,7 @@ if getenv("MODE") != "development":
     print("Add MODE=development to your .env file in workspace's `backend/` directory")
     exit(1)
 
+
 def _engine_str() -> str:
     dialect = "postgresql+psycopg2"
     user = getenv("POSTGRES_USER")
@@ -18,6 +19,7 @@ def _engine_str() -> str:
     host = getenv("POSTGRES_HOST")
     port = getenv("POSTGRES_PORT")
     return f"{dialect}://{user}:{password}@{host}:{port}"
+
 
 engine = sqlalchemy.create_engine(_engine_str(), echo=True)
 

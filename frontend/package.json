@@ -50,7 +50,8 @@
         "karma-jasmine-html-reporter": "~2.0.0",
         "prettier": "^3.0.3",
         "prettier-eslint": "^16.1.1",
-        "typescript": "~4.9.4"
+        "typescript": "~4.9.4",
+        "vercel": "^41.3.0"
     },
     "overrides": {
         "webpack": "5.93.0"
