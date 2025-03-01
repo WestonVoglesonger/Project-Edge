@@ -5,35 +5,92 @@
   align-items: center;
   justify-content: center;
   padding: 20px;
-  background-color: #f5f5f5;
+  height: 100vh;
   min-height: 100vh;
+  background: linear-gradient(
+    135deg,
+    #fff6e5 0%,
+    #ffd3b6 50%,
+    #ffaaa5 100%
+  ); /* Warm peach gradient that contrasts with blue components */
 }
 
 .main-content {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   width: 100%;
-  max-width: 400px;
+  max-width: 1200px;
+  max-height: 1000px;
   box-sizing: border-box;
+  gap: 250px;
+}
+
+/* Brand side styling */
+.brand-side {
+  width: 40%;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  text-align: center;
+  order: 1;
+}
+
+.brand-content {
+  background: linear-gradient(
+    135deg,
+    #6a11cb 0%,
+    #2575fc 100%
+  ); /* Purple to blue gradient */
+  padding: 40px 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  width: 100%;
+}
+
+.brand-title {
+  font-size: 42px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  letter-spacing: 1px;
+}
+
+.brand-tagline {
+  font-size: 16px;
+  line-height: 1.5;
+  opacity: 0.9;
 }
 
 .auth-card {
-  width: 100%;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 50%;
+  margin-left: auto;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
   background-color: #ffffff;
+  transition: all 0.3s ease;
+  order: 2;
+}
+
+.auth-card:hover {
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
 }
 
 .title-container {
   display: flex;
   justify-content: center;
+  margin-bottom: 10px;
 }
 
 .title {
   text-align: center;
-  font-size: 24px;
+  font-size: 26px;
+  font-weight: 500;
   color: #333;
   margin-bottom: 20px;
 }
@@ -46,41 +103,113 @@
 .form-actions {
   display: flex;
   justify-content: center;
+  margin-top: 10px;
 }
 
 .form-submit {
   width: 100%;
   text-align: center;
-  padding: 10px;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  border-radius: 6px;
+  transition: all 0.2s;
+  background: linear-gradient(
+    135deg,
+    #6a11cb 0%,
+    #2575fc 100%
+  ); /* Matching purple to blue gradient */
+  color: white;
+  border: none;
+}
+
+.form-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(
+    135deg,
+    #5c0fb5 0%,
+    #1e68e3 100%
+  ); /* Slightly darker on hover */
 }
 
 .error-message {
   color: #d9534f;
-  background-color: #f2dede;
-  border: 1px solid #ebccd1;
-  padding: 10px;
-  border-radius: 4px;
-  margin-top: 10px;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  padding: 12px;
+  border-radius: 6px;
+  margin: 15px 0;
   text-align: center;
   font-size: 14px;
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .switch-mode {
   text-align: center;
-  margin-top: 20px;
+  margin-top: 25px;
+  font-size: 15px;
+  color: #555;
 }
 
 .switch-mode button {
   margin-left: 5px;
+  font-weight: 500;
+  color: #6a11cb; /* Match the primary purple from our gradient */
+}
+
+.switch-mode button:hover {
+  background-color: rgba(
+    106,
+    17,
+    203,
+    0.05
+  ); /* Very light purple background on hover */
+  color: #5c0fb5; /* Slightly darker purple on hover */
 }
 
 /* Responsive Styles */
 @media (max-width: 768px) {
   .main-content {
-    padding: 10px;
+    flex-direction: column;
+    padding: 15px;
+    max-width: 95%;
+  }
+
+  .brand-side {
+    width: 100%;
+    margin-bottom: 20px;
+    padding: 0;
+    order: 1;
+  }
+
+  .brand-content {
+    padding: 20px;
+  }
+
+  .brand-title {
+    font-size: 32px;
+  }
+
+  .auth-card {
+    width: 100%;
+    padding: 20px;
+    order: 2;
   }
 
   .title {
-    font-size: 20px;
+    font-size: 22px;
   }
 }
