@@ -110,18 +110,30 @@ def db_session():
             if mode == "production" and attempt == 0:  # Only on first attempt
                 session.execute(sqlalchemy.text("SELECT 1"))
 
-            # Session is good, yield it
-            yield session
-            break
+            break  # Connection successful, break the retry loop
 
         except Exception as e:
             if session:
                 session.close()
+                session = None  # Reset session after closing
 
             if attempt == 2:  # Last attempt
                 logger.error(f"Failed to create database session after 3 attempts: {e}")
                 raise
 
-    # Always close the session
+    # If we have a session, yield it and ensure it's closed after use
     if session:
-        session.close()
+        try:
+            yield session
+        except Exception as e:
+            # Log any exceptions that occur while the session is being used
+            logger.error(f"Exception occurred during session usage: {e}")
+            raise  # Re-raise the exception after logging
+        finally:
+            # Always close the session, even if an exception occurred
+            session.close()
+    else:
+        # This should never happen because we should have raised an exception in the retry loop
+        # But just in case...
+        logger.error("Failed to create database session but did not raise an exception")
+        raise Exception("Could not create database session")

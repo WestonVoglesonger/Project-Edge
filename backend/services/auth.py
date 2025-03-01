@@ -23,8 +23,9 @@ if not SECRET_KEY:
     raise ValueError("JWT_SECRET environment variable is not set")
 
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 1440  # 24 hours (increased from 30 minutes)
-REFRESH_TOKEN_EXPIRE_DAYS = 30  # 30 days (increased from 7 days)
+ACCESS_TOKEN_EXPIRE_MINUTES = 10080  # 7 days (increased from 24 hours)
+REFRESH_TOKEN_EXPIRE_DAYS = 60  # 60 days (increased from 30 days)
+TOKEN_LEEWAY_SECONDS = 300  # 5 minutes of leeway for clock skew
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 logger = logging.getLogger(__name__)
@@ -63,7 +64,9 @@ def get_current_user(
 ) -> UserResponse:
     try:
         print(f"Received token: {token}")  # Log received token
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(
+            token, SECRET_KEY, algorithms=[ALGORITHM], options={"verify_exp": True}
+        )
         email = payload.get("sub")  # Remove type annotation
         if email is None:
             raise CredentialsException()
@@ -112,7 +115,9 @@ def create_refresh_token(
 
 def verify_refresh_token(token: str) -> Optional[Dict[str, str]]:
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(
+            token, SECRET_KEY, algorithms=[ALGORITHM], options={"verify_exp": True}
+        )
         return payload
     except JWTError:
         return None
