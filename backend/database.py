@@ -18,8 +18,10 @@ def _engine_str(database: str = getenv("POSTGRES_DATABASE")) -> str:
     port = getenv("POSTGRES_PORT")
 
     # Add SSL mode parameter if we're in production mode (for services like Render)
-    if getenv("MODE") == "production":
-        return f"{dialect}://{user}:{password}@{host}:{port}/{database}?sslmode=require"
+    mode = getenv("MODE") or "development"
+    if mode == "production":
+        # Enhanced SSL configuration for Render PostgreSQL
+        return f"{dialect}://{user}:{password}@{host}:{port}/{database}?sslmode=require&connect_timeout=10"
 
     return f"{dialect}://{user}:{password}@{host}:{port}/{database}"
 
@@ -36,6 +38,14 @@ if mode == "production":
         "max_overflow": 10,
         "pool_recycle": 300,  # Recycle connections every 5 minutes
         "pool_pre_ping": True,  # Verify connection is still alive
+        "pool_timeout": 30,  # Timeout after 30 seconds when waiting for a connection
+        "connect_args": {
+            "connect_timeout": 10,  # Connection timeout of 10 seconds
+            "keepalives": 1,  # Enable keepalives
+            "keepalives_idle": 60,  # Idle time before sending keepalive
+            "keepalives_interval": 10,  # Interval between keepalives
+            "keepalives_count": 3,  # Number of keepalives before dropping
+        },
     }
 else:
     engine_settings = {"echo": True}  # Keep echo for development
