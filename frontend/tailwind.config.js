@@ -32,5 +32,20 @@ module.exports = {
       },
     },
   },
+  // Disable unused features to reduce memory usage
+  corePlugins: {
+    aspectRatio: false,
+    container: false,
+    fontVariantNumeric: false,
+    placeholderColor: false,
+    placeholderOpacity: false,
+    backdropOpacity: false,
+    backdropFilter: false,
+    ringWidth: false,
+    ringColor: false,
+    ringOpacity: false,
+    ringOffsetWidth: false,
+    ringOffsetColor: false,
+  },
   plugins: [],
 };
