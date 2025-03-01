@@ -2,6 +2,7 @@
 
 import sqlalchemy
 from sqlalchemy.orm import Session
+from sqlalchemy.pool import NullPool
 from .env import getenv
 
 __authors__ = ["Weston Voglesonger"]
@@ -30,15 +31,10 @@ def _engine_str(database: str = getenv("POSTGRES_DATABASE")) -> str:
 mode = getenv("MODE") or "development"
 engine_settings = {}
 
-# For production, use less verbose logging and handle reconnections better
 if mode == "production":
     engine_settings = {
         "echo": False,
-        "pool_size": 5,
-        "max_overflow": 10,
-        "pool_recycle": 300,  # Recycle connections every 5 minutes
-        "pool_pre_ping": True,  # Verify connection is still alive
-        "pool_timeout": 30,  # Timeout after 30 seconds when waiting for a connection
+        "poolclass": NullPool,  # Disable connection pooling
         "connect_args": {
             "connect_timeout": 10,  # Connection timeout of 10 seconds
             "keepalives": 1,  # Enable keepalives
