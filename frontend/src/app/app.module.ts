@@ -22,10 +22,11 @@ import { MatExpansionModule } from "@angular/material/expansion";
 import { ButtonModule } from "primeng/button";
 import { CardModule } from "primeng/card";
 import { InputTextModule } from "primeng/inputtext";
-import { MenubarModule } from "primeng/menubar";
-import { TableModule } from "primeng/table";
-import { DialogModule } from "primeng/dialog";
-import { ToastModule } from "primeng/toast";
+// Temporarily commenting out modules that aren't immediately needed
+// import { MenubarModule } from "primeng/menubar";
+// import { TableModule } from "primeng/table";
+// import { DialogModule } from "primeng/dialog";
+// import { ToastModule } from "primeng/toast";
 
 // Components
 import { AppComponent } from "./app.component";
@@ -87,10 +88,11 @@ import { AuthService } from "./shared/auth.service";
     ButtonModule,
     CardModule,
     InputTextModule,
-    MenubarModule,
-    TableModule,
-    DialogModule,
-    ToastModule,
+    // Temporarily disabled to reduce initial memory usage
+    // MenubarModule,
+    // TableModule,
+    // DialogModule,
+    // ToastModule,
 
     // Add other module imports as necessary
   ],

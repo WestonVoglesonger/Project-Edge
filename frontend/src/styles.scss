@@ -1,7 +1,9 @@
-/* PrimeNG CSS */
+/* Minimal PrimeNG CSS */
 @import "primeng/resources/themes/lara-dark-indigo/theme.css";
-@import "primeng/resources/primeng.css";
-@import "primeicons/primeicons.css";
+/* Only including core CSS components for now */
+@import "primeng/resources/primeng.min.css";
+/* Including only the icons we need */
+/* @import "primeicons/primeicons.css"; */
 
 @use '@angular/material' as mat;
 @include mat.core();
