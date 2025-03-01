@@ -9,7 +9,7 @@
         "test": "ng test",
         "lint": "ng lint",
         "start:dynamic": "node --optimize-for-size --max-old-space-size=2048 --gc-interval=100 ./node_modules/@angular/cli/bin/ng serve --configuration development ${windir:+--poll 2000}",
-        "build:minimal": "node --optimize-for-size --max-old-space-size=2048 --gc-interval=100 ./node_modules/@angular/cli/bin/ng build --configuration development --aot=false --output-hashing=none --source-map=false --optimization=false",
+        "build:minimal": "node --optimize-for-size --max-old-space-size=2048 --gc-interval=100 ./node_modules/@angular/cli/bin/ng build --configuration development --output-hashing=none --source-map=false --optimization=false",
         "serve:lightweight": "node serve-prebuild.js"
     },
     "private": true,

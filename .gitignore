@@ -339,3 +339,11 @@ deploy_key*
 .env
 .DS_Store
 .coverage
+
+# Angular build output
+/dist/
+# Prevent future build outputs in docs
+/docs/*.js
+/docs/*.css
+/docs/*.html
+/docs/*.png
