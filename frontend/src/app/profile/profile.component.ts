@@ -1,7 +1,7 @@
-import { Component, OnInit } from "@angular/core";
-import { FormBuilder, FormGroup } from "@angular/forms";
+import { Component, OnInit, OnDestroy } from "@angular/core";
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { UserService } from "../shared/users/user.service";
-import { Route } from "@angular/router";
+import { Route, Router } from "@angular/router";
 import { AuthService } from "../shared/auth.service";
 import { UserResponse } from "../shared/users/user.models";
 import { ProjectResponse } from "../projects/project.models";
@@ -10,13 +10,14 @@ import { CommentResponse } from "../shared/comment.models";
 import { DiscussionService } from "../discussions/discussions.service";
 import { ProjectService } from "../projects/projects.service";
 import { CommentService } from "../shared/comment.service";
+import { Subscription, forkJoin } from "rxjs";
 
 @Component({
   selector: "app-profile",
   templateUrl: "./profile.component.html",
   styleUrls: ["./profile.component.css"],
 })
-export class ProfileComponent implements OnInit {
+export class ProfileComponent implements OnInit, OnDestroy {
   public static Route: Route = {
     path: "profile",
     component: ProfileComponent,
@@ -26,6 +27,11 @@ export class ProfileComponent implements OnInit {
   currentUser!: UserResponse;
   isEditMode: boolean = false;
   posts: any[] = [];
+  userProjects: ProjectResponse[] = [];
+  userDiscussions: DiscussionResponse[] = [];
+  userComments: CommentResponse[] = [];
+  isLoading: boolean = true;
+  private subscriptions: Subscription[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -34,6 +40,7 @@ export class ProfileComponent implements OnInit {
     private projectService: ProjectService,
     private discussionService: DiscussionService,
     private commentService: CommentService,
+    private router: Router,
   ) {
     this.profileForm = this.fb.group({
       first_name: [{ value: "", disabled: true }],
@@ -45,21 +52,41 @@ export class ProfileComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.authService.fetchCurrentUser().subscribe((user: UserResponse) => {
-      console.log("User:", user);
-      this.currentUser = user;
-      this.profileForm.patchValue({
-        first_name: user.first_name || "",
-        last_name: user.last_name || "",
-        email: user.email || "",
-        bio: user.bio || "",
-        accepted_community_agreement: user.accepted_community_agreement,
+    this.isLoading = true;
+    const userSub = this.authService
+      .fetchCurrentUser()
+      .subscribe((user: UserResponse) => {
+        console.log("User:", user);
+        this.currentUser = user;
+        this.profileForm.patchValue({
+          first_name: user.first_name || "",
+          last_name: user.last_name || "",
+          email: user.email || "",
+          bio: user.bio || "",
+          accepted_community_agreement: user.accepted_community_agreement,
+        });
+
+        this.loadPosts();
+        this.loadUserProjects();
       });
-      this.loadPosts();
-    });
+    this.subscriptions.push(userSub);
+  }
+
+  ngOnDestroy(): void {
+    // Unsubscribe from all subscriptions
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
 
   loadPosts() {
+    let postCount = 0;
+    const totalPostSources = 3; // projects, discussions, comments
+    const checkLoading = () => {
+      postCount++;
+      if (postCount >= totalPostSources) {
+        this.isLoading = false;
+      }
+    };
+
     this.projectService.getProjectsByUser(this.currentUser.id!).subscribe({
       next: (projects: ProjectResponse[]) => {
         const projectPosts = projects
@@ -74,9 +101,11 @@ export class ProfileComponent implements OnInit {
           }));
         this.posts = [...this.posts, ...projectPosts];
         this.sortPostsByDate();
+        checkLoading();
       },
       error: (err) => {
         console.error("Error loading projects:", err);
+        checkLoading();
       },
     });
 
@@ -94,9 +123,11 @@ export class ProfileComponent implements OnInit {
             }));
           this.posts = [...this.posts, ...discussionPosts];
           this.sortPostsByDate();
+          checkLoading();
         },
         error: (err) => {
           console.error("Error loading discussions:", err);
+          checkLoading();
         },
       });
 
@@ -109,11 +140,46 @@ export class ProfileComponent implements OnInit {
         }));
         this.posts = [...this.posts, ...commentPosts];
         this.sortPostsByDate();
+        checkLoading();
       },
       error: (err) => {
         console.error("Error loading comments:", err);
+        checkLoading();
       },
     });
+  }
+
+  loadUserProjects() {
+    this.projectService.getProjectsByUser(this.currentUser.id!).subscribe({
+      next: (projects: ProjectResponse[]) => {
+        this.userProjects = projects.sort(
+          (a, b) =>
+            new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
+        );
+      },
+      error: (err) => {
+        console.error("Error loading user projects:", err);
+      },
+    });
+  }
+
+  getActivityText(post: any): string {
+    switch (post.type) {
+      case "discussion":
+        return `Started a discussion: "${post.title}"`;
+      case "comment":
+        return `Commented on: "${post.content.substring(0, 30)}${
+          post.content.length > 30 ? "..." : ""
+        }"`;
+      case "project":
+        return `Created a project: "${post.name}"`;
+      default:
+        return "Unknown activity";
+    }
+  }
+
+  createNewProject(): void {
+    this.router.navigate(["/projects/new"]);
   }
 
   sortPostsByDate() {
@@ -169,6 +235,9 @@ export class ProfileComponent implements OnInit {
   handleProjectDeleted(projectId: number): void {
     this.posts = this.posts.filter(
       (post) => !(post.type === "project" && post.id === projectId),
+    );
+    this.userProjects = this.userProjects.filter(
+      (project) => project.id !== projectId,
     );
   }
 

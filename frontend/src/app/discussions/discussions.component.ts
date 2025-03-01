@@ -21,6 +21,7 @@ export class DiscussionsComponent implements OnInit {
   filteredDiscussions: DiscussionResponse[] = [];
   searchQuery: string = "";
   currentUser!: UserResponse;
+  isLoading: boolean = true;
 
   constructor(
     private discussionService: DiscussionService,
@@ -42,6 +43,7 @@ export class DiscussionsComponent implements OnInit {
   }
 
   loadDiscussions(): void {
+    this.isLoading = true;
     this.discussionService.getAllDiscussions().subscribe(
       (discussions: DiscussionResponse[]) => {
         this.discussions = discussions.sort(
@@ -49,9 +51,13 @@ export class DiscussionsComponent implements OnInit {
             new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
         );
         this.filteredDiscussions = this.discussions;
+        this.isLoading = false;
+        this.cdr.markForCheck(); // Ensure view is updated
       },
       (error) => {
         console.error("Error loading discussions", error);
+        this.isLoading = false;
+        this.cdr.markForCheck(); // Ensure view is updated even on error
       },
     );
   }
@@ -65,15 +71,22 @@ export class DiscussionsComponent implements OnInit {
   }
 
   filterDiscussions(): void {
+    if (!this.searchQuery) {
+      this.filteredDiscussions = [...this.discussions];
+      return;
+    }
+
+    const searchTermLower = this.searchQuery.toLowerCase();
     this.filteredDiscussions = this.discussions.filter(
       (discussion) =>
-        discussion.title
-          .toLowerCase()
-          .includes(this.searchQuery.toLowerCase()) ||
-        discussion.description
-          .toLowerCase()
-          .includes(this.searchQuery.toLowerCase()),
+        discussion.title.toLowerCase().includes(searchTermLower) ||
+        discussion.description.toLowerCase().includes(searchTermLower),
     );
+  }
+
+  clearSearch() {
+    this.searchQuery = "";
+    this.filterDiscussions();
   }
 
   handleDiscussionDeleted(discussionId: number): void {

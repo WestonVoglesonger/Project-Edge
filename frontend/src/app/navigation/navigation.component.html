@@ -1,4 +1,10 @@
 <mat-toolbar color="primary" class="header">
+  <div class="menu-button">
+    <button mat-icon-button (click)="toggleMobileMenu()">
+      <mat-icon>menu</mat-icon>
+    </button>
+  </div>
+
   <div class="header-links">
     <a mat-button routerLink="/home">Home</a>
     <a mat-button *ngIf="authService.isLoggedIn()" routerLink="/profile"
@@ -7,8 +13,34 @@
     <a mat-button routerLink="/projects">Projects</a>
     <a mat-button routerLink="/discussions">Discussions</a>
   </div>
+
   <div class="auth-links">
     <a mat-button *ngIf="!authService.isLoggedIn()" routerLink="">Login</a>
     <a mat-button *ngIf="authService.isLoggedIn()" (click)="logout()">Logout</a>
   </div>
 </mat-toolbar>
+
+<div class="mobile-menu" [class.show]="mobileMenuOpen">
+  <a mat-button routerLink="/home" (click)="closeMobileMenu()">Home</a>
+  <a
+    mat-button
+    *ngIf="authService.isLoggedIn()"
+    routerLink="/profile"
+    (click)="closeMobileMenu()"
+    >Profile</a
+  >
+  <a mat-button routerLink="/projects" (click)="closeMobileMenu()">Projects</a>
+  <a mat-button routerLink="/discussions" (click)="closeMobileMenu()"
+    >Discussions</a
+  >
+  <a
+    mat-button
+    *ngIf="!authService.isLoggedIn()"
+    routerLink=""
+    (click)="closeMobileMenu()"
+    >Login</a
+  >
+  <a mat-button *ngIf="authService.isLoggedIn()" (click)="logoutAndCloseMenu()"
+    >Logout</a
+  >
+</div>
