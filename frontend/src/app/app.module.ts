@@ -18,6 +18,15 @@ import { MatInputModule } from "@angular/material/input";
 import { MatAutocompleteModule } from "@angular/material/autocomplete";
 import { MatExpansionModule } from "@angular/material/expansion";
 
+// PrimeNG Components
+import { ButtonModule } from "primeng/button";
+import { CardModule } from "primeng/card";
+import { InputTextModule } from "primeng/inputtext";
+import { MenubarModule } from "primeng/menubar";
+import { TableModule } from "primeng/table";
+import { DialogModule } from "primeng/dialog";
+import { ToastModule } from "primeng/toast";
+
 // Components
 import { AppComponent } from "./app.component";
 import { AuthComponent } from "./auth/auth.component";
@@ -73,6 +82,16 @@ import { AuthService } from "./shared/auth.service";
     MatInputModule,
     MatAutocompleteModule,
     MatExpansionModule,
+
+    // PrimeNG Modules
+    ButtonModule,
+    CardModule,
+    InputTextModule,
+    MenubarModule,
+    TableModule,
+    DialogModule,
+    ToastModule,
+
     // Add other module imports as necessary
   ],
   providers: [
