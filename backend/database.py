@@ -41,12 +41,13 @@ if mode == "production":
             "keepalives_idle": 60,  # Idle time before sending keepalive
             "keepalives_interval": 10,  # Interval between keepalives
             "keepalives_count": 3,  # Number of keepalives before dropping
+            "sslmode": "require",
         },
     }
 else:
     engine_settings = {"echo": True}  # Keep echo for development
 
-engine = sqlalchemy.create_engine(_engine_str(), **engine_settings)
+engine = sqlalchemy.create_engine(_engine_str(), **engine_settings, echo_pool="debug")
 """Application-level SQLAlchemy database engine."""
 
 
