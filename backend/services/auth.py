@@ -25,7 +25,7 @@ if not SECRET_KEY:
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 10080  # 7 days (increased from 24 hours)
 REFRESH_TOKEN_EXPIRE_DAYS = 60  # 60 days (increased from 30 days)
-TOKEN_LEEWAY_SECONDS = 300  # 5 minutes of leeway for clock skew
+TOKEN_LEEWAY_SECONDS = 86400  # 24 hours of leeway for clock skew and transition period
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 logger = logging.getLogger(__name__)
@@ -64,17 +64,43 @@ def get_current_user(
 ) -> UserResponse:
     try:
         print(f"Received token: {token}")  # Log received token
-        payload = jwt.decode(
-            token, SECRET_KEY, algorithms=[ALGORITHM], options={"verify_exp": True}
-        )
-        email = payload.get("sub")  # Remove type annotation
+
+        # First try with verification disabled to extract the payload
+        try:
+            # Get payload without verifying expiration
+            payload = jwt.decode(
+                token,
+                SECRET_KEY,
+                algorithms=[ALGORITHM],
+                options={"verify_exp": False},  # Don't verify expiration yet
+            )
+
+            # Now manually check expiration with extended grace period
+            exp = payload.get("exp")
+            if exp:
+                token_expiry = datetime.fromtimestamp(exp, tz=timezone.utc)
+                current_time = datetime.now(tz=timezone.utc)
+                # Allow tokens expired within the last 24 hours
+                if token_expiry < current_time - timedelta(hours=24):
+                    logger.warning(
+                        f"Token expired more than 24 hours ago: {token_expiry}"
+                    )
+                    raise CredentialsException()
+                elif token_expiry < current_time:
+                    logger.info(
+                        f"Using expired token within grace period (expired: {token_expiry})"
+                    )
+
+            logger.info("Successfully decoded token with grace period handling")
+        except JWTError as e:
+            logger.warning(f"Token validation failed: {e}")
+            raise CredentialsException()
+
+        email = payload.get("sub")
         if email is None:
+            logger.warning("Token missing 'sub' claim")
             raise CredentialsException()
-        expiration = payload.get("exp")
-        if expiration and datetime.fromtimestamp(
-            expiration, tz=timezone.utc
-        ) < datetime.now(tz=timezone.utc):
-            raise CredentialsException()
+
         print(f"Decoded JWT payload: {payload}")  # Log the payload
     except JWTError as e:
         print(f"JWTError: {e}")
@@ -115,11 +141,33 @@ def create_refresh_token(
 
 def verify_refresh_token(token: str) -> Optional[Dict[str, str]]:
     try:
+        # Get payload without verifying expiration
         payload = jwt.decode(
-            token, SECRET_KEY, algorithms=[ALGORITHM], options={"verify_exp": True}
+            token,
+            SECRET_KEY,
+            algorithms=[ALGORITHM],
+            options={"verify_exp": False},  # Don't verify expiration yet
         )
+
+        # Now manually check expiration with extended grace period
+        exp = payload.get("exp")
+        if exp:
+            token_expiry = datetime.fromtimestamp(exp, tz=timezone.utc)
+            current_time = datetime.now(tz=timezone.utc)
+            # For refresh tokens, use a 7-day grace period
+            if token_expiry < current_time - timedelta(days=7):
+                logger.warning(
+                    f"Refresh token expired more than 7 days ago: {token_expiry}"
+                )
+                return None
+            elif token_expiry < current_time:
+                logger.info(
+                    f"Using expired refresh token within grace period (expired: {token_expiry})"
+                )
+
         return payload
-    except JWTError:
+    except JWTError as e:
+        logger.warning(f"Refresh token validation failed: {e}")
         return None
 
 
