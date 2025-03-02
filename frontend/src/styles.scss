@@ -43,7 +43,7 @@ body {
   transition: background-color var(--transition-speed) ease;
   overflow-x: hidden;
   width: 100%;
-  max-width: 100%;
+  max-width: 100vw;
   box-sizing: border-box;
 }
 
@@ -59,7 +59,12 @@ body {
   color: var(--text-light);
   position: relative;
   min-height: 100vh;
+  width: 100%;
+  max-width: 100vw;
   overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 /* App root element styles */
@@ -68,7 +73,11 @@ app-root {
   min-height: 100vh;
   position: relative;
   width: 100%;
-  overflow-x: hidden;
+  max-width: 100vw;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 /* Common Elements Styling */

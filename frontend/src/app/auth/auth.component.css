@@ -7,9 +7,11 @@
   min-height: 100vh;
   width: 100%;
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  overflow: auto;
+  overflow: hidden;
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
+  max-width: 100vw;
 }
 
 .main-content {
@@ -21,6 +23,8 @@
   padding: var(--spacing-xl) var(--spacing-md);
   gap: var(--spacing-xl);
   flex-wrap: wrap;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 /* Brand side styling */
