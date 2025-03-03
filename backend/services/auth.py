@@ -72,7 +72,7 @@ def get_current_user(
                 token,
                 SECRET_KEY,
                 algorithms=[ALGORITHM],
-                options={"verify_exp": False},  # Don't verify expiration yet
+                options={"verify_exp": True},  # Verify expiration
             )
 
             # Now manually check expiration with extended grace period

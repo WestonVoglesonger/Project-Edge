@@ -17,6 +17,14 @@ logger = logging.getLogger(__name__)
 # Get environment variables
 mode = getenv("MODE") or "development"
 
+def _engine_str(database: str = getenv("POSTGRES_DATABASE")) -> str:
+    """Helper function for reading settings from environment variables to produce connection string."""
+    dialect = "postgresql+psycopg2"
+    user = getenv("POSTGRES_USER")
+    password = getenv("POSTGRES_PASSWORD")
+    host = getenv("POSTGRES_HOST")
+    port = getenv("POSTGRES_PORT")
+    return f"{dialect}://{user}:{password}@{host}:{port}/{database}"
 
 # Simplified direct connection string approach
 def get_database_url():

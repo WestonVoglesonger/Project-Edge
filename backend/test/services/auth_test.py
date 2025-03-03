@@ -17,7 +17,6 @@ from .demo_data.user_data import user1
 
 # Data Setup and Injected Service Fixtures
 from .demo_data.core_data import setup_insert_data_fixture
-from .fixtures import add_test_user
 
 # Load environment variables
 from dotenv import load_dotenv
